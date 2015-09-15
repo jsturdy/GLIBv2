@@ -1,0 +1,7 @@
+# Ignore OS files
+.DS_Store
+
+# Only keep important files in the `prj`directory
+prj/*
+!prj/GLIB_v2.gise
+!prj/GLIB_v2.xise
