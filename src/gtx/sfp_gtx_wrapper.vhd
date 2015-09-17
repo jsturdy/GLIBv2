@@ -28,19 +28,19 @@ port(
     
     reset_i         : in std_logic;
     
-    tx_kchar_i      : in std_logic_vector(3 downto 0);
-    tx_data_i       : in std_logic_vector(31 downto 0);
+    tx_kchar_i      : in std_logic_vector(7 downto 0);
+    tx_data_i       : in std_logic_vector(63 downto 0);
     
-    rx_kchar_o      : out std_logic_vector(3 downto 0);
-    rx_data_o       : out std_logic_vector(31 downto 0);
-    rx_error_o      : out std_logic_vector(1 downto 0);
+    rx_kchar_o      : out std_logic_vector(7 downto 0);
+    rx_data_o       : out std_logic_vector(63 downto 0);
+    rx_error_o      : out std_logic_vector(3 downto 0);
  
     usr_clk_o       : out std_logic;
    
-    rx_n_i          : in std_logic_vector(1 downto 0);
-    rx_p_i          : in std_logic_vector(1 downto 0);
-    tx_n_o          : out std_logic_vector(1 downto 0);
-    tx_p_o          : out std_logic_vector(1 downto 0)
+    rx_n_i          : in std_logic_vector(3 downto 0);
+    rx_p_i          : in std_logic_vector(3 downto 0);
+    tx_n_o          : out std_logic_vector(3 downto 0);
+    tx_p_o          : out std_logic_vector(3 downto 0)
     
 );
 end sfp_gtx_wrapper;
@@ -49,8 +49,8 @@ architecture Behavioral of sfp_gtx_wrapper is
 
     signal mgt_refclk       : std_logic;
    
-    signal rx_disperr       : std_logic_vector(3 downto 0); 
-    signal rx_notintable    : std_logic_vector(3 downto 0);
+    signal rx_disperr       : std_logic_vector(7 downto 0); 
+    signal rx_notintable    : std_logic_vector(7 downto 0);
     
     signal usr_clk          : std_logic;
     signal usr_clk2         : std_logic;
@@ -78,6 +78,8 @@ begin
     
     rx_error_o(0) <= rx_disperr(0) or rx_disperr(1) or rx_notintable(0) or rx_notintable(1);
     rx_error_o(1) <= rx_disperr(2) or rx_disperr(3) or rx_notintable(2) or rx_notintable(3);
+    rx_error_o(2) <= rx_disperr(4) or rx_disperr(5) or rx_notintable(4) or rx_notintable(5);
+    rx_error_o(3) <= rx_disperr(6) or rx_disperr(7) or rx_notintable(6) or rx_notintable(7);
     
     
     sfp_gtx_inst : entity work.sfp_gtx
@@ -130,7 +132,57 @@ begin
         GTX1_TXN_OUT                => tx_n_o(1),
         GTX1_TXP_OUT                => tx_p_o(1),
         GTX1_GTXTXRESET_IN          => reset_i,
-        GTX1_TXRESETDONE_OUT        => open
+        GTX1_TXRESETDONE_OUT        => open,
+        --        
+        GTX2_RXCHARISK_OUT          => rx_kchar_o(5 downto 4),
+        GTX2_RXDISPERR_OUT          => rx_disperr(5 downto 4),
+        GTX2_RXNOTINTABLE_OUT       => rx_notintable(5 downto 4),
+        GTX2_RXBYTEISALIGNED_OUT    => open,
+        GTX2_RXCOMMADET_OUT         => open,
+        GTX2_RXENMCOMMAALIGN_IN     => '1',
+        GTX2_RXENPCOMMAALIGN_IN     => '1',
+        GTX2_RXDATA_OUT             => rx_data_o(47 downto 32),
+        GTX2_RXUSRCLK2_IN           => usr_clk2,
+        GTX2_RXN_IN                 => rx_n_i(2),
+        GTX2_RXP_IN                 => rx_p_i(2),
+        GTX2_GTXRXRESET_IN          => reset_i,
+        GTX2_MGTREFCLKRX_IN         => mgt_refclk,
+        GTX2_PLLRXRESET_IN          => reset_i,
+        GTX2_RXPLLLKDET_OUT         => open,
+        GTX2_RXRESETDONE_OUT        => open,
+        GTX2_TXCHARISK_IN           => tx_kchar_i(5 downto 4),
+        GTX2_TXDATA_IN              => tx_data_i(47 downto 32),
+        GTX2_TXOUTCLK_OUT           => open,
+        GTX2_TXUSRCLK2_IN           => usr_clk2,
+        GTX2_TXN_OUT                => tx_n_o(2),
+        GTX2_TXP_OUT                => tx_p_o(2),
+        GTX2_GTXTXRESET_IN          => reset_i,
+        GTX2_TXRESETDONE_OUT        => open,
+        --       
+        GTX3_RXCHARISK_OUT          => rx_kchar_o(7 downto 6),
+        GTX3_RXDISPERR_OUT          => rx_disperr(7 downto 6),
+        GTX3_RXNOTINTABLE_OUT       => rx_notintable(7 downto 6),
+        GTX3_RXBYTEISALIGNED_OUT    => open,
+        GTX3_RXCOMMADET_OUT         => open,
+        GTX3_RXENMCOMMAALIGN_IN     => '1',
+        GTX3_RXENPCOMMAALIGN_IN     => '1',
+        GTX3_RXDATA_OUT             => rx_data_o(63 downto 48),
+        GTX3_RXUSRCLK2_IN           => usr_clk2,
+        GTX3_RXN_IN                 => rx_n_i(3),
+        GTX3_RXP_IN                 => rx_p_i(3),
+        GTX3_GTXRXRESET_IN          => reset_i,
+        GTX3_MGTREFCLKRX_IN         => mgt_refclk,
+        GTX3_PLLRXRESET_IN          => reset_i,
+        GTX3_RXPLLLKDET_OUT         => open,
+        GTX3_RXRESETDONE_OUT        => open,
+        GTX3_TXCHARISK_IN           => tx_kchar_i(7 downto 6),
+        GTX3_TXDATA_IN              => tx_data_i(63 downto 48),
+        GTX3_TXOUTCLK_OUT           => open,
+        GTX3_TXUSRCLK2_IN           => usr_clk2,
+        GTX3_TXN_OUT                => tx_n_o(3),
+        GTX3_TXP_OUT                => tx_p_o(3),
+        GTX3_GTXTXRESET_IN          => reset_i,
+        GTX3_TXRESETDONE_OUT        => open
     );
     
 end Behavioral;

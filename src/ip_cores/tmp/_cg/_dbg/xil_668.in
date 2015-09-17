@@ -2,7 +2,7 @@ SET_FLAG DEBUG FALSE
 SET_FLAG MODE INTERACTIVE
 SET_FLAG STANDALONE_MODE FALSE
 SET_PREFERENCE devicefamily virtex6
-SET_PREFERENCE device xc6vlx130t
+SET_PREFERENCE device xc6vcx130t
 SET_PREFERENCE speedgrade -1
 SET_PREFERENCE package ff1156
 SET_PREFERENCE verilogsim false
@@ -148,12 +148,12 @@ SET_PARAMETER rx_refclk_x0_y5 REFCLK1_Q1
 SET_PARAMETER use_gtx_x0_y4 false
 SET_PARAMETER tx_refclk_x0_y4 use_rx_pll
 SET_PARAMETER rx_refclk_x0_y4 REFCLK1_Q1
-SET_PARAMETER use_gtx_x0_y3 false
+SET_PARAMETER use_gtx_x0_y3 true
 SET_PARAMETER tx_refclk_x0_y3 use_rx_pll
-SET_PARAMETER rx_refclk_x0_y3 REFCLK1_Q0
-SET_PARAMETER use_gtx_x0_y2 false
+SET_PARAMETER rx_refclk_x0_y3 REFCLK0_Q1
+SET_PARAMETER use_gtx_x0_y2 true
 SET_PARAMETER tx_refclk_x0_y2 use_rx_pll
-SET_PARAMETER rx_refclk_x0_y2 REFCLK1_Q0
+SET_PARAMETER rx_refclk_x0_y2 REFCLK0_Q1
 SET_PARAMETER use_gtx_x0_y1 true
 SET_PARAMETER tx_refclk_x0_y1 use_rx_pll
 SET_PARAMETER rx_refclk_x0_y1 REFCLK0_Q1

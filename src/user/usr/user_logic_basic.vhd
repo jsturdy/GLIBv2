@@ -203,12 +203,12 @@ architecture user_logic_arch of user_logic is
 
     --== SFP GTX signals ==--
 
-    signal sfp_tx_kchar : std_logic_vector(3 downto 0);
-    signal sfp_tx_data  : std_logic_vector(31 downto 0);
+    signal sfp_tx_kchar : std_logic_vector(7 downto 0);
+    signal sfp_tx_data  : std_logic_vector(63 downto 0);
     
-    signal sfp_rx_kchar : std_logic_vector(3 downto 0);
-    signal sfp_rx_data  : std_logic_vector(31 downto 0);
-    signal sfp_rx_error : std_logic_vector(1 downto 0);
+    signal sfp_rx_kchar : std_logic_vector(7 downto 0);
+    signal sfp_rx_data  : std_logic_vector(63 downto 0);
+    signal sfp_rx_error : std_logic_vector(3 downto 0);
  
     signal sfp_usr_clk  : std_logic;
     
@@ -252,10 +252,10 @@ begin
 		rx_data_o       => sfp_rx_data,
 		rx_error_o      => sfp_rx_error,
 		usr_clk_o       => sfp_usr_clk,
-		rx_n_i          => sfp_rx_n(1 to 2),
-		rx_p_i          => sfp_rx_p(1 to 2),
-		tx_n_o          => sfp_tx_n(1 to 2),
-		tx_p_o          => sfp_tx_p(1 to 2)
+		rx_n_i          => sfp_rx_n(1 to 4),
+		rx_p_i          => sfp_rx_p(1 to 4),
+		tx_n_o          => sfp_tx_n(1 to 4),
+		tx_p_o          => sfp_tx_p(1 to 4)
 	);    
     
     sfp_gtx_tx_tracking_inst : entity work.sfp_gtx_tx_tracking

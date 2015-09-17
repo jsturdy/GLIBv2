@@ -1,7 +1,7 @@
 ##############################################################
 #
 # Xilinx Core Generator version 14.7
-# Date: Tue Sep 15 11:22:28 2015
+# Date: Wed Sep 16 14:07:11 2015
 #
 ##############################################################
 #
@@ -199,7 +199,7 @@ CSET rx_refclk_x0_y16=REFCLK1_Q4
 CSET rx_refclk_x0_y17=REFCLK1_Q4
 CSET rx_refclk_x0_y18=REFCLK1_Q4
 CSET rx_refclk_x0_y19=REFCLK1_Q4
-CSET rx_refclk_x0_y2=REFCLK1_Q0
+CSET rx_refclk_x0_y2=REFCLK0_Q1
 CSET rx_refclk_x0_y20=REFCLK1_Q5
 CSET rx_refclk_x0_y21=REFCLK1_Q5
 CSET rx_refclk_x0_y22=REFCLK1_Q5
@@ -210,7 +210,7 @@ CSET rx_refclk_x0_y26=REFCLK1_Q6
 CSET rx_refclk_x0_y27=REFCLK1_Q6
 CSET rx_refclk_x0_y28=REFCLK1_Q7
 CSET rx_refclk_x0_y29=REFCLK1_Q7
-CSET rx_refclk_x0_y3=REFCLK1_Q0
+CSET rx_refclk_x0_y3=REFCLK0_Q1
 CSET rx_refclk_x0_y30=REFCLK1_Q7
 CSET rx_refclk_x0_y31=REFCLK1_Q7
 CSET rx_refclk_x0_y32=REFCLK1_Q8
@@ -310,7 +310,7 @@ CSET use_gtx_x0_y16=false
 CSET use_gtx_x0_y17=false
 CSET use_gtx_x0_y18=false
 CSET use_gtx_x0_y19=false
-CSET use_gtx_x0_y2=false
+CSET use_gtx_x0_y2=true
 CSET use_gtx_x0_y20=false
 CSET use_gtx_x0_y21=false
 CSET use_gtx_x0_y22=false
@@ -321,7 +321,7 @@ CSET use_gtx_x0_y26=false
 CSET use_gtx_x0_y27=false
 CSET use_gtx_x0_y28=false
 CSET use_gtx_x0_y29=false
-CSET use_gtx_x0_y3=false
+CSET use_gtx_x0_y3=true
 CSET use_gtx_x0_y30=false
 CSET use_gtx_x0_y31=false
 CSET use_gtx_x0_y32=false
@@ -408,4 +408,4 @@ CSET wideband_highpass_mix=000
 MISC pkg_timestamp=2011-04-08T05:24:23Z
 # END Extra information
 GENERATE
-# CRC: 9a7ebd8e
+# CRC: 78a66b3e

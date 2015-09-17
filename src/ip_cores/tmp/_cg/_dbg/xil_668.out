@@ -58,8 +58,8 @@ SET_PARAMETER use_gtx_x0_y0 true
 SET_PARAMETER use_gtx_x0_y1 true
 SET_PARAMETER sata_burst_val 4
 SET_PARAMETER use_port_rxlossofsync false
-SET_PARAMETER use_gtx_x0_y2 false
-SET_PARAMETER use_gtx_x0_y3 false
+SET_PARAMETER use_gtx_x0_y2 true
+SET_PARAMETER use_gtx_x0_y3 true
 SET_PARAMETER use_gtx_x0_y4 false
 SET_PARAMETER use_gtx_x0_y5 false
 SET_PARAMETER tx_tdcc_cfg 11
@@ -221,9 +221,9 @@ SET_PARAMETER cb_seq_1_1 00000000
 SET_PARAMETER use_rxprbserr_loopback false
 SET_PARAMETER rx_refclk_x0_y1 REFCLK0_Q1
 SET_PARAMETER cb_seq_1_2 00000000
-SET_PARAMETER rx_refclk_x0_y2 REFCLK1_Q0
+SET_PARAMETER rx_refclk_x0_y2 REFCLK0_Q1
 SET_PARAMETER cb_seq_1_3 00000000
-SET_PARAMETER rx_refclk_x0_y3 REFCLK1_Q0
+SET_PARAMETER rx_refclk_x0_y3 REFCLK0_Q1
 SET_PARAMETER cb_seq_1_4 00000000
 SET_PARAMETER rx_refclk_x0_y4 REFCLK1_Q1
 SET_PARAMETER rx_refclk_x0_y5 REFCLK1_Q1

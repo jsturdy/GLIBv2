@@ -85,10 +85,10 @@ port
     GTXTXRESET_IN                           : in   std_logic;
     GTXRXRESET_IN                           : in   std_logic;
     TRACK_DATA_OUT                          : out  std_logic;
-    RXN_IN                                  : in   std_logic_vector(1 downto 0);
-    RXP_IN                                  : in   std_logic_vector(1 downto 0);
-    TXN_OUT                                 : out  std_logic_vector(1 downto 0);
-    TXP_OUT                                 : out  std_logic_vector(1 downto 0)
+    RXN_IN                                  : in   std_logic_vector(3 downto 0);
+    RXP_IN                                  : in   std_logic_vector(3 downto 0);
+    TXN_OUT                                 : out  std_logic_vector(3 downto 0);
+    TXP_OUT                                 : out  std_logic_vector(3 downto 0)
     
 );
 
@@ -185,7 +185,87 @@ port
     GTX1_TXP_OUT                            : out  std_logic;
     ----------------------- Transmit Ports - TX PLL Ports ----------------------
     GTX1_GTXTXRESET_IN                      : in   std_logic;
-    GTX1_TXRESETDONE_OUT                    : out  std_logic
+    GTX1_TXRESETDONE_OUT                    : out  std_logic;
+
+
+
+    --_________________________________________________________________________
+    --_________________________________________________________________________
+    --GTX2  (X0_Y2)
+
+    ----------------------- Receive Ports - 8b10b Decoder ----------------------
+    GTX2_RXCHARISK_OUT                      : out  std_logic_vector(1 downto 0);
+    GTX2_RXDISPERR_OUT                      : out  std_logic_vector(1 downto 0);
+    GTX2_RXNOTINTABLE_OUT                   : out  std_logic_vector(1 downto 0);
+    --------------- Receive Ports - Comma Detection and Alignment --------------
+    GTX2_RXBYTEISALIGNED_OUT                : out  std_logic;
+    GTX2_RXCOMMADET_OUT                     : out  std_logic;
+    GTX2_RXENMCOMMAALIGN_IN                 : in   std_logic;
+    GTX2_RXENPCOMMAALIGN_IN                 : in   std_logic;
+    ------------------- Receive Ports - RX Data Path interface -----------------
+    GTX2_RXDATA_OUT                         : out  std_logic_vector(15 downto 0);
+    GTX2_RXUSRCLK2_IN                       : in   std_logic;
+    ------- Receive Ports - RX Driver,OOB signalling,Coupling and Eq.,CDR ------
+    GTX2_RXN_IN                             : in   std_logic;
+    GTX2_RXP_IN                             : in   std_logic;
+    ------------------------ Receive Ports - RX PLL Ports ----------------------
+    GTX2_GTXRXRESET_IN                      : in   std_logic;
+    GTX2_MGTREFCLKRX_IN                     : in   std_logic;
+    GTX2_PLLRXRESET_IN                      : in   std_logic;
+    GTX2_RXPLLLKDET_OUT                     : out  std_logic;
+    GTX2_RXRESETDONE_OUT                    : out  std_logic;
+    ---------------- Transmit Ports - 8b10b Encoder Control Ports --------------
+    GTX2_TXCHARISK_IN                       : in   std_logic_vector(1 downto 0);
+    ------------------ Transmit Ports - TX Data Path interface -----------------
+    GTX2_TXDATA_IN                          : in   std_logic_vector(15 downto 0);
+    GTX2_TXOUTCLK_OUT                       : out  std_logic;
+    GTX2_TXUSRCLK2_IN                       : in   std_logic;
+    ---------------- Transmit Ports - TX Driver and OOB signaling --------------
+    GTX2_TXN_OUT                            : out  std_logic;
+    GTX2_TXP_OUT                            : out  std_logic;
+    ----------------------- Transmit Ports - TX PLL Ports ----------------------
+    GTX2_GTXTXRESET_IN                      : in   std_logic;
+    GTX2_TXRESETDONE_OUT                    : out  std_logic;
+
+
+
+    --_________________________________________________________________________
+    --_________________________________________________________________________
+    --GTX3  (X0_Y3)
+
+    ----------------------- Receive Ports - 8b10b Decoder ----------------------
+    GTX3_RXCHARISK_OUT                      : out  std_logic_vector(1 downto 0);
+    GTX3_RXDISPERR_OUT                      : out  std_logic_vector(1 downto 0);
+    GTX3_RXNOTINTABLE_OUT                   : out  std_logic_vector(1 downto 0);
+    --------------- Receive Ports - Comma Detection and Alignment --------------
+    GTX3_RXBYTEISALIGNED_OUT                : out  std_logic;
+    GTX3_RXCOMMADET_OUT                     : out  std_logic;
+    GTX3_RXENMCOMMAALIGN_IN                 : in   std_logic;
+    GTX3_RXENPCOMMAALIGN_IN                 : in   std_logic;
+    ------------------- Receive Ports - RX Data Path interface -----------------
+    GTX3_RXDATA_OUT                         : out  std_logic_vector(15 downto 0);
+    GTX3_RXUSRCLK2_IN                       : in   std_logic;
+    ------- Receive Ports - RX Driver,OOB signalling,Coupling and Eq.,CDR ------
+    GTX3_RXN_IN                             : in   std_logic;
+    GTX3_RXP_IN                             : in   std_logic;
+    ------------------------ Receive Ports - RX PLL Ports ----------------------
+    GTX3_GTXRXRESET_IN                      : in   std_logic;
+    GTX3_MGTREFCLKRX_IN                     : in   std_logic;
+    GTX3_PLLRXRESET_IN                      : in   std_logic;
+    GTX3_RXPLLLKDET_OUT                     : out  std_logic;
+    GTX3_RXRESETDONE_OUT                    : out  std_logic;
+    ---------------- Transmit Ports - 8b10b Encoder Control Ports --------------
+    GTX3_TXCHARISK_IN                       : in   std_logic_vector(1 downto 0);
+    ------------------ Transmit Ports - TX Data Path interface -----------------
+    GTX3_TXDATA_IN                          : in   std_logic_vector(15 downto 0);
+    GTX3_TXOUTCLK_OUT                       : out  std_logic;
+    GTX3_TXUSRCLK2_IN                       : in   std_logic;
+    ---------------- Transmit Ports - TX Driver and OOB signaling --------------
+    GTX3_TXN_OUT                            : out  std_logic;
+    GTX3_TXP_OUT                            : out  std_logic;
+    ----------------------- Transmit Ports - TX PLL Ports ----------------------
+    GTX3_GTXTXRESET_IN                      : in   std_logic;
+    GTX3_TXRESETDONE_OUT                    : out  std_logic
 
 
 );
@@ -486,6 +566,20 @@ attribute syn_noprune of ila   : component is TRUE;
     signal   gtx1_rxresetdone_r2             : std_logic;
     signal   gtx1_rxresetdone_r3             : std_logic;
     attribute max_fanout of gtx1_rxresetdone_i_r : signal is "1";
+    signal   gtx2_txresetdone_r              : std_logic;
+    signal   gtx2_txresetdone_r2             : std_logic;
+    signal   gtx2_rxresetdone_i_r            : std_logic;
+    signal   gtx2_rxresetdone_r              : std_logic;
+    signal   gtx2_rxresetdone_r2             : std_logic;
+    signal   gtx2_rxresetdone_r3             : std_logic;
+    attribute max_fanout of gtx2_rxresetdone_i_r : signal is "1";
+    signal   gtx3_txresetdone_r              : std_logic;
+    signal   gtx3_txresetdone_r2             : std_logic;
+    signal   gtx3_rxresetdone_i_r            : std_logic;
+    signal   gtx3_rxresetdone_r              : std_logic;
+    signal   gtx3_rxresetdone_r2             : std_logic;
+    signal   gtx3_rxresetdone_r3             : std_logic;
+    attribute max_fanout of gtx3_rxresetdone_i_r : signal is "1";
 
 
 --**************************** Wire Declarations ******************************
@@ -550,12 +644,76 @@ attribute syn_noprune of ila   : component is TRUE;
     signal  gtx1_txresetdone_i              : std_logic;
 
 
+    --________________________________________________________________________
+    --________________________________________________________________________
+    --GTX2   (X0Y2)
+
+    ----------------------- Receive Ports - 8b10b Decoder ----------------------
+    signal  gtx2_rxcharisk_i                : std_logic_vector(1 downto 0);
+    signal  gtx2_rxdisperr_i                : std_logic_vector(1 downto 0);
+    signal  gtx2_rxnotintable_i             : std_logic_vector(1 downto 0);
+    --------------- Receive Ports - Comma Detection and Alignment --------------
+    signal  gtx2_rxbyteisaligned_i          : std_logic;
+    signal  gtx2_rxcommadet_i               : std_logic;
+    signal  gtx2_rxenmcommaalign_i          : std_logic;
+    signal  gtx2_rxenpcommaalign_i          : std_logic;
+    ------------------- Receive Ports - RX Data Path interface -----------------
+    signal  gtx2_rxdata_i                   : std_logic_vector(15 downto 0);
+    ------------------------ Receive Ports - RX PLL Ports ----------------------
+    signal  gtx2_gtxrxreset_i               : std_logic;
+    signal  gtx2_pllrxreset_i               : std_logic;
+    signal  gtx2_rxplllkdet_i               : std_logic;
+    signal  gtx2_rxresetdone_i              : std_logic;
+    ---------------- Transmit Ports - 8b10b Encoder Control Ports --------------
+    signal  gtx2_txcharisk_i                : std_logic_vector(1 downto 0);
+    ------------------ Transmit Ports - TX Data Path interface -----------------
+    signal  gtx2_txdata_i                   : std_logic_vector(15 downto 0);
+    signal  gtx2_txoutclk_i                 : std_logic;
+    ----------------------- Transmit Ports - TX PLL Ports ----------------------
+    signal  gtx2_gtxtxreset_i               : std_logic;
+    signal  gtx2_txresetdone_i              : std_logic;
+
+
+    --________________________________________________________________________
+    --________________________________________________________________________
+    --GTX3   (X0Y3)
+
+    ----------------------- Receive Ports - 8b10b Decoder ----------------------
+    signal  gtx3_rxcharisk_i                : std_logic_vector(1 downto 0);
+    signal  gtx3_rxdisperr_i                : std_logic_vector(1 downto 0);
+    signal  gtx3_rxnotintable_i             : std_logic_vector(1 downto 0);
+    --------------- Receive Ports - Comma Detection and Alignment --------------
+    signal  gtx3_rxbyteisaligned_i          : std_logic;
+    signal  gtx3_rxcommadet_i               : std_logic;
+    signal  gtx3_rxenmcommaalign_i          : std_logic;
+    signal  gtx3_rxenpcommaalign_i          : std_logic;
+    ------------------- Receive Ports - RX Data Path interface -----------------
+    signal  gtx3_rxdata_i                   : std_logic_vector(15 downto 0);
+    ------------------------ Receive Ports - RX PLL Ports ----------------------
+    signal  gtx3_gtxrxreset_i               : std_logic;
+    signal  gtx3_pllrxreset_i               : std_logic;
+    signal  gtx3_rxplllkdet_i               : std_logic;
+    signal  gtx3_rxresetdone_i              : std_logic;
+    ---------------- Transmit Ports - 8b10b Encoder Control Ports --------------
+    signal  gtx3_txcharisk_i                : std_logic_vector(1 downto 0);
+    ------------------ Transmit Ports - TX Data Path interface -----------------
+    signal  gtx3_txdata_i                   : std_logic_vector(15 downto 0);
+    signal  gtx3_txoutclk_i                 : std_logic;
+    ----------------------- Transmit Ports - TX PLL Ports ----------------------
+    signal  gtx3_gtxtxreset_i               : std_logic;
+    signal  gtx3_txresetdone_i              : std_logic;
+
+
 
 
     signal  gtx0_tx_system_reset_c          : std_logic;
     signal  gtx0_rx_system_reset_c          : std_logic;
     signal  gtx1_tx_system_reset_c          : std_logic;
     signal  gtx1_rx_system_reset_c          : std_logic;
+    signal  gtx2_tx_system_reset_c          : std_logic;
+    signal  gtx2_rx_system_reset_c          : std_logic;
+    signal  gtx3_tx_system_reset_c          : std_logic;
+    signal  gtx3_rx_system_reset_c          : std_logic;
     signal  tied_to_ground_i                : std_logic;
     signal  tied_to_ground_vec_i            : std_logic_vector(63 downto 0);
     signal  tied_to_vcc_i                   : std_logic;
@@ -603,6 +761,34 @@ attribute syn_noprune of ila   : component is TRUE;
     signal    gtx1_inc_out_i                  : std_logic;
     signal    gtx1_unscrambled_data_i         : std_logic_vector(15 downto 0);
 
+    signal    gtx2_matchn_i                   : std_logic;
+    
+    signal    gtx2_txcharisk_float_i          : std_logic_vector(1 downto 0);
+    
+    signal    gtx2_txdata_float_i             : std_logic_vector(23 downto 0);
+    
+    signal    gtx2_track_data_i               : std_logic;
+    signal    gtx2_block_sync_i               : std_logic;
+    signal    gtx2_error_count_i              : std_logic_vector(7 downto 0);
+    signal    gtx2_frame_check_reset_i        : std_logic;
+    signal    gtx2_inc_in_i                   : std_logic;
+    signal    gtx2_inc_out_i                  : std_logic;
+    signal    gtx2_unscrambled_data_i         : std_logic_vector(15 downto 0);
+
+    signal    gtx3_matchn_i                   : std_logic;
+    
+    signal    gtx3_txcharisk_float_i          : std_logic_vector(1 downto 0);
+    
+    signal    gtx3_txdata_float_i             : std_logic_vector(23 downto 0);
+    
+    signal    gtx3_track_data_i               : std_logic;
+    signal    gtx3_block_sync_i               : std_logic;
+    signal    gtx3_error_count_i              : std_logic_vector(7 downto 0);
+    signal    gtx3_frame_check_reset_i        : std_logic;
+    signal    gtx3_inc_in_i                   : std_logic;
+    signal    gtx3_inc_out_i                  : std_logic;
+    signal    gtx3_unscrambled_data_i         : std_logic_vector(15 downto 0);
+
     signal    reset_on_data_error_i           : std_logic;
     signal    track_data_out_i                : std_logic;
  
@@ -646,10 +832,30 @@ attribute syn_noprune of ila   : component is TRUE;
     signal  gtx1_rx_data_vio_sync_out_i     : std_logic_vector(31 downto 0);
     signal  gtx1_ila_in_i                   : std_logic_vector(84 downto 0);
 
+    signal  gtx2_tx_data_vio_async_in_i     : std_logic_vector(31 downto 0);
+    signal  gtx2_tx_data_vio_sync_in_i      : std_logic_vector(31 downto 0);
+    signal  gtx2_tx_data_vio_async_out_i    : std_logic_vector(31 downto 0);
+    signal  gtx2_tx_data_vio_sync_out_i     : std_logic_vector(31 downto 0);
+    signal  gtx2_rx_data_vio_async_in_i     : std_logic_vector(31 downto 0);
+    signal  gtx2_rx_data_vio_sync_in_i      : std_logic_vector(31 downto 0);
+    signal  gtx2_rx_data_vio_async_out_i    : std_logic_vector(31 downto 0);
+    signal  gtx2_rx_data_vio_sync_out_i     : std_logic_vector(31 downto 0);
+    signal  gtx2_ila_in_i                   : std_logic_vector(84 downto 0);
+
+    signal  gtx3_tx_data_vio_async_in_i     : std_logic_vector(31 downto 0);
+    signal  gtx3_tx_data_vio_sync_in_i      : std_logic_vector(31 downto 0);
+    signal  gtx3_tx_data_vio_async_out_i    : std_logic_vector(31 downto 0);
+    signal  gtx3_tx_data_vio_sync_out_i     : std_logic_vector(31 downto 0);
+    signal  gtx3_rx_data_vio_async_in_i     : std_logic_vector(31 downto 0);
+    signal  gtx3_rx_data_vio_sync_in_i      : std_logic_vector(31 downto 0);
+    signal  gtx3_rx_data_vio_async_out_i    : std_logic_vector(31 downto 0);
+    signal  gtx3_rx_data_vio_sync_out_i     : std_logic_vector(31 downto 0);
+    signal  gtx3_ila_in_i                   : std_logic_vector(84 downto 0);
+
 
     signal    gtxtxreset_i                    : std_logic;
     signal    gtxrxreset_i                    : std_logic;
-    signal    mux_sel_i                       : std_logic;
+    signal    mux_sel_i                       : std_logic_vector(1 downto 0);
 
     signal    user_tx_reset_i                 : std_logic;
     signal    user_rx_reset_i                 : std_logic;
@@ -670,6 +876,10 @@ begin
 
 
 
+    
+  
+    
+  
     
   
     
@@ -829,7 +1039,93 @@ begin
         GTX1_TXP_OUT                    =>      TXP_OUT(1),
         ----------------------- Transmit Ports - TX PLL Ports ----------------------
         GTX1_GTXTXRESET_IN              =>      gtx1_gtxtxreset_i,
-        GTX1_TXRESETDONE_OUT            =>      gtx1_txresetdone_i
+        GTX1_TXRESETDONE_OUT            =>      gtx1_txresetdone_i,
+
+
+  
+ 
+ 
+ 
+
+        --_____________________________________________________________________
+        --_____________________________________________________________________
+        --GTX2  (X0Y2)
+        ----------------------- Receive Ports - 8b10b Decoder ----------------------
+        GTX2_RXCHARISK_OUT              =>      gtx2_rxcharisk_i,
+        GTX2_RXDISPERR_OUT              =>      gtx2_rxdisperr_i,
+        GTX2_RXNOTINTABLE_OUT           =>      gtx2_rxnotintable_i,
+        --------------- Receive Ports - Comma Detection and Alignment --------------
+        GTX2_RXBYTEISALIGNED_OUT        =>      gtx2_rxbyteisaligned_i,
+        GTX2_RXCOMMADET_OUT             =>      gtx2_rxcommadet_i,
+        GTX2_RXENMCOMMAALIGN_IN         =>      gtx2_rxenmcommaalign_i,
+        GTX2_RXENPCOMMAALIGN_IN         =>      gtx2_rxenpcommaalign_i,
+        ------------------- Receive Ports - RX Data Path interface -----------------
+        GTX2_RXDATA_OUT                 =>      gtx2_rxdata_i,
+        GTX2_RXUSRCLK2_IN               =>      gtx0_txusrclk2_i,
+        ------- Receive Ports - RX Driver,OOB signalling,Coupling and Eq.,CDR ------
+        GTX2_RXN_IN                     =>      RXN_IN(2),
+        GTX2_RXP_IN                     =>      RXP_IN(2),
+        ------------------------ Receive Ports - RX PLL Ports ----------------------
+        GTX2_GTXRXRESET_IN              =>      gtx2_gtxrxreset_i,
+        GTX2_MGTREFCLKRX_IN             =>      q1_clk0_refclk_i,
+        GTX2_PLLRXRESET_IN              =>      gtx2_pllrxreset_i,
+        GTX2_RXPLLLKDET_OUT             =>      gtx2_rxplllkdet_i,
+        GTX2_RXRESETDONE_OUT            =>      gtx2_rxresetdone_i,
+        ---------------- Transmit Ports - 8b10b Encoder Control Ports --------------
+        GTX2_TXCHARISK_IN               =>      gtx2_txcharisk_i,
+        ------------------ Transmit Ports - TX Data Path interface -----------------
+        GTX2_TXDATA_IN                  =>      gtx2_txdata_i,
+        GTX2_TXOUTCLK_OUT               =>      gtx2_txoutclk_i,
+        GTX2_TXUSRCLK2_IN               =>      gtx0_txusrclk2_i,
+        ---------------- Transmit Ports - TX Driver and OOB signaling --------------
+        GTX2_TXN_OUT                    =>      TXN_OUT(2),
+        GTX2_TXP_OUT                    =>      TXP_OUT(2),
+        ----------------------- Transmit Ports - TX PLL Ports ----------------------
+        GTX2_GTXTXRESET_IN              =>      gtx2_gtxtxreset_i,
+        GTX2_TXRESETDONE_OUT            =>      gtx2_txresetdone_i,
+
+
+  
+ 
+ 
+ 
+
+        --_____________________________________________________________________
+        --_____________________________________________________________________
+        --GTX3  (X0Y3)
+        ----------------------- Receive Ports - 8b10b Decoder ----------------------
+        GTX3_RXCHARISK_OUT              =>      gtx3_rxcharisk_i,
+        GTX3_RXDISPERR_OUT              =>      gtx3_rxdisperr_i,
+        GTX3_RXNOTINTABLE_OUT           =>      gtx3_rxnotintable_i,
+        --------------- Receive Ports - Comma Detection and Alignment --------------
+        GTX3_RXBYTEISALIGNED_OUT        =>      gtx3_rxbyteisaligned_i,
+        GTX3_RXCOMMADET_OUT             =>      gtx3_rxcommadet_i,
+        GTX3_RXENMCOMMAALIGN_IN         =>      gtx3_rxenmcommaalign_i,
+        GTX3_RXENPCOMMAALIGN_IN         =>      gtx3_rxenpcommaalign_i,
+        ------------------- Receive Ports - RX Data Path interface -----------------
+        GTX3_RXDATA_OUT                 =>      gtx3_rxdata_i,
+        GTX3_RXUSRCLK2_IN               =>      gtx0_txusrclk2_i,
+        ------- Receive Ports - RX Driver,OOB signalling,Coupling and Eq.,CDR ------
+        GTX3_RXN_IN                     =>      RXN_IN(3),
+        GTX3_RXP_IN                     =>      RXP_IN(3),
+        ------------------------ Receive Ports - RX PLL Ports ----------------------
+        GTX3_GTXRXRESET_IN              =>      gtx3_gtxrxreset_i,
+        GTX3_MGTREFCLKRX_IN             =>      q1_clk0_refclk_i,
+        GTX3_PLLRXRESET_IN              =>      gtx3_pllrxreset_i,
+        GTX3_RXPLLLKDET_OUT             =>      gtx3_rxplllkdet_i,
+        GTX3_RXRESETDONE_OUT            =>      gtx3_rxresetdone_i,
+        ---------------- Transmit Ports - 8b10b Encoder Control Ports --------------
+        GTX3_TXCHARISK_IN               =>      gtx3_txcharisk_i,
+        ------------------ Transmit Ports - TX Data Path interface -----------------
+        GTX3_TXDATA_IN                  =>      gtx3_txdata_i,
+        GTX3_TXOUTCLK_OUT               =>      gtx3_txoutclk_i,
+        GTX3_TXUSRCLK2_IN               =>      gtx0_txusrclk2_i,
+        ---------------- Transmit Ports - TX Driver and OOB signaling --------------
+        GTX3_TXN_OUT                    =>      TXN_OUT(3),
+        GTX3_TXP_OUT                    =>      TXP_OUT(3),
+        ----------------------- Transmit Ports - TX PLL Ports ----------------------
+        GTX3_GTXTXRESET_IN              =>      gtx3_gtxtxreset_i,
+        GTX3_TXRESETDONE_OUT            =>      gtx3_txresetdone_i
 
 
     );
@@ -914,6 +1210,76 @@ begin
         elsif(gtx0_txusrclk2_i'event and gtx0_txusrclk2_i = '1') then
             gtx1_txresetdone_r  <= gtx1_txresetdone_i   after DLY;
             gtx1_txresetdone_r2 <= gtx1_txresetdone_r   after DLY;
+        end if;
+    end process;
+    process( gtx0_txusrclk2_i)
+    begin
+         if(gtx0_txusrclk2_i'event and gtx0_txusrclk2_i = '1') then
+            gtx2_rxresetdone_i_r  <= gtx2_rxresetdone_i   after DLY;
+         end if; 
+    end process; 
+
+    process( gtx0_txusrclk2_i,gtx2_rxresetdone_i_r)
+    begin
+        if(gtx2_rxresetdone_i_r = '0') then
+            gtx2_rxresetdone_r    <= '0'   after DLY;
+            gtx2_rxresetdone_r2   <= '0'   after DLY;
+        elsif(gtx0_txusrclk2_i'event and gtx0_txusrclk2_i = '1') then
+            gtx2_rxresetdone_r    <= gtx2_rxresetdone_i_r after DLY;
+            gtx2_rxresetdone_r2   <= gtx2_rxresetdone_r   after DLY;
+        end if;
+    end process;
+
+    process( gtx0_txusrclk2_i)
+    begin
+         if(gtx0_txusrclk2_i'event and gtx0_txusrclk2_i = '1') then
+            gtx2_rxresetdone_r3  <= gtx2_rxresetdone_r2   after DLY;
+         end if; 
+    end process; 
+
+    process( gtx0_txusrclk2_i,gtx2_txresetdone_i)
+    begin
+        if(gtx2_txresetdone_i = '0') then
+            gtx2_txresetdone_r  <= '0'   after DLY;
+            gtx2_txresetdone_r2 <= '0'   after DLY;
+        elsif(gtx0_txusrclk2_i'event and gtx0_txusrclk2_i = '1') then
+            gtx2_txresetdone_r  <= gtx2_txresetdone_i   after DLY;
+            gtx2_txresetdone_r2 <= gtx2_txresetdone_r   after DLY;
+        end if;
+    end process;
+    process( gtx0_txusrclk2_i)
+    begin
+         if(gtx0_txusrclk2_i'event and gtx0_txusrclk2_i = '1') then
+            gtx3_rxresetdone_i_r  <= gtx3_rxresetdone_i   after DLY;
+         end if; 
+    end process; 
+
+    process( gtx0_txusrclk2_i,gtx3_rxresetdone_i_r)
+    begin
+        if(gtx3_rxresetdone_i_r = '0') then
+            gtx3_rxresetdone_r    <= '0'   after DLY;
+            gtx3_rxresetdone_r2   <= '0'   after DLY;
+        elsif(gtx0_txusrclk2_i'event and gtx0_txusrclk2_i = '1') then
+            gtx3_rxresetdone_r    <= gtx3_rxresetdone_i_r after DLY;
+            gtx3_rxresetdone_r2   <= gtx3_rxresetdone_r   after DLY;
+        end if;
+    end process;
+
+    process( gtx0_txusrclk2_i)
+    begin
+         if(gtx0_txusrclk2_i'event and gtx0_txusrclk2_i = '1') then
+            gtx3_rxresetdone_r3  <= gtx3_rxresetdone_r2   after DLY;
+         end if; 
+    end process; 
+
+    process( gtx0_txusrclk2_i,gtx3_txresetdone_i)
+    begin
+        if(gtx3_txresetdone_i = '0') then
+            gtx3_txresetdone_r  <= '0'   after DLY;
+            gtx3_txresetdone_r2 <= '0'   after DLY;
+        elsif(gtx0_txusrclk2_i'event and gtx0_txusrclk2_i = '1') then
+            gtx3_txresetdone_r  <= gtx3_txresetdone_i   after DLY;
+            gtx3_txresetdone_r2 <= gtx3_txresetdone_r   after DLY;
         end if;
     end process;
 
@@ -1107,6 +1473,186 @@ begin
         -- System Interface
         USER_CLK                        =>      gtx0_txusrclk2_i,
         SYSTEM_RESET                    =>      gtx1_tx_system_reset_c
+    );
+    
+    gtx2_frame_gen : FRAME_GEN
+    generic map
+    (
+        WORDS_IN_BRAM                   =>      EXAMPLE_WORDS_IN_BRAM,
+        MEM_00                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_01                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_02                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_03                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_04                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_05                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_06                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_07                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEM_08                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_09                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_0A                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_0B                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_0C                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_0D                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_0E                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_0F                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEM_10                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_11                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_12                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_13                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_14                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_15                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_16                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_17                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEM_18                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_19                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_1A                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_1B                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_1C                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_1D                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_1E                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_1F                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEM_20                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_21                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_22                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_23                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_24                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_25                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_26                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_27                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEM_28                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_29                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_2A                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_2B                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_2C                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_2D                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_2E                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_2F                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEM_30                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_31                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_32                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_33                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_34                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_35                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_36                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_37                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEM_38                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_39                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_3A                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_3B                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_3C                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_3D                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_3E                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_3F                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEMP_00                  =>  x"0000000000000000000000000000000000000000000000000000000000000010",
+        MEMP_01                  =>  x"0000000000000000000000000000000000000000000000000000000000000010",
+        MEMP_02                  =>  x"0000000000000000000000000000000000000000000000000000000000000010",
+        MEMP_03                  =>  x"0000000000000000000000000000000000000000000000000000000000000010",
+        MEMP_04                  =>  x"0000000000000000000000000000000000000000000000000000000000000010",
+        MEMP_05                  =>  x"0000000000000000000000000000000000000000000000000000000000000010",
+        MEMP_06                  =>  x"0000000000000000000000000000000000000000000000000000000000000010",
+        MEMP_07                  =>  x"0000000000000000000000000000000000000000000000000000000000000010"
+    )
+    port map
+    (
+        -- User Interface
+        TX_DATA(39 downto 16)           =>      gtx2_txdata_float_i,
+        TX_DATA(15 downto 0)            =>      gtx2_txdata_i,
+ 
+        TX_CHARISK(3 downto 2)          =>      gtx2_txcharisk_float_i,
+        TX_CHARISK(1 downto 0)          =>      gtx2_txcharisk_i,
+        -- System Interface
+        USER_CLK                        =>      gtx0_txusrclk2_i,
+        SYSTEM_RESET                    =>      gtx2_tx_system_reset_c
+    );
+    
+    gtx3_frame_gen : FRAME_GEN
+    generic map
+    (
+        WORDS_IN_BRAM                   =>      EXAMPLE_WORDS_IN_BRAM,
+        MEM_00                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_01                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_02                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_03                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_04                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_05                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_06                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_07                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEM_08                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_09                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_0A                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_0B                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_0C                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_0D                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_0E                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_0F                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEM_10                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_11                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_12                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_13                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_14                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_15                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_16                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_17                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEM_18                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_19                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_1A                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_1B                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_1C                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_1D                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_1E                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_1F                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEM_20                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_21                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_22                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_23                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_24                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_25                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_26                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_27                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEM_28                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_29                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_2A                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_2B                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_2C                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_2D                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_2E                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_2F                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEM_30                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_31                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_32                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_33                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_34                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_35                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_36                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_37                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEM_38                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_39                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_3A                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_3B                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_3C                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_3D                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_3E                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_3F                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEMP_00                  =>  x"0000000000000000000000000000000000000000000000000000000000000010",
+        MEMP_01                  =>  x"0000000000000000000000000000000000000000000000000000000000000010",
+        MEMP_02                  =>  x"0000000000000000000000000000000000000000000000000000000000000010",
+        MEMP_03                  =>  x"0000000000000000000000000000000000000000000000000000000000000010",
+        MEMP_04                  =>  x"0000000000000000000000000000000000000000000000000000000000000010",
+        MEMP_05                  =>  x"0000000000000000000000000000000000000000000000000000000000000010",
+        MEMP_06                  =>  x"0000000000000000000000000000000000000000000000000000000000000010",
+        MEMP_07                  =>  x"0000000000000000000000000000000000000000000000000000000000000010"
+    )
+    port map
+    (
+        -- User Interface
+        TX_DATA(39 downto 16)           =>      gtx3_txdata_float_i,
+        TX_DATA(15 downto 0)            =>      gtx3_txdata_i,
+ 
+        TX_CHARISK(3 downto 2)          =>      gtx3_txcharisk_float_i,
+        TX_CHARISK(1 downto 0)          =>      gtx3_txcharisk_i,
+        -- System Interface
+        USER_CLK                        =>      gtx0_txusrclk2_i,
+        SYSTEM_RESET                    =>      gtx3_tx_system_reset_c
     );
     
 
@@ -1346,13 +1892,237 @@ begin
         TRACK_DATA                      =>      gtx1_track_data_i
     );
         
+    gtx2_frame_check_reset_i                     <= reset_on_data_error_i when (EXAMPLE_CONFIG_INDEPENDENT_LANES=0) else gtx2_matchn_i;
+
+    -- in the "independent lanes" configuration, each of the lanes looks for the unique start char and
+    -- in this case, the INC_IN port is tied off.
+    -- Else, the data checking is triggered by the "master" lane
+    gtx2_inc_in_i                                <= gtx0_inc_out_i when (EXAMPLE_CONFIG_INDEPENDENT_LANES=0) else '0';
+
+ 
+    gtx2_frame_check : FRAME_CHECK
+    generic map
+    (
+        RX_DATA_WIDTH                   =>      16,
+        RXCTRL_WIDTH                    =>      2,
+        USE_COMMA                       =>      1,
+        WORDS_IN_BRAM                   =>      EXAMPLE_WORDS_IN_BRAM,
+        CONFIG_INDEPENDENT_LANES        =>      EXAMPLE_CONFIG_INDEPENDENT_LANES,
+        START_OF_PACKET_CHAR            =>      x"02bc",
+        MEM_00                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_01                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_02                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_03                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_04                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_05                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_06                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_07                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEM_08                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_09                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_0A                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_0B                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_0C                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_0D                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_0E                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_0F                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEM_10                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_11                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_12                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_13                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_14                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_15                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_16                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_17                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEM_18                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_19                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_1A                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_1B                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_1C                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_1D                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_1E                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_1F                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEM_20                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_21                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_22                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_23                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_24                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_25                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_26                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_27                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEM_28                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_29                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_2A                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_2B                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_2C                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_2D                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_2E                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_2F                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEM_30                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_31                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_32                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_33                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_34                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_35                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_36                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_37                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEM_38                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_39                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_3A                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_3B                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_3C                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_3D                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_3E                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_3F                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEMP_00                  =>  x"0000000000000000000000000000000000000000000000000000000000000010",
+        MEMP_01                  =>  x"0000000000000000000000000000000000000000000000000000000000000010",
+        MEMP_02                  =>  x"0000000000000000000000000000000000000000000000000000000000000010",
+        MEMP_03                  =>  x"0000000000000000000000000000000000000000000000000000000000000010",
+        MEMP_04                  =>  x"0000000000000000000000000000000000000000000000000000000000000010",
+        MEMP_05                  =>  x"0000000000000000000000000000000000000000000000000000000000000010",
+        MEMP_06                  =>  x"0000000000000000000000000000000000000000000000000000000000000010",
+        MEMP_07                  =>  x"0000000000000000000000000000000000000000000000000000000000000010"
+    )
+    port map
+    (
+        -- MGT Interface
+        RX_DATA                         =>      gtx2_rxdata_i,
+        RXCTRL_IN                       =>      gtx2_rxcharisk_i,
+        RX_ENMCOMMA_ALIGN               =>      gtx2_rxenmcommaalign_i,
+        RX_ENPCOMMA_ALIGN               =>      gtx2_rxenpcommaalign_i,
+        RX_ENCHAN_SYNC                  =>      open,
+        RX_CHANBOND_SEQ                 =>      tied_to_ground_i,
+        -- Control Interface
+        INC_IN                          =>      gtx2_inc_in_i,
+        INC_OUT                         =>      gtx2_inc_out_i,
+        PATTERN_MATCH_N                 =>      gtx2_matchn_i,
+        RESET_ON_ERROR                  =>      gtx2_frame_check_reset_i,
+        -- System Interface
+        USER_CLK                        =>      gtx0_txusrclk2_i,
+        SYSTEM_RESET                    =>      gtx2_rx_system_reset_c,
+        ERROR_COUNT                     =>      gtx2_error_count_i,
+        TRACK_DATA                      =>      gtx2_track_data_i
+    );
+        
+    gtx3_frame_check_reset_i                     <= reset_on_data_error_i when (EXAMPLE_CONFIG_INDEPENDENT_LANES=0) else gtx3_matchn_i;
+
+    -- in the "independent lanes" configuration, each of the lanes looks for the unique start char and
+    -- in this case, the INC_IN port is tied off.
+    -- Else, the data checking is triggered by the "master" lane
+    gtx3_inc_in_i                                <= gtx0_inc_out_i when (EXAMPLE_CONFIG_INDEPENDENT_LANES=0) else '0';
+
+ 
+    gtx3_frame_check : FRAME_CHECK
+    generic map
+    (
+        RX_DATA_WIDTH                   =>      16,
+        RXCTRL_WIDTH                    =>      2,
+        USE_COMMA                       =>      1,
+        WORDS_IN_BRAM                   =>      EXAMPLE_WORDS_IN_BRAM,
+        CONFIG_INDEPENDENT_LANES        =>      EXAMPLE_CONFIG_INDEPENDENT_LANES,
+        START_OF_PACKET_CHAR            =>      x"02bc",
+        MEM_00                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_01                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_02                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_03                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_04                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_05                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_06                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_07                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEM_08                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_09                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_0A                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_0B                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_0C                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_0D                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_0E                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_0F                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEM_10                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_11                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_12                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_13                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_14                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_15                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_16                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_17                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEM_18                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_19                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_1A                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_1B                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_1C                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_1D                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_1E                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_1F                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEM_20                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_21                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_22                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_23                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_24                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_25                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_26                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_27                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEM_28                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_29                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_2A                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_2B                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_2C                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_2D                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_2E                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_2F                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEM_30                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_31                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_32                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_33                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_34                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_35                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_36                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_37                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEM_38                  =>  x"00000e0d00000c0b00000a09000008070000060500000403000002bc00000100",
+        MEM_39                  =>  x"00001e1d00001c1b00001a19000018170000161500001413000012110000100f",
+        MEM_3A                  =>  x"00002e2d00002c2b00002a29000028270000262500002423000022210000201f",
+        MEM_3B                  =>  x"00003e3d00003c3b00003a39000038370000363500003433000032310000302f",
+        MEM_3C                  =>  x"00004e4d00004c4b00004a49000048470000464500004443000042410000403f",
+        MEM_3D                  =>  x"00005e5d00005c5b00005a59000058570000565500005453000052510000504f",
+        MEM_3E                  =>  x"00006e6d00006c6b00006a69000068670000666500006463000062610000605f",
+        MEM_3F                  =>  x"00007e7d00007c7b00007a79000078770000767500007473000072710000706f",
+        MEMP_00                  =>  x"0000000000000000000000000000000000000000000000000000000000000010",
+        MEMP_01                  =>  x"0000000000000000000000000000000000000000000000000000000000000010",
+        MEMP_02                  =>  x"0000000000000000000000000000000000000000000000000000000000000010",
+        MEMP_03                  =>  x"0000000000000000000000000000000000000000000000000000000000000010",
+        MEMP_04                  =>  x"0000000000000000000000000000000000000000000000000000000000000010",
+        MEMP_05                  =>  x"0000000000000000000000000000000000000000000000000000000000000010",
+        MEMP_06                  =>  x"0000000000000000000000000000000000000000000000000000000000000010",
+        MEMP_07                  =>  x"0000000000000000000000000000000000000000000000000000000000000010"
+    )
+    port map
+    (
+        -- MGT Interface
+        RX_DATA                         =>      gtx3_rxdata_i,
+        RXCTRL_IN                       =>      gtx3_rxcharisk_i,
+        RX_ENMCOMMA_ALIGN               =>      gtx3_rxenmcommaalign_i,
+        RX_ENPCOMMA_ALIGN               =>      gtx3_rxenpcommaalign_i,
+        RX_ENCHAN_SYNC                  =>      open,
+        RX_CHANBOND_SEQ                 =>      tied_to_ground_i,
+        -- Control Interface
+        INC_IN                          =>      gtx3_inc_in_i,
+        INC_OUT                         =>      gtx3_inc_out_i,
+        PATTERN_MATCH_N                 =>      gtx3_matchn_i,
+        RESET_ON_ERROR                  =>      gtx3_frame_check_reset_i,
+        -- System Interface
+        USER_CLK                        =>      gtx0_txusrclk2_i,
+        SYSTEM_RESET                    =>      gtx3_rx_system_reset_c,
+        ERROR_COUNT                     =>      gtx3_error_count_i,
+        TRACK_DATA                      =>      gtx3_track_data_i
+    );
+        
 
 
     TRACK_DATA_OUT                               <= track_data_out_i;
 
     track_data_out_i                             <= 
                                 gtx0_track_data_i  and
-                                gtx1_track_data_i ;
+                                gtx1_track_data_i  and
+                                gtx2_track_data_i  and
+                                gtx3_track_data_i ;
 
 
 
@@ -1425,21 +2195,29 @@ chipscope : if EXAMPLE_USE_CHIPSCOPE = 1 generate
     -- assign resets for frame_gen modules
     gtx0_tx_system_reset_c                       <= not gtx0_txresetdone_r2 or user_tx_reset_i;
     gtx1_tx_system_reset_c                       <= not gtx1_txresetdone_r2 or user_tx_reset_i;
+    gtx2_tx_system_reset_c                       <= not gtx2_txresetdone_r2 or user_tx_reset_i;
+    gtx3_tx_system_reset_c                       <= not gtx3_txresetdone_r2 or user_tx_reset_i;
     -- assign resets for frame_check modules
     gtx0_rx_system_reset_c                       <= not gtx0_rxresetdone_r3 or user_rx_reset_i;
     gtx1_rx_system_reset_c                       <= not gtx1_rxresetdone_r3 or user_rx_reset_i;
+    gtx2_rx_system_reset_c                       <= not gtx2_rxresetdone_r3 or user_rx_reset_i;
+    gtx3_rx_system_reset_c                       <= not gtx3_rxresetdone_r3 or user_rx_reset_i;
 
     gtx0_gtxtxreset_i                            <= gtxtxreset_i or gtxrxreset_i;
     gtx0_gtxrxreset_i                            <= gtxtxreset_i or gtxrxreset_i;
     gtx1_gtxtxreset_i                            <= gtxtxreset_i or gtxrxreset_i;
     gtx1_gtxrxreset_i                            <= gtxtxreset_i or gtxrxreset_i;
+    gtx2_gtxtxreset_i                            <= gtxtxreset_i or gtxrxreset_i;
+    gtx2_gtxrxreset_i                            <= gtxtxreset_i or gtxrxreset_i;
+    gtx3_gtxtxreset_i                            <= gtxtxreset_i or gtxrxreset_i;
+    gtx3_gtxrxreset_i                            <= gtxtxreset_i or gtxrxreset_i;
 
     -- Shared VIO Outputs
     gtxtxreset_i                                 <= shared_vio_out_i(31);
     gtxrxreset_i                                 <= shared_vio_out_i(30);
     user_tx_reset_i                              <= shared_vio_out_i(29);
     user_rx_reset_i                              <= shared_vio_out_i(28);
-    mux_sel_i                                    <= shared_vio_out_i(27);
+    mux_sel_i                                    <= shared_vio_out_i(27 downto 26);
 
     -- Shared VIO Inputs
     shared_vio_in_i(31 downto 0)                 <= "00000000000000000000000000000000";
@@ -1482,26 +2260,74 @@ chipscope : if EXAMPLE_USE_CHIPSCOPE = 1 generate
     gtx1_ila_in_i(60 downto 53)                  <= gtx1_error_count_i;
     gtx1_ila_in_i(52 downto 0)                   <= "00000000000000000000000000000000000000000000000000000";
 
+    -- Chipscope connections on GTX 2
+    gtx2_tx_data_vio_async_in_i(31)              <= '0';
+    gtx2_tx_data_vio_async_in_i(30)              <= gtx2_txresetdone_i;
+    gtx2_tx_data_vio_async_in_i(29 downto 0)     <= "000000000000000000000000000000";
+    gtx2_tx_data_vio_sync_in_i(31 downto 0)      <= "00000000000000000000000000000000";
+    gtx2_rx_data_vio_async_in_i(31)              <= gtx2_rxplllkdet_i;
+    gtx2_rx_data_vio_async_in_i(30)              <= gtx2_rxresetdone_i;
+    gtx2_rx_data_vio_async_in_i(29 downto 0)     <= "000000000000000000000000000000";
+    gtx2_rx_data_vio_sync_in_i(31 downto 0)      <= "00000000000000000000000000000000";
+    gtx2_pllrxreset_i                            <= rx_data_vio_async_out_i(31);
+    gtx2_ila_in_i(84 downto 83)                  <= gtx2_rxcharisk_i;
+    gtx2_ila_in_i(82 downto 81)                  <= gtx2_rxdisperr_i;
+    gtx2_ila_in_i(80 downto 79)                  <= gtx2_rxnotintable_i;
+    gtx2_ila_in_i(78)                            <= gtx2_rxbyteisaligned_i;
+    gtx2_ila_in_i(77)                            <= gtx2_rxcommadet_i;
+    gtx2_ila_in_i(76 downto 61)                  <= gtx2_rxdata_i;
+    gtx2_ila_in_i(60 downto 53)                  <= gtx2_error_count_i;
+    gtx2_ila_in_i(52 downto 0)                   <= "00000000000000000000000000000000000000000000000000000";
+
+    -- Chipscope connections on GTX 3
+    gtx3_tx_data_vio_async_in_i(31)              <= '0';
+    gtx3_tx_data_vio_async_in_i(30)              <= gtx3_txresetdone_i;
+    gtx3_tx_data_vio_async_in_i(29 downto 0)     <= "000000000000000000000000000000";
+    gtx3_tx_data_vio_sync_in_i(31 downto 0)      <= "00000000000000000000000000000000";
+    gtx3_rx_data_vio_async_in_i(31)              <= gtx3_rxplllkdet_i;
+    gtx3_rx_data_vio_async_in_i(30)              <= gtx3_rxresetdone_i;
+    gtx3_rx_data_vio_async_in_i(29 downto 0)     <= "000000000000000000000000000000";
+    gtx3_rx_data_vio_sync_in_i(31 downto 0)      <= "00000000000000000000000000000000";
+    gtx3_pllrxreset_i                            <= rx_data_vio_async_out_i(31);
+    gtx3_ila_in_i(84 downto 83)                  <= gtx3_rxcharisk_i;
+    gtx3_ila_in_i(82 downto 81)                  <= gtx3_rxdisperr_i;
+    gtx3_ila_in_i(80 downto 79)                  <= gtx3_rxnotintable_i;
+    gtx3_ila_in_i(78)                            <= gtx3_rxbyteisaligned_i;
+    gtx3_ila_in_i(77)                            <= gtx3_rxcommadet_i;
+    gtx3_ila_in_i(76 downto 61)                  <= gtx3_rxdata_i;
+    gtx3_ila_in_i(60 downto 53)                  <= gtx3_error_count_i;
+    gtx3_ila_in_i(52 downto 0)                   <= "00000000000000000000000000000000000000000000000000000";
+
 
     --Mux inputs to Chipscope modules based on mux_sel_i
 
-    tx_data_vio_async_in_i              <=      gtx0_tx_data_vio_async_in_i when (mux_sel_i = '0')
-                                        else    gtx1_tx_data_vio_async_in_i;
+    tx_data_vio_async_in_i              <=      gtx0_tx_data_vio_async_in_i when (mux_sel_i = "00")
+                                        else    gtx1_tx_data_vio_async_in_i when (mux_sel_i = "01")
+                                        else    gtx2_tx_data_vio_async_in_i when (mux_sel_i = "10")
+                                        else    gtx3_tx_data_vio_async_in_i;
 
 
-    tx_data_vio_sync_in_i               <=      gtx0_tx_data_vio_sync_in_i when (mux_sel_i = '0')
-                                        else    gtx1_tx_data_vio_sync_in_i;
+    tx_data_vio_sync_in_i               <=      gtx0_tx_data_vio_sync_in_i when (mux_sel_i = "00")
+                                        else    gtx1_tx_data_vio_sync_in_i when (mux_sel_i = "01")
+                                        else    gtx2_tx_data_vio_sync_in_i when (mux_sel_i = "10")
+                                        else    gtx3_tx_data_vio_sync_in_i;
 
-    rx_data_vio_async_in_i              <=      gtx0_rx_data_vio_async_in_i when (mux_sel_i = '0')
-                                        else    gtx1_rx_data_vio_async_in_i;
+    rx_data_vio_async_in_i              <=      gtx0_rx_data_vio_async_in_i when (mux_sel_i = "00")
+                                        else    gtx1_rx_data_vio_async_in_i when (mux_sel_i = "01")
+                                        else    gtx2_rx_data_vio_async_in_i when (mux_sel_i = "10")
+                                        else    gtx3_rx_data_vio_async_in_i;
 
 
-    rx_data_vio_sync_in_i               <=      gtx0_rx_data_vio_sync_in_i when (mux_sel_i = '0')
-                                        else    gtx1_rx_data_vio_sync_in_i;
+    rx_data_vio_sync_in_i               <=      gtx0_rx_data_vio_sync_in_i when (mux_sel_i = "00")
+                                        else    gtx1_rx_data_vio_sync_in_i when (mux_sel_i = "01")
+                                        else    gtx2_rx_data_vio_sync_in_i when (mux_sel_i = "10")
+                                        else    gtx3_rx_data_vio_sync_in_i;
 
 
-    ila_in_i                            <=      gtx0_ila_in_i when (mux_sel_i = '0')
-                                        else    gtx1_ila_in_i;
+    ila_in_i                            <=      gtx0_ila_in_i when (mux_sel_i = "00")
+                                        else    gtx1_ila_in_i when (mux_sel_i = "01")
+                                        else    gtx2_ila_in_i when (mux_sel_i = "10")
+                                        else    gtx3_ila_in_i;
 
 
 end generate chipscope;
@@ -1515,21 +2341,31 @@ no_chipscope : if EXAMPLE_USE_CHIPSCOPE = 0 generate
     gtx0_gtxrxreset_i                            <= GTXRXRESET_IN;
     gtx1_gtxtxreset_i                            <= GTXTXRESET_IN;
     gtx1_gtxrxreset_i                            <= GTXRXRESET_IN;
+    gtx2_gtxtxreset_i                            <= GTXTXRESET_IN;
+    gtx2_gtxrxreset_i                            <= GTXRXRESET_IN;
+    gtx3_gtxtxreset_i                            <= GTXTXRESET_IN;
+    gtx3_gtxrxreset_i                            <= GTXRXRESET_IN;
 
     -- assign resets for frame_gen modules
     gtx0_tx_system_reset_c                       <= not gtx0_txresetdone_r2;
     gtx1_tx_system_reset_c                       <= not gtx1_txresetdone_r2;
+    gtx2_tx_system_reset_c                       <= not gtx2_txresetdone_r2;
+    gtx3_tx_system_reset_c                       <= not gtx3_txresetdone_r2;
     -- assign resets for frame_check modules
     gtx0_rx_system_reset_c                       <= not gtx0_rxresetdone_r3;
     gtx1_rx_system_reset_c                       <= not gtx1_rxresetdone_r3;
+    gtx2_rx_system_reset_c                       <= not gtx2_rxresetdone_r3;
+    gtx3_rx_system_reset_c                       <= not gtx3_rxresetdone_r3;
 
     gtxtxreset_i                                 <= tied_to_ground_i;
     gtxrxreset_i                                 <= tied_to_ground_i;
     user_tx_reset_i                              <= tied_to_ground_i;
     user_rx_reset_i                              <= tied_to_ground_i;
-    mux_sel_i                                    <= tied_to_ground_i;
+    mux_sel_i                                    <= tied_to_ground_vec_i(1 downto 0);
     gtx0_pllrxreset_i                            <= tied_to_ground_i;
     gtx1_pllrxreset_i                            <= tied_to_ground_i;
+    gtx2_pllrxreset_i                            <= tied_to_ground_i;
+    gtx3_pllrxreset_i                            <= tied_to_ground_i;
 
 
 

@@ -26,8 +26,7 @@ package body user_addr_decode is
 		variable sel : integer;
    begin
 		if   std_match(addr, "100000000000000000000000--------") then  	sel := user_wb_regs;
-		else
-			sel := 99;
+		else sel := 99;
 		end if;
 		return sel;
 	end user_wb_addr_sel; 

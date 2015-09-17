@@ -1,4 +1,5 @@
 # Output products list for <sfp_gtx>
+_xmsgs\pn_parser.xmsgs
 sfp_gtx.gise
 sfp_gtx.vhd
 sfp_gtx.vho

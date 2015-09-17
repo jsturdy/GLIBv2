@@ -62,6 +62,20 @@ add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/gtx1_frame_check/data_er
 add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/gtx1_frame_check/start_of_packet_detected_r
 add wave -noupdate -format Logic -radix hexadecimal /DEMO_TB/sfp_gtx_top_i/gtx1_frame_check/RX_DATA
 add wave -noupdate -format Logic -radix hexadecimal /DEMO_TB/sfp_gtx_top_i/gtx1_frame_check/ERROR_COUNT
+add wave -noupdate -divider {FRAME CHECK MODULE gtx2_frame_check }
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/gtx2_frame_check/begin_r
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/gtx2_frame_check/track_data_r
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/gtx2_frame_check/data_error_detected_r
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/gtx2_frame_check/start_of_packet_detected_r
+add wave -noupdate -format Logic -radix hexadecimal /DEMO_TB/sfp_gtx_top_i/gtx2_frame_check/RX_DATA
+add wave -noupdate -format Logic -radix hexadecimal /DEMO_TB/sfp_gtx_top_i/gtx2_frame_check/ERROR_COUNT
+add wave -noupdate -divider {FRAME CHECK MODULE gtx3_frame_check }
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/gtx3_frame_check/begin_r
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/gtx3_frame_check/track_data_r
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/gtx3_frame_check/data_error_detected_r
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/gtx3_frame_check/start_of_packet_detected_r
+add wave -noupdate -format Logic -radix hexadecimal /DEMO_TB/sfp_gtx_top_i/gtx3_frame_check/RX_DATA
+add wave -noupdate -format Logic -radix hexadecimal /DEMO_TB/sfp_gtx_top_i/gtx3_frame_check/ERROR_COUNT
 add wave -noupdate -divider {GTX0_SFP_GTX }
 add wave -noupdate -divider {Receive Ports - 8b10b Decoder }
 add wave -noupdate -format Literal -radix hexadecimal /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx0_sfp_gtx_i/RXCHARISK_OUT
@@ -131,6 +145,76 @@ add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx1_sfp_gtx_i
 add wave -noupdate -divider {Transmit Ports - TX PLL Ports }
 add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx1_sfp_gtx_i/GTXTXRESET_IN
 add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx1_sfp_gtx_i/TXRESETDONE_OUT
+
+add wave -noupdate -divider {GTX2_SFP_GTX }
+add wave -noupdate -divider {Receive Ports - 8b10b Decoder }
+add wave -noupdate -format Literal -radix hexadecimal /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/RXCHARISK_OUT
+add wave -noupdate -format Literal -radix hexadecimal /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/RXDISPERR_OUT
+add wave -noupdate -format Literal -radix hexadecimal /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/RXNOTINTABLE_OUT
+add wave -noupdate -divider {Receive Ports - Comma Detection and Alignment }
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/RXBYTEISALIGNED_OUT
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/RXCOMMADET_OUT
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/RXENMCOMMAALIGN_IN
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/RXENPCOMMAALIGN_IN
+add wave -noupdate -divider {Receive Ports - RX Data Path interface }
+add wave -noupdate -format Literal -radix hexadecimal /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/RXDATA_OUT
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/RXUSRCLK2_IN
+add wave -noupdate -divider {Receive Ports - RX Driver,OOB signalling,Coupling and Eq.,CDR }
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/RXN_IN
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/RXP_IN
+add wave -noupdate -divider {Receive Ports - RX PLL Ports }
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/GTXRXRESET_IN
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/MGTREFCLKRX_IN
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/PLLRXRESET_IN
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/RXPLLLKDET_OUT
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/RXRESETDONE_OUT
+add wave -noupdate -divider {Transmit Ports - 8b10b Encoder Control Ports }
+add wave -noupdate -format Literal -radix hexadecimal /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/TXCHARISK_IN
+add wave -noupdate -divider {Transmit Ports - TX Data Path interface }
+add wave -noupdate -format Literal -radix hexadecimal /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/TXDATA_IN
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/TXOUTCLK_OUT
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/TXUSRCLK2_IN
+add wave -noupdate -divider {Transmit Ports - TX Driver and OOB signaling }
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/TXN_OUT
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/TXP_OUT
+add wave -noupdate -divider {Transmit Ports - TX PLL Ports }
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/GTXTXRESET_IN
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/TXRESETDONE_OUT
+
+add wave -noupdate -divider {GTX3_SFP_GTX }
+add wave -noupdate -divider {Receive Ports - 8b10b Decoder }
+add wave -noupdate -format Literal -radix hexadecimal /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/RXCHARISK_OUT
+add wave -noupdate -format Literal -radix hexadecimal /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/RXDISPERR_OUT
+add wave -noupdate -format Literal -radix hexadecimal /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/RXNOTINTABLE_OUT
+add wave -noupdate -divider {Receive Ports - Comma Detection and Alignment }
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/RXBYTEISALIGNED_OUT
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/RXCOMMADET_OUT
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/RXENMCOMMAALIGN_IN
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/RXENPCOMMAALIGN_IN
+add wave -noupdate -divider {Receive Ports - RX Data Path interface }
+add wave -noupdate -format Literal -radix hexadecimal /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/RXDATA_OUT
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/RXUSRCLK2_IN
+add wave -noupdate -divider {Receive Ports - RX Driver,OOB signalling,Coupling and Eq.,CDR }
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/RXN_IN
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/RXP_IN
+add wave -noupdate -divider {Receive Ports - RX PLL Ports }
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/GTXRXRESET_IN
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/MGTREFCLKRX_IN
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/PLLRXRESET_IN
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/RXPLLLKDET_OUT
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/RXRESETDONE_OUT
+add wave -noupdate -divider {Transmit Ports - 8b10b Encoder Control Ports }
+add wave -noupdate -format Literal -radix hexadecimal /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/TXCHARISK_IN
+add wave -noupdate -divider {Transmit Ports - TX Data Path interface }
+add wave -noupdate -format Literal -radix hexadecimal /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/TXDATA_IN
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/TXOUTCLK_OUT
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/TXUSRCLK2_IN
+add wave -noupdate -divider {Transmit Ports - TX Driver and OOB signaling }
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/TXN_OUT
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/TXP_OUT
+add wave -noupdate -divider {Transmit Ports - TX PLL Ports }
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/GTXTXRESET_IN
+add wave -noupdate -format Logic /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/TXRESETDONE_OUT
 
 TreeUpdate [SetDefaultTree]
 WaveRestoreCursors {{Cursor 1} {0 ps} 0}

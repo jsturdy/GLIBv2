@@ -61,6 +61,18 @@ wave add /DEMO_TB/sfp_gtx_top_i/gtx1_frame_check/data_error_detected_r
 wave add /DEMO_TB/sfp_gtx_top_i/gtx1_frame_check/start_of_packet_detected_r
 wave add /DEMO_TB/sfp_gtx_top_i/gtx1_frame_check/RX_DATA
 wave add /DEMO_TB/sfp_gtx_top_i/gtx1_frame_check/ERROR_COUNT
+wave add /DEMO_TB/sfp_gtx_top_i/gtx2_frame_check/begin_r
+wave add /DEMO_TB/sfp_gtx_top_i/gtx2_frame_check/track_data_r
+wave add /DEMO_TB/sfp_gtx_top_i/gtx2_frame_check/data_error_detected_r
+wave add /DEMO_TB/sfp_gtx_top_i/gtx2_frame_check/start_of_packet_detected_r
+wave add /DEMO_TB/sfp_gtx_top_i/gtx2_frame_check/RX_DATA
+wave add /DEMO_TB/sfp_gtx_top_i/gtx2_frame_check/ERROR_COUNT
+wave add /DEMO_TB/sfp_gtx_top_i/gtx3_frame_check/begin_r
+wave add /DEMO_TB/sfp_gtx_top_i/gtx3_frame_check/track_data_r
+wave add /DEMO_TB/sfp_gtx_top_i/gtx3_frame_check/data_error_detected_r
+wave add /DEMO_TB/sfp_gtx_top_i/gtx3_frame_check/start_of_packet_detected_r
+wave add /DEMO_TB/sfp_gtx_top_i/gtx3_frame_check/RX_DATA
+wave add /DEMO_TB/sfp_gtx_top_i/gtx3_frame_check/ERROR_COUNT
 divider add "Receive Ports - 8b10b Decoder"
 wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx0_sfp_gtx_i/RXCHARISK_OUT
 wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx0_sfp_gtx_i/RXDISPERR_OUT
@@ -128,6 +140,74 @@ wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx1_sfp_gtx_i/TXP_OUT
 divider add "Transmit Ports - TX PLL Ports"
 wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx1_sfp_gtx_i/GTXTXRESET_IN
 wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx1_sfp_gtx_i/TXRESETDONE_OUT
+
+divider add "Receive Ports - 8b10b Decoder"
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/RXCHARISK_OUT
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/RXDISPERR_OUT
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/RXNOTINTABLE_OUT
+divider add "Receive Ports - Comma Detection and Alignment"
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/RXBYTEISALIGNED_OUT
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/RXCOMMADET_OUT
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/RXENMCOMMAALIGN_IN
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/RXENPCOMMAALIGN_IN
+divider add "Receive Ports - RX Data Path interface"
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/RXDATA_OUT
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/RXUSRCLK2_IN
+divider add "Receive Ports - RX Driver,OOB signalling,Coupling and Eq.,CDR"
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/RXN_IN
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/RXP_IN
+divider add "Receive Ports - RX PLL Ports"
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/GTXRXRESET_IN
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/MGTREFCLKRX_IN
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/PLLRXRESET_IN
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/RXPLLLKDET_OUT
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/RXRESETDONE_OUT
+divider add "Transmit Ports - 8b10b Encoder Control Ports"
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/TXCHARISK_IN
+divider add "Transmit Ports - TX Data Path interface"
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/TXDATA_IN
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/TXOUTCLK_OUT
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/TXUSRCLK2_IN
+divider add "Transmit Ports - TX Driver and OOB signaling"
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/TXN_OUT
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/TXP_OUT
+divider add "Transmit Ports - TX PLL Ports"
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/GTXTXRESET_IN
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx2_sfp_gtx_i/TXRESETDONE_OUT
+
+divider add "Receive Ports - 8b10b Decoder"
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/RXCHARISK_OUT
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/RXDISPERR_OUT
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/RXNOTINTABLE_OUT
+divider add "Receive Ports - Comma Detection and Alignment"
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/RXBYTEISALIGNED_OUT
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/RXCOMMADET_OUT
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/RXENMCOMMAALIGN_IN
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/RXENPCOMMAALIGN_IN
+divider add "Receive Ports - RX Data Path interface"
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/RXDATA_OUT
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/RXUSRCLK2_IN
+divider add "Receive Ports - RX Driver,OOB signalling,Coupling and Eq.,CDR"
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/RXN_IN
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/RXP_IN
+divider add "Receive Ports - RX PLL Ports"
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/GTXRXRESET_IN
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/MGTREFCLKRX_IN
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/PLLRXRESET_IN
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/RXPLLLKDET_OUT
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/RXRESETDONE_OUT
+divider add "Transmit Ports - 8b10b Encoder Control Ports"
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/TXCHARISK_IN
+divider add "Transmit Ports - TX Data Path interface"
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/TXDATA_IN
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/TXOUTCLK_OUT
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/TXUSRCLK2_IN
+divider add "Transmit Ports - TX Driver and OOB signaling"
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/TXN_OUT
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/TXP_OUT
+divider add "Transmit Ports - TX PLL Ports"
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/GTXTXRESET_IN
+wave add /DEMO_TB/sfp_gtx_top_i/sfp_gtx_i/gtx3_sfp_gtx_i/TXRESETDONE_OUT
 
 run 61 us
 quit

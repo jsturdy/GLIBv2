@@ -95,5 +95,11 @@ INST sfp_gtx_i/gtx0_sfp_gtx_i/gtxe1_i LOC=GTXE1_X0Y0;
 ##---------- Set placement for gtx1_gtx_wrapper_i/GTX_DUAL ------
 INST sfp_gtx_i/gtx1_sfp_gtx_i/gtxe1_i LOC=GTXE1_X0Y1;
 
+##---------- Set placement for gtx2_gtx_wrapper_i/GTX_DUAL ------
+INST sfp_gtx_i/gtx2_sfp_gtx_i/gtxe1_i LOC=GTXE1_X0Y2;
+
+##---------- Set placement for gtx3_gtx_wrapper_i/GTX_DUAL ------
+INST sfp_gtx_i/gtx3_sfp_gtx_i/gtxe1_i LOC=GTXE1_X0Y3;
+
 
 

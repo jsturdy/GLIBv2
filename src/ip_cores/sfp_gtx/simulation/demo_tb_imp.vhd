@@ -89,10 +89,10 @@ architecture RTL of DEMO_TB_IMP is
         GTXTXRESET_IN                     :   in std_logic;
         GTXRXRESET_IN                     :   in std_logic;
         TRACK_DATA_OUT                    :   out std_logic;
-        RXN_IN                            :   in std_logic_vector(1 downto 0);
-        RXP_IN                            :   in std_logic_vector(1 downto 0);
-        TXN_OUT                           :   out std_logic_vector(1 downto 0);
-        TXP_OUT                           :   out std_logic_vector(1 downto 0)
+        RXN_IN                            :   in std_logic_vector(3 downto 0);
+        RXP_IN                            :   in std_logic_vector(3 downto 0);
+        TXN_OUT                           :   out std_logic_vector(3 downto 0);
+        TXP_OUT                           :   out std_logic_vector(3 downto 0)
     );
     end component;
 
@@ -125,16 +125,20 @@ architecture RTL of DEMO_TB_IMP is
     signal  rx_refclk_p_r           :   std_logic;    
     signal  tied_to_ground_i        :   std_logic;
     ---------------------------- Example Module Connections -------------------------
-    signal  rxn_in_i                :   std_logic_vector(1 downto 0);
-    signal  rxp_in_i                :   std_logic_vector(1 downto 0);
-    signal  txn_out_i               :   std_logic_vector(1 downto 0);
-    signal  txp_out_i               :   std_logic_vector(1 downto 0);
+    signal  rxn_in_i                :   std_logic_vector(3 downto 0);
+    signal  rxp_in_i                :   std_logic_vector(3 downto 0);
+    signal  txn_out_i               :   std_logic_vector(3 downto 0);
+    signal  txp_out_i               :   std_logic_vector(3 downto 0);
 
 
     signal  gtx0_txplllkdet_i     :   std_logic;
     signal  gtx0_rxplllkdet_i     :   std_logic;    
     signal  gtx1_txplllkdet_i     :   std_logic;
     signal  gtx1_rxplllkdet_i     :   std_logic;    
+    signal  gtx2_txplllkdet_i     :   std_logic;
+    signal  gtx2_rxplllkdet_i     :   std_logic;    
+    signal  gtx3_txplllkdet_i     :   std_logic;
+    signal  gtx3_rxplllkdet_i     :   std_logic;    
 
     signal  track_data_i            :   std_logic;
 
