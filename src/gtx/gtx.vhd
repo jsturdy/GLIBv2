@@ -48,32 +48,31 @@ architecture Behavioral of gtx is
 
     --== GTX signals ==--
 
-    signal gtx_tx_kchar : std_logic_vector(7 downto 0);
-    signal gtx_tx_data  : std_logic_vector(63 downto 0);
+    signal gtx_tx_kchar     : std_logic_vector(7 downto 0);
+    signal gtx_tx_data      : std_logic_vector(63 downto 0);
     
-    signal gtx_rx_kchar : std_logic_vector(7 downto 0);
-    signal gtx_rx_data  : std_logic_vector(63 downto 0);
-    signal gtx_rx_error : std_logic_vector(3 downto 0);
+    signal gtx_rx_kchar     : std_logic_vector(7 downto 0);
+    signal gtx_rx_data      : std_logic_vector(63 downto 0);
+    signal gtx_rx_error     : std_logic_vector(3 downto 0);
  
-    signal gtx_usr_clk  : std_logic;
+    signal gtx_usr_clk      : std_logic;
     
     --== GTX requests ==--
     
-    signal fwd_req_en   : std_logic;
-    signal fwd_req_ack  : std_logic;
-    signal fwd_req_data : std_logic_vector(64 downto 0);
+    signal fwd_req_en       : std_logic;
+    signal fwd_req_valid    : std_logic;
+    signal fwd_req_data     : std_logic_vector(64 downto 0);
     
-    signal fwd_res_en   : std_logic;
-    signal fwd_res_ack  : std_logic;
-    signal fwd_res_data : std_logic_vector(31 downto 0);
+    signal fwd_res_en       : std_logic;
+    signal fwd_res_data     : std_logic_vector(31 downto 0);
     
     --== Chipscope signals ==--
     
-    signal cs_ctrl0     : std_logic_vector(35 downto 0);
-    signal cs_ctrl1     : std_logic_vector(35 downto 0); 
-    signal cs_async_out : std_logic_vector(7 downto 0);
-    signal cs_trig0     : std_logic_vector(31 downto 0);
-    signal cs_trig1     : std_logic_vector(31 downto 0);
+    signal cs_ctrl0         : std_logic_vector(35 downto 0);
+    signal cs_ctrl1         : std_logic_vector(35 downto 0); 
+    signal cs_async_out     : std_logic_vector(7 downto 0);
+    signal cs_trig0         : std_logic_vector(31 downto 0);
+    signal cs_trig1         : std_logic_vector(31 downto 0);
     
 begin    
     
@@ -106,8 +105,8 @@ begin
     port map(
         gtx_clk_i   => gtx_usr_clk,   
         reset_i     => reset_i,           
-        req_en_i    => fwd_req_en,   
-        req_ack_o   => fwd_req_ack,   
+        req_en_o    => fwd_req_en,   
+        req_valid_i => fwd_req_valid,   
         req_data_i  => fwd_req_data,           
         tx_kchar_o  => gtx_tx_kchar(1 downto 0),   
         tx_data_o   => gtx_tx_data(15 downto 0)        
@@ -122,7 +121,6 @@ begin
         gtx_clk_i   => gtx_usr_clk,   
         reset_i     => reset_i,           
         req_en_o    => fwd_res_en,   
-        req_ack_i   => fwd_res_ack,   
         req_data_o  => fwd_res_data,           
         rx_kchar_i  => gtx_rx_kchar(1 downto 0),   
         rx_data_i   => gtx_rx_data(15 downto 0)        
@@ -139,11 +137,10 @@ begin
         reset_i     => reset_i,        
         ipb_mosi_i  => ipb_mosi_i,
         ipb_miso_o  => ipb_miso_o,        
-        tx_en_o     => fwd_req_en,
-        tx_ack_i    => fwd_req_ack,
+        tx_en_i     => fwd_req_en,
+        tx_valid_o  => fwd_req_valid,
         tx_data_o   => fwd_req_data,        
         rx_en_i     => fwd_res_en,
-        rx_ack_o    => fwd_res_ack,
         rx_data_i   => fwd_res_data        
     );    
      
@@ -175,9 +172,9 @@ begin
     cs_trig1(4 downto 0) <= (
         0 => ipb_mosi_i.ipb_strobe, 
         1 => fwd_req_en,
-        2 => fwd_req_ack, 
+        2 => fwd_req_valid, 
         3 => fwd_res_en,
-        4 => fwd_res_ack
+        4 => '0'
     );
     cs_trig1(8 downto 5) <= fwd_req_data(3 downto 0);
     cs_trig1(12 downto 9) <= fwd_res_data(3 downto 0);
