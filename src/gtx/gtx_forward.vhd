@@ -96,24 +96,24 @@ begin
                 ipb_miso_o.ipb_ack <= '0';
                 ipb_miso_o.ipb_rdata <= (others => '0');                
             else     
-                ipb_miso_o.ipb_err <= '0';
-                ipb_miso_o.ipb_ack <= ipb_mosi_i.ipb_strobe;
-                ipb_miso_o.ipb_rdata <= x"ABCD0123";
---                -- Incoming data
---                if (rx_en_i = '1' and rx_ack <= '0') then
---                    rx_ack <= '1';
---                    -- Return to IPBus
---                    ipb_miso_o.ipb_err <= '0';
---                    ipb_miso_o.ipb_ack <= ipb_mosi_i.ipb_strobe;
---                    ipb_miso_o.ipb_rdata <= rx_data_i;
---                -- 
---                elsif (rx_en_i = '0' and rx_ack <= '1') then
---                    rx_ack <= '0';
---                    ipb_miso_o.ipb_ack <= '0';    
---                -- No data
---                else
---                    ipb_miso_o.ipb_ack <= '0';      
---                end if;
+--                ipb_miso_o.ipb_err <= '0';
+--                ipb_miso_o.ipb_ack <= ipb_mosi_i.ipb_strobe;
+--                ipb_miso_o.ipb_rdata <= x"ABCD0123";
+                -- Incoming data
+                if (rx_en_i = '1' and rx_ack <= '0') then
+                    rx_ack <= '1';
+                    -- Return to IPBus
+                    ipb_miso_o.ipb_err <= '0';
+                    ipb_miso_o.ipb_ack <= ipb_mosi_i.ipb_strobe;
+                    ipb_miso_o.ipb_rdata <= rx_data_i;
+                -- 
+                elsif (rx_en_i = '0' and rx_ack <= '1') then
+                    rx_ack <= '0';
+                    ipb_miso_o.ipb_ack <= '0';    
+                -- No data
+                else
+                    ipb_miso_o.ipb_ack <= '0';      
+                end if;
             end if;
         end if;
     end process;      

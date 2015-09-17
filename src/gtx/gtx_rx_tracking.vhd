@@ -21,105 +21,83 @@ use unisim.vcomponents.all;
 library work;
 
 entity gtx_rx_tracking is
+generic(
+    
+    RECEIVE_SIZE    : integer   := 3
+    
+);
 port(
 
-    ref_clk_i   : in std_logic;    
-    reset_i     : in std_logic;
+    gtx_clk_i       : in std_logic;    
+    reset_i         : in std_logic;
     
-    res_en_o    : out std_logic;
-    res_ack_i   : in std_logic;
-    res_data_o  : out std_logic_vector(31 downto 0);
+    req_en_o        : out std_logic;
+    req_ack_i       : in std_logic;
+    req_data_o      : out std_logic_vector(31 downto 0);
     
-    rx_kchar_i  : in std_logic_vector(1 downto 0);
-    rx_data_i   : in std_logic_vector(15 downto 0)
+    rx_kchar_i      : in std_logic_vector(1 downto 0);
+    rx_data_i       : in std_logic_vector(15 downto 0)
     
 );
 end gtx_rx_tracking;
 
 architecture Behavioral of gtx_rx_tracking is    
 
-    type state_t is (COMMA, HEADER, ADDRESS_0, ADDRESS_1, DATA_0, DATA_1);
+    type state_t is (COMMA, RECEIVE);
     
-    signal state    : state_t;
+    signal state        : state_t;
     
-    signal req_ack  : std_logic;
-    signal req_data : std_logic_vector(79 downto 0);
+    signal receive_pos  : integer range 0 to (RECEIVE_SIZE - 1);
+    
+    signal req_en       : std_logic;
+    signal req_data     : std_logic_vector(47 downto 0);
 
 begin  
 
-    req_ack_o <= req_ack;
-
-    -- Cycle between states
-
-    process(ref_clk_i)
+    req_en_o <= req_en;
+    
+    process(gtx_clk_i)
     begin
-        if (rising_edge(ref_clk_i)) then
+        if (rising_edge(gtx_clk_i)) then
             if (reset_i = '1') then
+                req_en <= '0';
+                req_data_o <= (others => '0');
                 state <= COMMA;
-            else
-                case state is
-                    when COMMA => state <= HEADER;
-                    when HEADER => state <= ADDRESS_0;
-                    when ADDRESS_0 => state <= ADDRESS_1;
-                    when ADDRESS_1 => state <= DATA_0;
-                    when DATA_0 => state <= DATA_1;
-                    when DATA_1 => state <= COMMA;
-                    when others => state <= HEADER;
-                end case;
-            end if;
-        end if;
-    end process;
-    
-    -- Forward data
-    
-    process(ref_clk_i)
-    begin
-        if (rising_edge(ref_clk_i)) then
-            if (reset_i = '1') then
-                tx_kchar_o <= "00";
-                tx_data_o <= (others => '0');
-                req_ack <= '0';
-                req_data <= (others => '0');
+                receive_pos <= 0;
             else
                 -- Reset the acknowledgment whenever it has been seen
-                if (req_en_i = '0' and req_ack = '1') then
-                    req_ack <= '0';
+                if (req_en = '1' and req_ack_i = '1') then
+                    req_en <= '0';
                 end if;
                 -- Handle the data
                 case state is
-                    -- Send a comma and look for valid data to send
+                    -- Send a comma and look for valid data to receive
                     when COMMA => 
-                        -- Request data
-                        if (req_en_i = '1' and req_ack = '0') then
-                            req_ack <= '1';
-                            req_data <= x"FF0" & "000" & req_data_i;
-                        else
-                            req_data <= (others => '0');
+                        -- Look for comma
+                        if (rx_kchar_i = "01" and rx_data_i = x"00BC") then
+                            state <= RECEIVE;
+                            receive_pos <= (RECEIVE_SIZE - 1);
                         end if;
-                        -- Data on the link
-                        tx_kchar_o <= "01";
-                        tx_data_o <= x"00BC";
-                    -- Header data
-                    when HEADER => 
-                        tx_kchar_o <= "00";
-                        tx_data_o <= req_data(79 downto 64);
-                    when ADDRESS_0 => 
-                        tx_kchar_o <= "00";
-                        tx_data_o <= req_data(63 downto 48);
-                    when ADDRESS_1 =>
-                        tx_kchar_o <= "00";
-                        tx_data_o <= req_data(47 downto 32);
-                    when DATA_0 =>
-                        tx_kchar_o <= "00";
-                        tx_data_o <= req_data(31 downto 16);
-                    when DATA_1 =>
-                        tx_kchar_o <= "00";
-                        tx_data_o <= req_data(15 downto 0);
+                        -- Look if valid data
+                        if (req_data(47) = '1') then
+                            if (req_en = '0' and req_ack_i = '0') then
+                                req_en <= '1';
+                                req_data_o <= req_data(31 downto 0);
+                            end if;
+                        end if;
+                    -- Receive data
+                    when RECEIVE => 
+                        req_data((receive_pos * 16 + 15) downto (receive_pos * 16)) <= rx_data_i;                        
+                        -- Data receive limit
+                        if (receive_pos = 0) then
+                            state <= COMMA;
+                        else
+                            receive_pos <= receive_pos - 1;
+                        end if;
                     when others =>
-                        tx_kchar_o <= "00";
-                        tx_data_o <= (others => '0');
-                        req_ack <= '0';
-                        req_data <= (others => '0');
+                        req_en <= '0';
+                        req_data_o <= (others => '0');
+                        state <= COMMA;
                 end case;
             end if;
         end if;

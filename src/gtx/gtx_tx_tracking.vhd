@@ -21,29 +21,36 @@ use unisim.vcomponents.all;
 library work;
 
 entity gtx_tx_tracking is
+generic(
+    
+    TRANSMIT_SIZE   : integer   := 5
+    
+);
 port(
 
-    ref_clk_i   : in std_logic;    
-    reset_i     : in std_logic;
+    gtx_clk_i       : in std_logic;    
+    reset_i         : in std_logic;
     
-    req_en_i    : in std_logic;
-    req_ack_o   : out std_logic;
-    req_data_i  : in std_logic_vector(64 downto 0);
+    req_en_i        : in std_logic;
+    req_ack_o       : out std_logic;
+    req_data_i      : in std_logic_vector(64 downto 0);
     
-    tx_kchar_o  : out std_logic_vector(1 downto 0);
-    tx_data_o   : out std_logic_vector(15 downto 0)
+    tx_kchar_o      : out std_logic_vector(1 downto 0);
+    tx_data_o       : out std_logic_vector(15 downto 0)
     
 );
 end gtx_tx_tracking;
 
 architecture Behavioral of gtx_tx_tracking is    
 
-    type state_t is (COMMA, HEADER, ADDRESS_0, ADDRESS_1, DATA_0, DATA_1);
+    type state_t is (COMMA, TRANSMIT);
     
-    signal state    : state_t;
+    signal state        : state_t;
     
-    signal req_ack  : std_logic;
-    signal req_data : std_logic_vector(79 downto 0);
+    signal trasnmit_pos : integer range 0 to (TRANSMIT_SIZE - 1);
+    
+    signal req_ack      : std_logic;
+    signal req_data     : std_logic_vector(79 downto 0);
 
 begin  
 
@@ -51,20 +58,26 @@ begin
 
     -- Cycle between states
 
-    process(ref_clk_i)
+    process(gtx_clk_i)
     begin
-        if (rising_edge(ref_clk_i)) then
+        if (rising_edge(gtx_clk_i)) then
             if (reset_i = '1') then
                 state <= COMMA;
+                trasnmit_pos <= 0;
             else
                 case state is
-                    when COMMA => state <= HEADER;
-                    when HEADER => state <= ADDRESS_0;
-                    when ADDRESS_0 => state <= ADDRESS_1;
-                    when ADDRESS_1 => state <= DATA_0;
-                    when DATA_0 => state <= DATA_1;
-                    when DATA_1 => state <= COMMA;
-                    when others => state <= HEADER;
+                    when COMMA => 
+                        state <= TRANSMIT;
+                        trasnmit_pos <= (TRANSMIT_SIZE - 1);
+                    when TRANSMIT => 
+                        if (trasnmit_pos = 0) then
+                            state <= COMMA;
+                        else
+                            trasnmit_pos <= trasnmit_pos - 1;
+                        end if;
+                    when others => 
+                        state <= COMMA;
+                        trasnmit_pos <= 0;
                 end case;
             end if;
         end if;
@@ -72,9 +85,9 @@ begin
     
     -- Forward data
     
-    process(ref_clk_i)
+    process(gtx_clk_i)
     begin
-        if (rising_edge(ref_clk_i)) then
+        if (rising_edge(gtx_clk_i)) then
             if (reset_i = '1') then
                 tx_kchar_o <= "00";
                 tx_data_o <= (others => '0');
@@ -99,22 +112,10 @@ begin
                         -- Data on the link
                         tx_kchar_o <= "01";
                         tx_data_o <= x"00BC";
-                    -- Header data
-                    when HEADER => 
+                    -- Transmit data
+                    when TRANSMIT => 
                         tx_kchar_o <= "00";
-                        tx_data_o <= req_data(79 downto 64);
-                    when ADDRESS_0 => 
-                        tx_kchar_o <= "00";
-                        tx_data_o <= req_data(63 downto 48);
-                    when ADDRESS_1 =>
-                        tx_kchar_o <= "00";
-                        tx_data_o <= req_data(47 downto 32);
-                    when DATA_0 =>
-                        tx_kchar_o <= "00";
-                        tx_data_o <= req_data(31 downto 16);
-                    when DATA_1 =>
-                        tx_kchar_o <= "00";
-                        tx_data_o <= req_data(15 downto 0);
+                        tx_data_o <= req_data((trasnmit_pos * 16 + 15) downto (trasnmit_pos * 16));                 
                     when others =>
                         tx_kchar_o <= "00";
                         tx_data_o <= (others => '0');

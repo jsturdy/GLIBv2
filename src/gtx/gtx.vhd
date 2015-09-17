@@ -28,6 +28,7 @@ port(
 
     mgt_refclk_n_i  : in std_logic;
     mgt_refclk_p_i  : in std_logic;
+    
     ipb_clk_i       : in std_logic;
     
     reset_i         : in std_logic;
@@ -103,13 +104,28 @@ begin
        
     gtx_tx_tracking_inst : entity work.gtx_tx_tracking
     port map(
-        ref_clk_i   => gtx_usr_clk,   
+        gtx_clk_i   => gtx_usr_clk,   
         reset_i     => reset_i,           
         req_en_i    => fwd_req_en,   
         req_ack_o   => fwd_req_ack,   
         req_data_i  => fwd_req_data,           
         tx_kchar_o  => gtx_tx_kchar(1 downto 0),   
         tx_data_o   => gtx_tx_data(15 downto 0)        
+    );  
+    
+    --==========================--
+    --== SFP RX Tracking link ==--
+    --==========================--
+       
+    gtx_rx_tracking_inst : entity work.gtx_rx_tracking
+    port map(
+        gtx_clk_i   => gtx_usr_clk,   
+        reset_i     => reset_i,           
+        req_en_o    => fwd_res_en,   
+        req_ack_i   => fwd_res_ack,   
+        req_data_o  => fwd_res_data,           
+        rx_kchar_i  => gtx_rx_kchar(1 downto 0),   
+        rx_data_i   => gtx_rx_data(15 downto 0)        
     );
     
     --============================--
@@ -156,11 +172,14 @@ begin
     );
     
     cs_trig0 <= gtx_rx_data(15 downto 0) & gtx_tx_data(15 downto 0);
-    cs_trig1 <= (
+    cs_trig1(4 downto 0) <= (
         0 => ipb_mosi_i.ipb_strobe, 
         1 => fwd_req_en,
         2 => fwd_req_ack, 
-        others => '0'
+        3 => fwd_res_en,
+        4 => fwd_res_ack
     );
-    
+    cs_trig1(8 downto 5) <= fwd_req_data(3 downto 0);
+    cs_trig1(12 downto 9) <= fwd_res_data(3 downto 0);
+    cs_trig1(31 downto 13) <= (others => '0');
 end Behavioral;
