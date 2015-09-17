@@ -4,7 +4,7 @@
 -- 
 -- Create Date:    08:37:33 07/07/2015 
 -- Design Name:    GLIB v2
--- Module Name:    sfp_gtx_tx_tracking - Behavioral 
+-- Module Name:    gtx_rx_tracking - Behavioral 
 -- Project Name:   GLIB v2
 -- Target Devices: xc6vlx130t-1ff1156
 -- Tool versions:  ISE  P.20131013
@@ -20,23 +20,23 @@ use unisim.vcomponents.all;
 
 library work;
 
-entity sfp_gtx_tx_tracking is
+entity gtx_rx_tracking is
 port(
 
     ref_clk_i   : in std_logic;    
     reset_i     : in std_logic;
     
-    req_en_i    : in std_logic;
-    req_ack_o   : out std_logic;
-    req_data_i  : in std_logic_vector(64 downto 0);
+    res_en_o    : out std_logic;
+    res_ack_i   : in std_logic;
+    res_data_o  : out std_logic_vector(31 downto 0);
     
-    tx_kchar_o  : out std_logic_vector(1 downto 0);
-    tx_data_o   : out std_logic_vector(15 downto 0)
+    rx_kchar_i  : in std_logic_vector(1 downto 0);
+    rx_data_i   : in std_logic_vector(15 downto 0)
     
 );
-end sfp_gtx_tx_tracking;
+end gtx_rx_tracking;
 
-architecture Behavioral of sfp_gtx_tx_tracking is    
+architecture Behavioral of gtx_rx_tracking is    
 
     type state_t is (COMMA, HEADER, ADDRESS_0, ADDRESS_1, DATA_0, DATA_1);
     

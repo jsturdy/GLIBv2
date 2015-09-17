@@ -4,7 +4,7 @@
 -- 
 -- Create Date:    08:37:33 07/07/2015 
 -- Design Name:    GLIB v2
--- Module Name:    sfp_gtx_wrapper - Behavioral 
+-- Module Name:    gtx_wrapper - Behavioral 
 -- Project Name:   GLIB v2
 -- Target Devices: xc6vlx130t-1ff1156
 -- Tool versions:  ISE  P.20131013
@@ -20,7 +20,7 @@ use unisim.vcomponents.all;
 
 library work;
 
-entity sfp_gtx_wrapper is
+entity gtx_wrapper is
 port(
 
     mgt_refclk_n_i  : in std_logic;
@@ -43,9 +43,9 @@ port(
     tx_p_o          : out std_logic_vector(3 downto 0)
     
 );
-end sfp_gtx_wrapper;
+end gtx_wrapper;
 
-architecture Behavioral of sfp_gtx_wrapper is
+architecture Behavioral of gtx_wrapper is
 
     signal mgt_refclk       : std_logic;
    

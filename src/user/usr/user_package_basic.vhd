@@ -23,7 +23,7 @@ package user_package is
     
 	constant number_of_ipb_slaves		: positive := 1;
    
-	constant ipb_oh_forward		        : integer  := 0;
+	constant ipb_gtx_forward            : integer  := 0;
 	
 end user_package;
    

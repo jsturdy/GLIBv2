@@ -199,33 +199,7 @@ port(
 );                             
 end user_logic;
                             
-architecture user_logic_arch of user_logic is          
-
-    --== SFP GTX signals ==--
-
-    signal sfp_tx_kchar : std_logic_vector(7 downto 0);
-    signal sfp_tx_data  : std_logic_vector(63 downto 0);
-    
-    signal sfp_rx_kchar : std_logic_vector(7 downto 0);
-    signal sfp_rx_data  : std_logic_vector(63 downto 0);
-    signal sfp_rx_error : std_logic_vector(3 downto 0);
- 
-    signal sfp_usr_clk  : std_logic;
-    
-    --== OptoHybrid ==--
-    
-    signal oh_req_en    : std_logic;
-    signal oh_req_ack   : std_logic;
-    signal oh_req_data  : std_logic_vector(64 downto 0);
-    
-    --== Chipscope signals ==--
-    
-    signal cs_ctrl0     : std_logic_vector(35 downto 0);
-    signal cs_ctrl1     : std_logic_vector(35 downto 0); 
-    signal cs_async_out : std_logic_vector(7 downto 0);
-    signal cs_trig0     : std_logic_vector(31 downto 0);
-    signal cs_trig1     : std_logic_vector(31 downto 0);
-              
+architecture user_logic_arch of user_logic is                        
 begin
     
     --==================--
@@ -237,87 +211,22 @@ begin
 
     user_v6_led_o <= "10";
     
-    --=============--
-    --== SFP GTX ==--
-    --=============--
+    --=========--
+    --== GTX ==--
+    --=========--
     
-	sfp_gtx_wrapper_inst : entity work.sfp_gtx_wrapper 
+	gtx_inst : entity work.gtx 
     port map(
 		mgt_refclk_n_i  => cdce_out1_n,
 		mgt_refclk_p_i  => cdce_out1_p,
-		reset_i         => '0',
-		tx_kchar_i      => sfp_tx_kchar,
-		tx_data_i       => sfp_tx_data,
-		rx_kchar_o      => sfp_rx_kchar,
-		rx_data_o       => sfp_rx_data,
-		rx_error_o      => sfp_rx_error,
-		usr_clk_o       => sfp_usr_clk,
+        ipb_clk_i       => ipb_clk_i,
+		reset_i         => reset_i,
+        ipb_mosi_i      => ipb_mosi_i(ipb_gtx_forward),
+        ipb_miso_o      => ipb_miso_o(ipb_gtx_forward), 
 		rx_n_i          => sfp_rx_n(1 to 4),
 		rx_p_i          => sfp_rx_p(1 to 4),
 		tx_n_o          => sfp_tx_n(1 to 4),
 		tx_p_o          => sfp_tx_p(1 to 4)
-	);    
-    
-    sfp_gtx_tx_tracking_inst : entity work.sfp_gtx_tx_tracking
-    port map(
-        ref_clk_i   => sfp_usr_clk,   
-        reset_i     => reset_i,           
-        req_en_i    => oh_req_en,   
-        req_ack_o   => oh_req_ack,   
-        req_data_i  => oh_req_data,           
-        tx_kchar_o  => sfp_tx_kchar(1 downto 0),   
-        tx_data_o   => sfp_tx_data(15 downto 0)        
-    );
-    
-    --================--
-    --== OptoHybrid ==--
-    --================--
-    
-    oh_forward_inst : entity work.oh_forward
-    port map(
-        ipb_clk_i   => ipb_clk_i,
-        gtx_clk_i   => sfp_usr_clk,
-        reset_i     => reset_i,        
-        ipb_mosi_i  => ipb_mosi_i(ipb_oh_forward),
-        ipb_miso_o  => ipb_miso_o(ipb_oh_forward),        
-        tx_en_o     => oh_req_en,
-        tx_ack_i    => oh_req_ack,
-        tx_data_o   => oh_req_data,        
-        rx_en_i     => '0',
-        rx_ack_o    => open,
-        rx_data_i   => (others => '0')        
-    );
-
-    --===============--
-    --== ChipScope ==--
-    --===============--
-    
-    chipscope_icon_inst : entity work.chipscope_icon
-    port map(
-        control0    => cs_ctrl0,
-        control1    => cs_ctrl1
-    );
-    
-    chipscope_vio_inst : entity work.chipscope_vio
-    port map(
-        control     => cs_ctrl0,
-        async_out   => cs_async_out
-    );
-    
-    chipscope_ila_inst : entity work.chipscope_ila
-    port map(
-        control => cs_ctrl1,
-        clk     => sfp_usr_clk,
-        trig0   => cs_trig0,
-        trig1   => cs_trig1
-    );
-    
-    cs_trig0 <= sfp_rx_data(15 downto 0) & sfp_tx_data(15 downto 0);
-    cs_trig1 <= (
-        0 => ipb_mosi_i(ipb_oh_forward).ipb_strobe, 
-        1 => oh_req_en,
-        2 => oh_req_ack, 
-        others => '0'
-    );
+	);
     
 end user_logic_arch;

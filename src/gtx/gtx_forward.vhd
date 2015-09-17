@@ -4,7 +4,7 @@
 -- 
 -- Create Date:    08:37:33 07/07/2015 
 -- Design Name:    GLIB v2
--- Module Name:    oh_forward - Behavioral 
+-- Module Name:    gtx_forward - Behavioral 
 -- Project Name:   GLIB v2
 -- Target Devices: xc6vlx130t-1ff1156
 -- Tool versions:  ISE  P.20131013
@@ -20,7 +20,7 @@ use work.ipbus.all;
 use work.system_package.all;
 use work.user_package.all;
 
-entity oh_forward is
+entity gtx_forward is
 port(
 
 	ipb_clk_i   : in std_logic;
@@ -39,9 +39,9 @@ port(
     rx_data_i   : in std_logic_vector(31 downto 0)
     
 );
-end oh_forward;
+end gtx_forward;
 
-architecture Behavioral of oh_forward is
+architecture Behavioral of gtx_forward is
     
     signal tx_en            : std_logic;    
     signal last_ipb_stobe   : std_logic;
@@ -86,8 +86,6 @@ begin
     end process;
     
     --== RX process ==--
-    
-
     
     process(ipb_clk_i)
     begin    
