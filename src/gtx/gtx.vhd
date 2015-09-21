@@ -59,14 +59,13 @@ architecture Behavioral of gtx is
     
     --== GTX requests ==--
     
-    signal fwd_req_en       : std_logic;
-    signal fwd_req_valid    : std_logic;
-    signal fwd_req_data     : std_logic_vector(64 downto 0);
+    signal g2o_req_en       : std_logic;
+    signal g2o_req_valid    : std_logic;
+    signal g2o_req_data     : std_logic_vector(64 downto 0);
     
-    signal fwd_res_en       : std_logic;
-    signal fwd_res_data     : std_logic_vector(31 downto 0);
-    
-    signal fwd_rx_error     : std_logic;
+    signal o2g_req_en       : std_logic;
+    signal o2g_req_data     : std_logic_vector(31 downto 0);
+    signal o2g_req_error    : std_logic;    
     
     --== Chipscope signals ==--
     
@@ -107,9 +106,9 @@ begin
     port map(
         gtx_clk_i   => gtx_usr_clk,   
         reset_i     => reset_i,           
-        req_en_o    => fwd_req_en,   
-        req_valid_i => fwd_req_valid,   
-        req_data_i  => fwd_req_data,           
+        req_en_o    => g2o_req_en,   
+        req_valid_i => g2o_req_valid,   
+        req_data_i  => g2o_req_data,           
         tx_kchar_o  => gtx_tx_kchar(1 downto 0),   
         tx_data_o   => gtx_tx_data(15 downto 0)        
     );  
@@ -122,9 +121,9 @@ begin
     port map(
         gtx_clk_i   => gtx_usr_clk,   
         reset_i     => reset_i,           
-        req_en_o    => fwd_res_en,   
-        req_data_o  => fwd_res_data,   
-        req_error_o => fwd_rx_error,
+        req_en_o    => o2g_req_en,   
+        req_data_o  => o2g_req_data,   
+        req_error_o => o2g_req_error,
         rx_kchar_i  => gtx_rx_kchar(1 downto 0),   
         rx_data_i   => gtx_rx_data(15 downto 0)        
     );
@@ -140,11 +139,11 @@ begin
         reset_i     => reset_i,        
         ipb_mosi_i  => ipb_mosi_i,
         ipb_miso_o  => ipb_miso_o,        
-        tx_en_i     => fwd_req_en,
-        tx_valid_o  => fwd_req_valid,
-        tx_data_o   => fwd_req_data,        
-        rx_en_i     => fwd_res_en,
-        rx_data_i   => fwd_res_data        
+        tx_en_i     => g2o_req_en,
+        tx_valid_o  => g2o_req_valid,
+        tx_data_o   => g2o_req_data,        
+        rx_en_i     => o2g_req_en,
+        rx_data_i   => o2g_req_data        
     );    
      
     --===============--
@@ -172,14 +171,11 @@ begin
     );
     
     cs_trig0 <= gtx_rx_data(15 downto 0) & gtx_tx_data(15 downto 0);
-    cs_trig1(4 downto 0) <= (
+    cs_trig1 <= (
         0 => ipb_mosi_i.ipb_strobe, 
-        1 => fwd_req_en,
-        2 => fwd_req_valid, 
-        3 => fwd_res_en,
-        4 => '0'
+        1 => g2o_req_en,
+        2 => g2o_req_valid, 
+        3 => o2g_req_en,
+        others => '0'
     );
-    cs_trig1(8 downto 5) <= fwd_req_data(3 downto 0);
-    cs_trig1(12 downto 9) <= fwd_res_data(3 downto 0);
-    cs_trig1(31 downto 13) <= (others => '0');
 end Behavioral;

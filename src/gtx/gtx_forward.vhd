@@ -82,14 +82,14 @@ begin
     port map(
         rst     => reset_i,
         wr_clk  => ipb_clk_i,
-        rd_clk  => gtx_clk_i,
-        din     => wr_data,
         wr_en   => wr_en,
+        din     => wr_data,        
+        rd_clk  => gtx_clk_i,
         rd_en   => tx_en_i,
+        valid   => tx_valid_o,
         dout    => tx_data_o,
         full    => open,
-        empty   => open,
-        valid   => tx_valid_o
+        empty   => open
     );
     
     --== Process inbetween is handled by the optical link ==--
@@ -100,14 +100,14 @@ begin
     port map(
         rst     => reset_i,
         wr_clk  => gtx_clk_i,
-        rd_clk  => ipb_clk_i,
-        din     => rx_data_i,
         wr_en   => rx_en_i,
+        din     => rx_data_i,        
+        rd_clk  => ipb_clk_i,
         rd_en   => '1',
+        valid   => rd_valid,
         dout    => rd_data,
         full    => open,
-        empty   => open,
-        valid   => rd_valid
+        empty   => open
     );
     
     --== RX process ==--
