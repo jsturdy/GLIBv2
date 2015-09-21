@@ -28,6 +28,7 @@ port(
     
     req_en_o        : out std_logic;
     req_data_o      : out std_logic_vector(31 downto 0);
+    req_error_o     : out std_logic;
     
     rx_kchar_i      : in std_logic_vector(1 downto 0);
     rx_data_i       : in std_logic_vector(15 downto 0)
@@ -67,29 +68,59 @@ begin
         end if;
     end process;
     
-    --== Data to receive at each state ==-- 
+    --== Detect errors on the link ==--    
+    
+    process(gtx_clk_i)
+    begin
+        if (rising_edge(gtx_clk_i)) then
+            if (reset_i = '1') then
+                req_error_o <= '0';
+            else
+                case state is
+                    when COMMA =>
+                        if (rx_kchar_i = "01" and rx_data_i = x"00BC") then
+                            req_error_o <= '0';
+                        else
+                            req_error_o <= '1';
+                        end if;
+                    when others => req_error_o <= '0';
+                end case;
+            end if;
+        end if;
+    end process;
+    
+    --== Receive data ==--
+    
+    process(gtx_clk_i)
+    begin
+        if (rising_edge(gtx_clk_i)) then
+            if (reset_i = '1') then
+                req_data <= (others => '0');
+            else
+                case state is                    
+                    when HEADER => req_data(47 downto 32) <= rx_data_i;
+                    when DATA_0 => req_data(31 downto 16) <= rx_data_i;
+                    when DATA_1 => req_data(15 downto 0) <= rx_data_i;
+                    when others => null;
+                end case;
+            end if;
+        end if;
+    end process;   
+    
+    --== Forward valid data ==--    
 
     process(gtx_clk_i)
     begin
         if (rising_edge(gtx_clk_i)) then
             if (reset_i = '1') then
+                req_en_o <= '0';
                 req_data_o <= (others => '0');
             else
                 case state is
                     when COMMA =>            
-                        if (req_data(47) = '1') then
-                            req_en_o <= '1';
-                            req_data_o <= req_data(31 downto 0);
-                        end if;
-                    when HEADER => 
-                        req_en_o <= '0';
-                        req_data(47 downto 32) <= rx_data_i;
-                    when DATA_0 => 
-                        req_data(31 downto 16) <= rx_data_i;
-                    when DATA_1 => 
-                        req_data(15 downto 0) <= rx_data_i;
-                    when others => 
-                        req_en_o <= '0';
+                        req_en_o <= req_data(47);
+                        req_data_o <= req_data(31 downto 0);
+                    when others => req_en_o <= '0';
                 end case;                
             end if;
         end if;

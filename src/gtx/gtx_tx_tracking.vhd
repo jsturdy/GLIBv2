@@ -66,8 +66,45 @@ begin
             end if;
         end if;
     end process;
-    
-    --== Data to send at each state ==--    
+
+    --== Request new data ==--
+
+    process(gtx_clk_i)
+    begin
+        if (rising_edge(gtx_clk_i)) then
+            if (reset_i = '1') then
+                req_en_o <= '0';
+            else
+                case state is         
+                    when DATA_0 => req_en_o <= '1';
+                    when others => req_en_o <= '0';
+                end case;
+            end if;
+        end if;
+    end process; 
+
+    --== Handle new data ==--
+
+    process(gtx_clk_i)
+    begin
+        if (rising_edge(gtx_clk_i)) then
+            if (reset_i = '1') then
+                req_data <= (others => '0');
+            else
+                case state is         
+                    when COMMA => 
+                        if (req_valid_i = '1') then
+                            req_data <= "100000000000000" & req_data_i;
+                        else
+                            req_data <= (others => '0');
+                        end if;
+                    when others => null;
+                end case;
+            end if;
+        end if;
+    end process; 
+        
+    --== Send data ==--    
     
     process(gtx_clk_i)
     begin
@@ -101,33 +138,6 @@ begin
                 end case;
             end if;
         end if;
-    end process;
-
-    --== Request new data ==--
-
-    process(gtx_clk_i)
-    begin
-        if (rising_edge(gtx_clk_i)) then
-            if (reset_i = '1') then
-                req_en_o <= '0';
-                req_data <= (others => '0');
-            else
-                case state is         
-                    when COMMA =>     
-                        if (req_valid_i = '1') then
-                            req_data <= "100000000000000" & req_data_i;
-                        else
-                            req_data <= (others => '0');
-                        end if;
-                    when DATA_0 =>                         
-                        req_en_o <= '1';
-                    when DATA_1 =>          
-                        req_en_o <= '0';
-                    when others => 
-                        req_en_o <= '0';
-                end case;
-            end if;
-        end if;
-    end process;    
+    end process;   
     
 end Behavioral;
