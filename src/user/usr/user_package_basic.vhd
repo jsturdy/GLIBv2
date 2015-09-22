@@ -21,9 +21,10 @@ package user_package is
 	
 		--=== ipb slaves =============--
     
-	constant number_of_ipb_slaves		: positive := 1;
+	constant number_of_ipb_slaves		: positive := 2;
    
 	constant ipb_gtx_forward            : integer  := 0;
+	constant ipb_tk_data                : integer  := 1;
 	
 end user_package;
    

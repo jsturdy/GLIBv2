@@ -33,8 +33,11 @@ port(
     
     reset_i         : in std_logic;
     
-	ipb_mosi_i      : in ipb_wbus;
-	ipb_miso_o      : out ipb_rbus;
+	gtx_ipb_mosi_i  : in ipb_wbus;
+	gtx_ipb_miso_o  : out ipb_rbus;
+    
+	tk_ipb_mosi_i   : in ipb_wbus;
+	tk_ipb_miso_o   : out ipb_rbus;
    
     rx_n_i          : in std_logic_vector(3 downto 0);
     rx_p_i          : in std_logic_vector(3 downto 0);
@@ -66,6 +69,11 @@ architecture Behavioral of gtx is
     signal o2g_req_en       : std_logic;
     signal o2g_req_data     : std_logic_vector(31 downto 0);
     signal o2g_req_error    : std_logic;    
+    
+    --== Tracking data ==--
+    
+    signal tk_en            : std_logic;
+    signal tk_data          : std_logic_vector(15 downto 0);
     
     --== Chipscope signals ==--
     
@@ -124,6 +132,8 @@ begin
         req_en_o    => o2g_req_en,   
         req_data_o  => o2g_req_data,   
         req_error_o => o2g_req_error,
+        tk_en_o     => tk_en,
+        tk_data_o   => tk_data,
         rx_kchar_i  => gtx_rx_kchar(1 downto 0),   
         rx_data_i   => gtx_rx_data(15 downto 0)        
     );
@@ -137,14 +147,29 @@ begin
         ipb_clk_i   => ipb_clk_i,
         gtx_clk_i   => gtx_usr_clk,
         reset_i     => reset_i,        
-        ipb_mosi_i  => ipb_mosi_i,
-        ipb_miso_o  => ipb_miso_o,        
+        ipb_mosi_i  => gtx_ipb_mosi_i,
+        ipb_miso_o  => gtx_ipb_miso_o,        
         tx_en_i     => g2o_req_en,
         tx_valid_o  => g2o_req_valid,
         tx_data_o   => g2o_req_data,        
         rx_en_i     => o2g_req_en,
         rx_data_i   => o2g_req_data        
-    );    
+    ); 
+
+    --================================--
+    --== Tracking data buffer IPBus ==--
+    --================================--
+    
+	gtx_tk_readout_inst : entity work.gtx_tk_readout 
+    port map(
+		ipb_clk_i   => ipb_clk_i,
+		gtx_clk_i   => gtx_usr_clk,
+		reset_i     => reset_i,
+		ipb_mosi_i  => tk_ipb_mosi_i,
+		ipb_miso_o  => tk_ipb_miso_o,
+		tk_en_i     => tk_en,
+		tk_data_i   => tk_data
+	);
      
     --===============--
     --== ChipScope ==--
@@ -172,10 +197,8 @@ begin
     
     cs_trig0 <= gtx_rx_data(15 downto 0) & gtx_tx_data(15 downto 0);
     cs_trig1 <= (
-        0 => ipb_mosi_i.ipb_strobe, 
-        1 => g2o_req_en,
-        2 => g2o_req_valid, 
-        3 => o2g_req_en,
+        0 => tk_en, 
         others => '0'
     );
+
 end Behavioral;

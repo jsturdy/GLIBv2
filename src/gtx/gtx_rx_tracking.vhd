@@ -30,6 +30,9 @@ port(
     req_data_o      : out std_logic_vector(31 downto 0);
     req_error_o     : out std_logic;
     
+    tk_en_o         : out std_logic;
+    tk_data_o       : out std_logic_vector(15 downto 0);
+    
     rx_kchar_i      : in std_logic_vector(1 downto 0);
     rx_data_i       : in std_logic_vector(15 downto 0)
     
@@ -140,5 +143,24 @@ begin
             end if;
         end if;
     end process;
+    
+    --== Forward tracking data ==--
+    
+    process(gtx_clk_i)
+    begin
+        if (rising_edge(gtx_clk_i)) then
+            if (reset_i = '1') then
+                tk_en_o <= '0';
+                tk_data_o <= (others => '0');
+            else
+                case state is                    
+                    when TK_DATA =>
+                        tk_en_o <= req_header(14);
+                        tk_data_o <= rx_data_i;
+                    when others => tk_en_o <= '0';
+                end case;
+            end if;
+        end if;
+    end process;   
     
 end Behavioral;

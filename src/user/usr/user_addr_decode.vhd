@@ -17,6 +17,7 @@ package body user_addr_decode is
 		variable sel : integer;
 	begin
 		if    std_match(addr, "0100----00000000----------------") then sel := ipb_gtx_forward;
+		elsif std_match(addr, "01010000000000000000000000000000") then sel := ipb_tk_data;
 		else sel := 99;
 		end if;
 		return sel;
