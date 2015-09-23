@@ -29,7 +29,7 @@
 
 #NET "cdce_sec_ref_p"	 					LOC =	C30		                                                                  ; # IO_L17P_25 (FPGA -> CDCE)
 #NET "cdce_sec_ref_n"						LOC =	D30		                                                                  ; # IO_L17N_25 (FPGA -> CDCE)	                    
-
+#
 #NET "cdce_out4_p"	 						LOC = L23			                                                               ; # IO_L0P_GC_24
 #NET "cdce_out4_n"							LOC = M22			                                                               ; # IO_L0N_GC_24
 #NET "cdce_out4_p"                     TNM_NET = cdce_out4_p                                                            ;

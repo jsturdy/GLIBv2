@@ -33,12 +33,12 @@
 #TIMESPEC TS_fmc2_clk0_m2c_xpoint2_p = PERIOD "fmc2_clk0_m2c_xpoint2_p" 8 ns HIGH 50 %                                   ;
 #TIMESPEC TS_fmc2_clk0_m2c_xpoint2_n = PERIOD "fmc2_clk0_m2c_xpoint2_n" TS_fmc2_clk0_m2c_xpoint2_p PHASE 4 ns HIGH 50 %  ;
 
-#NET "cdce_out1_p"                     LOC = AD6                                                                         ; # MGTREFCLK0P_113
-#NET "cdce_out1_n"                     LOC = AD5                                                                         ; # MGTREFCLK0N_113
-#NET "cdce_out1_p"                     TNM_NET = "cdce_out1_p"                                                           ;
-#NET "cdce_out1_n"                     TNM_NET = "cdce_out1_n"                                                           ;
-#TIMESPEC TS_cdce_out1_p =             PERIOD "cdce_out1_p" 6.25 ns HIGH 50 %                                            ;
-#TIMESPEC TS_cdce_out1_n =             PERIOD "cdce_out1_n" TS_cdce_out_1_p PHASE 3.125 ns HIGH 50 %                     ;
+NET "cdce_out1_p"                     LOC = AD6                                                                         ; # MGTREFCLK0P_113
+NET "cdce_out1_n"                     LOC = AD5                                                                         ; # MGTREFCLK0N_113
+NET "cdce_out1_p"                     TNM_NET = "cdce_out1_p"                                                           ;
+NET "cdce_out1_n"                     TNM_NET = "cdce_out1_n"                                                           ;
+TIMESPEC TS_cdce_out1_p =             PERIOD "cdce_out1_p" 6.25 ns HIGH 50 %                                            ;
+TIMESPEC TS_cdce_out1_n =             PERIOD "cdce_out1_n" TS_cdce_out_1_p PHASE 3.125 ns HIGH 50 %                     ;
  
 ##################
 ## BANK_114(Q2) ##

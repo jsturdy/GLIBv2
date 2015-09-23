@@ -38,7 +38,8 @@ end transactor_sm;
 
 architecture rtl of transactor_sm is
 
-	constant TIMEOUT: integer := 255;
+	--constant TIMEOUT: integer := 255;
+	constant TIMEOUT: unsigned(23 downto 0) := (others => '1');
 
 	constant TRANS_RD: std_logic_vector(3 downto 0) := X"0";
 	constant TRANS_WR: std_logic_vector(3 downto 0) := X"1";
@@ -56,7 +57,7 @@ architecture rtl of transactor_sm is
 	signal trans_type: std_logic_vector(3 downto 0);
 	signal addr: unsigned(31 downto 0);
 	signal words_todo, words_done: unsigned(7 downto 0);
-	signal timer: unsigned(7 downto 0);
+	signal timer: unsigned(23 downto 0);
 	signal rmw_coeff, rmw_input, rmw_result, data_out: std_logic_vector(31 downto 0);
 	signal err, err_d: std_logic_vector(3 downto 0);
 	signal hdr: std_logic_vector(31 downto 0);
