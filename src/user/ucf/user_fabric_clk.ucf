@@ -14,14 +14,14 @@
 ## CROSS POINT SWITCH 1 ##          
 ##########################          
             
-## xpoint1_clk1 (system_bench_clk.ucf or system_crate_clk.ucf)     
+# xpoint1_clk1 (system_bench_clk.ucf or system_crate_clk.ucf)     
             
-#NET "xpoint1_clk3_p" 						LOC = A10                                                                        ; # IO_L1P_GC_34		
-#NET "xpoint1_clk3_n" 						LOC = B10                                                                        ; # IO_L1N_GC_34			
-#NET "xpoint1_clk3_p" 						TNM_NET = "xpoint1_clk3_p"                                                       ;
-#NET "xpoint1_clk3_n" 						TNM_NET = "xpoint1_clk3_n"                                                       ;
-#TIMESPEC TS_xpoint1_clk3_p = 			PERIOD "xpoint1_clk3_p" 25 ns HIGH 50 %                                          ;
-#TIMESPEC TS_xpoint1_clk3_n = 			PERIOD "xpoint1_clk3_n" TS_xpoint1_clk3_p PHASE 12.5 ns HIGH 50 %                ;
+NET "xpoint1_clk3_p" 						LOC = A10                                                                        ; # IO_L1P_GC_34		
+NET "xpoint1_clk3_n" 						LOC = B10                                                                        ; # IO_L1N_GC_34			
+NET "xpoint1_clk3_p" 						TNM_NET = "xpoint1_clk3_p"                                                       ;
+NET "xpoint1_clk3_n" 						TNM_NET = "xpoint1_clk3_n"                                                       ;
+TIMESPEC TS_xpoint1_clk3_p = 			PERIOD "xpoint1_clk3_p" 25 ns HIGH 50 %                                          ;
+TIMESPEC TS_xpoint1_clk3_n = 			PERIOD "xpoint1_clk3_n" TS_xpoint1_clk3_p PHASE 12.5 ns HIGH 50 %                ;
          
 ###################################       
 ## CLOCK SYNTHESIZER (CDCE62005) ##       

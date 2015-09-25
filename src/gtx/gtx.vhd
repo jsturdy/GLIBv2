@@ -36,8 +36,13 @@ port(
 	gtx_ipb_mosi_i  : in ipb_wbus;
 	gtx_ipb_miso_o  : out ipb_rbus;
     
-	tk_ipb_mosi_i   : in ipb_wbus;
-	tk_ipb_miso_o   : out ipb_rbus;
+	evt_ipb_mosi_i  : in ipb_wbus;
+	evt_ipb_miso_o  : out ipb_rbus;
+    
+    vfat2_t1_i      : in t1_t;
+    
+    tk_error_o      : out std_logic;
+    tr_error_o      : out std_logic;
    
     rx_n_i          : in std_logic_vector(3 downto 0);
     rx_p_i          : in std_logic_vector(3 downto 0);
@@ -72,8 +77,8 @@ architecture Behavioral of gtx is
     
     --== Tracking data ==--
     
-    signal tk_en            : std_logic;
-    signal tk_data          : std_logic_vector(15 downto 0);
+    signal evt_en           : std_logic;
+    signal evt_data         : std_logic_vector(15 downto 0);
     
     --== Chipscope signals ==--
     
@@ -104,7 +109,20 @@ begin
 		rx_p_i          => rx_p_i(3 downto 0),
 		tx_n_o          => tx_n_o(3 downto 0),
 		tx_p_o          => tx_p_o(3 downto 0)
-	);   
+	);     
+    
+    --==========================--
+    --== SFP TX Trigger link ==--
+    --==========================--
+       
+    gtx_tx_trigger_inst : entity work.gtx_tx_trigger
+    port map(
+        gtx_clk_i   => gtx_usr_clk,   
+        reset_i     => reset_i,           
+        vfat2_t1_i  => vfat2_t1_i,          
+        tx_kchar_o  => gtx_tx_kchar(3 downto 2),   
+        tx_data_o   => gtx_tx_data(31 downto 16)        
+    );  
     
     --==========================--
     --== SFP TX Tracking link ==--
@@ -131,9 +149,9 @@ begin
         reset_i     => reset_i,           
         req_en_o    => o2g_req_en,   
         req_data_o  => o2g_req_data,   
-        req_error_o => o2g_req_error,
-        tk_en_o     => tk_en,
-        tk_data_o   => tk_data,
+        evt_en_o    => evt_en,
+        evt_data_o  => evt_data,
+        tk_error_o  => tk_error_o,
         rx_kchar_i  => gtx_rx_kchar(1 downto 0),   
         rx_data_i   => gtx_rx_data(15 downto 0)        
     );
@@ -165,10 +183,10 @@ begin
 		ipb_clk_i   => ipb_clk_i,
 		gtx_clk_i   => gtx_usr_clk,
 		reset_i     => reset_i,
-		ipb_mosi_i  => tk_ipb_mosi_i,
-		ipb_miso_o  => tk_ipb_miso_o,
-		tk_en_i     => tk_en,
-		tk_data_i   => tk_data
+		ipb_mosi_i  => evt_ipb_mosi_i,
+		ipb_miso_o  => evt_ipb_miso_o,
+		evt_en_i    => evt_en,
+		evt_data_i  => evt_data
 	);
      
     --===============--
@@ -197,7 +215,7 @@ begin
     
     cs_trig0 <= gtx_rx_data(15 downto 0) & gtx_tx_data(15 downto 0);
     cs_trig1 <= (
-        0 => tk_en, 
+        0 => evt_en, 
         others => '0'
     );
 

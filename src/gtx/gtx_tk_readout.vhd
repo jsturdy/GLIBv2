@@ -30,8 +30,8 @@ port(
 	ipb_mosi_i  : in ipb_wbus;
 	ipb_miso_o  : out ipb_rbus;
     
-    tk_en_i     : in std_logic;
-    tk_data_i   : in std_logic_vector(15 downto 0)
+    evt_en_i     : in std_logic;
+    evt_data_i   : in std_logic_vector(15 downto 0)
     
 );
 end gtx_tk_readout;
@@ -53,8 +53,8 @@ begin
     port map(
         rst         => (reset_i or (ipb_mosi_i.ipb_strobe and ipb_mosi_i.ipb_write)),
         wr_clk      => gtx_clk_i,
-        wr_en       => tk_en_i,
-        din         => tk_data_i,        
+        wr_en       => evt_en_i,
+        din         => evt_data_i,        
         rd_clk      => ipb_clk_i,
         rd_en       => rd_en,
         valid       => rd_valid,

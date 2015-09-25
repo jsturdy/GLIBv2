@@ -199,7 +199,10 @@ port(
 );                             
 end user_logic;
                             
-architecture user_logic_arch of user_logic is                        
+architecture user_logic_arch of user_logic is        
+
+    signal vfat2_t1 : t1_t;
+                
 begin
     
     --==================--
@@ -223,12 +226,34 @@ begin
 		reset_i         => reset_i,
         gtx_ipb_mosi_i  => ipb_mosi_i(ipb_gtx_forward),
         gtx_ipb_miso_o  => ipb_miso_o(ipb_gtx_forward), 
-        tk_ipb_mosi_i   => ipb_mosi_i(ipb_tk_data),
-        tk_ipb_miso_o   => ipb_miso_o(ipb_tk_data), 
+        evt_ipb_mosi_i  => ipb_mosi_i(ipb_evt_data),
+        evt_ipb_miso_o  => ipb_miso_o(ipb_evt_data), 
+        vfat2_t1_i      => vfat2_t1,
 		rx_n_i          => sfp_rx_n(1 to 4),
 		rx_p_i          => sfp_rx_p(1 to 4),
 		tx_n_o          => sfp_tx_n(1 to 4),
 		tx_p_o          => sfp_tx_p(1 to 4)
 	);
+    
+    --================================--
+    -- TTC/TTT signal handling 	
+    -- from ngFEC_logic.vhd (HCAL)
+    --================================--
+    amc13_inst : entity work.amc13_top
+    port map(
+        ttc_clk_p  => xpoint1_clk3_p,
+        ttc_clk_n  => xpoint1_clk3_n,
+        ttc_data_p => amc_port_rx_p(3),
+        ttc_data_n => amc_port_rx_n(3),
+        ttc_clk    => open,
+        ttcready   => open,
+        l1accept   => vfat2_t1.lv1a,
+        bcntres    => vfat2_t1.bc0,
+        evcntres   => open, 
+        sinerrstr  => open,
+        dberrstr   => open,
+        brcststr   => open,
+        brcst      => open
+    );    
     
 end user_logic_arch;

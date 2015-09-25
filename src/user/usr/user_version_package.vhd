@@ -8,7 +8,7 @@ package user_version_package is
     constant usr_ver_build  : integer range 0 to 255    := 0;
     constant usr_ver_year   : integer range 0 to 99     := 15;
     constant usr_ver_month  : integer range 0 to 12     := 09;
-    constant usr_ver_day    : integer range 0 to 31     := 23;
+    constant usr_ver_day    : integer range 0 to 31     := 25;
   
 end user_version_package;
 
