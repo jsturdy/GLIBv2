@@ -62,7 +62,7 @@ begin
                 last_ipb_stobe <= '0';                
             else         
                 wr_en <= ((not last_ipb_stobe) and ipb_mosi_i.ipb_strobe);
-                wr_data <= ipb_mosi_i.ipb_write & ipb_mosi_i.ipb_addr & ipb_mosi_i.ipb_wdata;
+                wr_data <= ipb_mosi_i.ipb_write & ipb_mosi_i.ipb_addr(31 downto 24) & "0000" & ipb_mosi_i.ipb_addr(19 downto 0) & ipb_mosi_i.ipb_wdata;
                 last_ipb_stobe <= ipb_mosi_i.ipb_strobe;            
             end if;        
         end if;        
