@@ -16,8 +16,11 @@ package body user_addr_decode is
 	function user_ipb_addr_sel(signal addr : in std_logic_vector(31 downto 0)) return integer is
 		variable sel : integer;
 	begin
-		if    std_match(addr, "0100----00000000----------------") then sel := ipb_gtx_forward;
-		elsif std_match(addr, "01010000000000000000000000000000") then sel := ipb_evt_data;
+		if    std_match(addr, "0100----00000000----------------") then sel := ipb_gtx_forward_0;
+		elsif std_match(addr, "0100----00010000----------------") then sel := ipb_gtx_forward_1;
+		elsif std_match(addr, "01010000000000000000000000000000") then sel := ipb_evt_data_0;
+		elsif std_match(addr, "01010000000100000000000000000000") then sel := ipb_evt_data_1;
+		elsif std_match(addr, "011000000000000000000000--------") then sel := ipb_counters;
 		else sel := 99;
 		end if;
 		return sel;

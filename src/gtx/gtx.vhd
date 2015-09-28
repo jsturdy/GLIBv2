@@ -33,16 +33,17 @@ port(
     
     reset_i         : in std_logic;
     
-	gtx_ipb_mosi_i  : in ipb_wbus;
-	gtx_ipb_miso_o  : out ipb_rbus;
+	gtx_ipb_mosi_i  : in ipb_wbus_array(0 to 1);
+	gtx_ipb_miso_o  : out ipb_rbus_array(0 to 1);
     
-	evt_ipb_mosi_i  : in ipb_wbus;
-	evt_ipb_miso_o  : out ipb_rbus;
+	evt_ipb_mosi_i  : in ipb_wbus_array(0 to 1);
+	evt_ipb_miso_o  : out ipb_rbus_array(0 to 1);
     
     vfat2_t1_i      : in t1_t;
     
-    tk_error_o      : out std_logic;
-    tr_error_o      : out std_logic;
+    gtx_usr_clk_o   : out std_logic;
+    tk_error_o      : out std_logic_vector(1 downto 0);
+    tr_error_o      : out std_logic_vector(1 downto 0);
    
     rx_n_i          : in std_logic_vector(3 downto 0);
     rx_p_i          : in std_logic_vector(3 downto 0);
@@ -56,37 +57,22 @@ architecture Behavioral of gtx is
 
     --== GTX signals ==--
 
-    signal gtx_tx_kchar     : std_logic_vector(7 downto 0);
-    signal gtx_tx_data      : std_logic_vector(63 downto 0);
+    signal tx_kchar     : std_logic_vector(7 downto 0);
+    signal tx_data      : std_logic_vector(63 downto 0);
     
-    signal gtx_rx_kchar     : std_logic_vector(7 downto 0);
-    signal gtx_rx_data      : std_logic_vector(63 downto 0);
-    signal gtx_rx_error     : std_logic_vector(3 downto 0);
+    signal rx_kchar     : std_logic_vector(7 downto 0);
+    signal rx_data      : std_logic_vector(63 downto 0);
+    signal rx_error     : std_logic_vector(3 downto 0);
  
-    signal gtx_usr_clk      : std_logic;
-    
-    --== GTX requests ==--
-    
-    signal g2o_req_en       : std_logic;
-    signal g2o_req_valid    : std_logic;
-    signal g2o_req_data     : std_logic_vector(64 downto 0);
-    
-    signal o2g_req_en       : std_logic;
-    signal o2g_req_data     : std_logic_vector(31 downto 0);
-    signal o2g_req_error    : std_logic;    
-    
-    --== Tracking data ==--
-    
-    signal evt_en           : std_logic;
-    signal evt_data         : std_logic_vector(15 downto 0);
+    signal gtx_usr_clk  : std_logic;
     
     --== Chipscope signals ==--
     
-    signal cs_ctrl0         : std_logic_vector(35 downto 0);
-    signal cs_ctrl1         : std_logic_vector(35 downto 0); 
-    signal cs_async_out     : std_logic_vector(7 downto 0);
-    signal cs_trig0         : std_logic_vector(31 downto 0);
-    signal cs_trig1         : std_logic_vector(31 downto 0);
+    signal cs_ctrl0     : std_logic_vector(35 downto 0);
+    signal cs_ctrl1     : std_logic_vector(35 downto 0); 
+    signal cs_async_out : std_logic_vector(7 downto 0);
+    signal cs_trig0     : std_logic_vector(31 downto 0);
+    signal cs_trig1     : std_logic_vector(31 downto 0);
     
 begin    
     
@@ -94,101 +80,52 @@ begin
     --== GTX wrapper ==--
     --=================--
     
+    gtx_usr_clk_o <= gtx_usr_clk;
+    
 	gtx_wrapper_inst : entity work.gtx_wrapper 
     port map(
 		mgt_refclk_n_i  => mgt_refclk_n_i,
 		mgt_refclk_p_i  => mgt_refclk_p_i,
 		reset_i         => reset_i,
-		tx_kchar_i      => gtx_tx_kchar,
-		tx_data_i       => gtx_tx_data,
-		rx_kchar_o      => gtx_rx_kchar,
-		rx_data_o       => gtx_rx_data,
-		rx_error_o      => gtx_rx_error,
+		tx_kchar_i      => tx_kchar,
+		tx_data_i       => tx_data,
+		rx_kchar_o      => rx_kchar,
+		rx_data_o       => rx_data,
+		rx_error_o      => rx_error,
 		usr_clk_o       => gtx_usr_clk,
 		rx_n_i          => rx_n_i(3 downto 0),
 		rx_p_i          => rx_p_i(3 downto 0),
 		tx_n_o          => tx_n_o(3 downto 0),
 		tx_p_o          => tx_p_o(3 downto 0)
-	);     
+	);  
+   
+    --================--
+    --== OptoHybrid ==--
+    --================--
     
-    --==========================--
-    --== SFP TX Trigger link ==--
-    --==========================--
-       
-    gtx_tx_trigger_inst : entity work.gtx_tx_trigger
-    port map(
-        gtx_clk_i   => gtx_usr_clk,   
-        reset_i     => reset_i,           
-        vfat2_t1_i  => vfat2_t1_i,          
-        tx_kchar_o  => gtx_tx_kchar(3 downto 2),   
-        tx_data_o   => gtx_tx_data(31 downto 16)        
-    );  
+    gtx_optohybrid_loop : for I in 0 to 1 generate
+    begin
     
-    --==========================--
-    --== SFP TX Tracking link ==--
-    --==========================--
-       
-    gtx_tx_tracking_inst : entity work.gtx_tx_tracking
-    port map(
-        gtx_clk_i   => gtx_usr_clk,   
-        reset_i     => reset_i,           
-        req_en_o    => g2o_req_en,   
-        req_valid_i => g2o_req_valid,   
-        req_data_i  => g2o_req_data,           
-        tx_kchar_o  => gtx_tx_kchar(1 downto 0),   
-        tx_data_o   => gtx_tx_data(15 downto 0)        
-    );  
+        gtx_optohybrid_inst : entity work.gtx_optohybrid
+        port map(
+            gtx_usr_clk_i   => gtx_usr_clk,
+            ipb_clk_i       => ipb_clk_i,    
+            reset_i         => reset_i,    
+            gtx_ipb_mosi_i  => gtx_ipb_mosi_i(I),
+            gtx_ipb_miso_o  => gtx_ipb_miso_o(I),    
+            evt_ipb_mosi_i  => evt_ipb_mosi_i(I),
+            evt_ipb_miso_o  => evt_ipb_miso_o(I),     
+            vfat2_t1_i      => vfat2_t1_i,    
+            tk_error_o      => tk_error_o(I),
+            tr_error_o      => tr_error_o(I),    
+            tx_kchar_o      => tx_kchar((4 * I + 3) downto (4 * I)),
+            tx_data_o       => tx_data((32 * I + 31) downto (32 * I)),    
+            rx_kchar_i      => rx_kchar((4 * I + 3) downto (4 * I)),
+            rx_data_i       => rx_data((32 * I + 31) downto (32 * I))
+        );
     
-    --==========================--
-    --== SFP RX Tracking link ==--
-    --==========================--
-       
-    gtx_rx_tracking_inst : entity work.gtx_rx_tracking
-    port map(
-        gtx_clk_i   => gtx_usr_clk,   
-        reset_i     => reset_i,           
-        req_en_o    => o2g_req_en,   
-        req_data_o  => o2g_req_data,   
-        evt_en_o    => evt_en,
-        evt_data_o  => evt_data,
-        tk_error_o  => tk_error_o,
-        rx_kchar_i  => gtx_rx_kchar(1 downto 0),   
-        rx_data_i   => gtx_rx_data(15 downto 0)        
-    );
+    end generate;
     
-    --============================--
-    --== GTX request forwarding ==--
-    --============================--
-    
-    gtx_forward_inst : entity work.gtx_forward
-    port map(
-        ipb_clk_i   => ipb_clk_i,
-        gtx_clk_i   => gtx_usr_clk,
-        reset_i     => reset_i,        
-        ipb_mosi_i  => gtx_ipb_mosi_i,
-        ipb_miso_o  => gtx_ipb_miso_o,        
-        tx_en_i     => g2o_req_en,
-        tx_valid_o  => g2o_req_valid,
-        tx_data_o   => g2o_req_data,        
-        rx_en_i     => o2g_req_en,
-        rx_data_i   => o2g_req_data        
-    ); 
-
-    --================================--
-    --== Tracking data buffer IPBus ==--
-    --================================--
-    
-	gtx_tk_readout_inst : entity work.gtx_tk_readout 
-    port map(
-		ipb_clk_i   => ipb_clk_i,
-		gtx_clk_i   => gtx_usr_clk,
-		reset_i     => reset_i,
-		ipb_mosi_i  => evt_ipb_mosi_i,
-		ipb_miso_o  => evt_ipb_miso_o,
-		evt_en_i    => evt_en,
-		evt_data_i  => evt_data
-	);
-     
     --===============--
     --== ChipScope ==--
     --===============--
@@ -213,10 +150,7 @@ begin
         trig1   => cs_trig1
     );
     
-    cs_trig0 <= gtx_rx_data(15 downto 0) & gtx_tx_data(15 downto 0);
-    cs_trig1 <= (
-        0 => evt_en, 
-        others => '0'
-    );
+    cs_trig0 <= rx_data(15 downto 0) & tx_data(15 downto 0);
+    cs_trig1 <= rx_data(47 downto 32) & tx_data(47 downto 32);
 
 end Behavioral;

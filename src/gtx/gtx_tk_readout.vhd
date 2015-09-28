@@ -70,25 +70,16 @@ begin
     begin    
         if (rising_edge(ipb_clk_i)) then      
             if (reset_i = '1') then  
+                ipb_miso_o <= (ipb_ack => '0', ipb_err => '0', ipb_rdata => (others => '0'));
                 last_ipb_stobe <= '0';     
                 rd_en <= '0';           
-            else         
-                --
-                if (last_ipb_stobe = '0' and ipb_mosi_i.ipb_strobe = '1') then 
-                    rd_en <= '1';
-                else                    
-                    rd_en <= '0';
-                end if; 
-                --
-                ipb_miso_o.ipb_ack <= rd_valid;
-                ipb_miso_o.ipb_err <= rd_underflow;
-                ipb_miso_o.ipb_rdata <= rd_data;
-                --
+            else     
+                rd_en <= ((not last_ipb_stobe) and ipb_mosi_i.ipb_strobe); -- !0 and 1
+                ipb_miso_o <= (ipb_ack => rd_valid, ipb_err => rd_underflow, ipb_rdata => rd_data);
                 last_ipb_stobe <= ipb_mosi_i.ipb_strobe;            
             end if;        
         end if;        
     end process;
-
 
 end Behavioral;
 

@@ -201,7 +201,20 @@ end user_logic;
                             
 architecture user_logic_arch of user_logic is        
 
-    signal vfat2_t1 : t1_t;
+    --== GTX signals ==--
+    
+    signal gtx_usr_clk  : std_logic;
+    signal gtx_tk_error : std_logic_vector(1 downto 0);
+    signal gtx_tr_error : std_logic_vector(1 downto 0);
+
+    --== TTC signals ==--
+
+    signal ttc_clk      : std_logic;
+    signal vfat2_t1     : t1_t;
+    
+    --== IPBus buffer for counting ==--    
+    
+    signal ipb_miso     : ipb_rbus_array(0 to number_of_ipb_slaves - 1);
                 
 begin
     
@@ -214,6 +227,8 @@ begin
 
     user_v6_led_o <= "10";
     
+    ipb_miso_o <= ipb_miso;
+    
     --=========--
     --== GTX ==--
     --=========--
@@ -224,10 +239,13 @@ begin
 		mgt_refclk_p_i  => cdce_out1_p,
         ipb_clk_i       => ipb_clk_i,
 		reset_i         => reset_i,
-        gtx_ipb_mosi_i  => ipb_mosi_i(ipb_gtx_forward),
-        gtx_ipb_miso_o  => ipb_miso_o(ipb_gtx_forward), 
-        evt_ipb_mosi_i  => ipb_mosi_i(ipb_evt_data),
-        evt_ipb_miso_o  => ipb_miso_o(ipb_evt_data), 
+        gtx_ipb_mosi_i  => ipb_mosi_i(ipb_gtx_forward_0 to ipb_gtx_forward_1),
+        gtx_ipb_miso_o  => ipb_miso(ipb_gtx_forward_0 to ipb_gtx_forward_1), 
+        evt_ipb_mosi_i  => ipb_mosi_i(ipb_evt_data_0 to ipb_evt_data_1),
+        evt_ipb_miso_o  => ipb_miso(ipb_evt_data_0 to ipb_evt_data_1), 
+        gtx_usr_clk_o   => gtx_usr_clk,
+        tk_error_o      => gtx_tk_error,
+        tr_error_o      => gtx_tr_error,
         vfat2_t1_i      => vfat2_t1,
 		rx_n_i          => sfp_rx_n(1 to 4),
 		rx_p_i          => sfp_rx_p(1 to 4),
@@ -239,13 +257,14 @@ begin
     -- TTC/TTT signal handling 	
     -- from ngFEC_logic.vhd (HCAL)
     --================================--
+    
     amc13_inst : entity work.amc13_top
     port map(
         ttc_clk_p  => xpoint1_clk3_p,
         ttc_clk_n  => xpoint1_clk3_n,
         ttc_data_p => amc_port_rx_p(3),
         ttc_data_n => amc_port_rx_n(3),
-        ttc_clk    => open,
+        ttc_clk    => ttc_clk,
         ttcready   => open,
         l1accept   => vfat2_t1.lv1a,
         bcntres    => vfat2_t1.bc0,
@@ -255,5 +274,24 @@ begin
         brcststr   => open,
         brcst      => open
     );    
+    
+    --==========--
+    -- Counters --
+    --==========--
+    
+	ipbus_counters_inst : entity work.ipbus_counters 
+    port map(
+		ipb_clk_i       => ipb_clk_i,
+		gtx_clk_i       => gtx_usr_clk,
+		ttc_clk_i       => ttc_clk,
+		reset_i         => reset_i,
+		ipb_mosi_i      => ipb_mosi_i(ipb_counters),
+		ipb_miso_o      => ipb_miso(ipb_counters),
+		ipb_i           => ipb_mosi_i,
+		ipb_o           => ipb_miso,
+		vfat2_t1_i      => vfat2_t1,
+		gtx_tk_error_i  => gtx_tk_error,
+		gtx_tr_error_i  => gtx_tr_error
+	);
     
 end user_logic_arch;
