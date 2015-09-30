@@ -67,7 +67,8 @@ COMPONENT fifo8192x16
     full : OUT STD_LOGIC;
     empty : OUT STD_LOGIC;
     valid : OUT STD_LOGIC;
-    underflow : OUT STD_LOGIC
+    underflow : OUT STD_LOGIC;
+    rd_data_count : OUT STD_LOGIC_VECTOR(12 DOWNTO 0)
   );
 END COMPONENT;
 -- COMP_TAG_END ------ End COMPONENT Declaration ------------
@@ -88,7 +89,8 @@ your_instance_name : fifo8192x16
     full => full,
     empty => empty,
     valid => valid,
-    underflow => underflow
+    underflow => underflow,
+    rd_data_count => rd_data_count
   );
 -- INST_TAG_END ------ End INSTANTIATION Template ------------
 

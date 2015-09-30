@@ -42,7 +42,7 @@ end gtx_rx_tracking;
 
 architecture Behavioral of gtx_rx_tracking is    
 
-    type state_t is (COMMA, HEADER, TK_DATA, DATA_0, DATA_1);
+    type state_t is (COMMA, HEADER, TK_DATA, DATA_0, DATA_1, CRC);
     
     signal state        : state_t;
     
@@ -52,6 +52,7 @@ architecture Behavioral of gtx_rx_tracking is
     signal evt_valid    : std_logic;
     signal req_valid    : std_logic;
     signal req_data     : std_logic_vector(31 downto 0);
+    signal req_crc      : std_logic_vector(15 downto 0);
     
 begin  
     
@@ -79,7 +80,8 @@ begin
                             tk_counter <= tk_counter + 1;
                         end if;
                     when DATA_0 => state <= DATA_1;
-                    when DATA_1 => state <= COMMA;
+                    when DATA_1 => state <= CRC;
+                    when CRC => state <= COMMA;
                     when others => 
                         state <= COMMA;
                         tk_counter <= 0;
@@ -140,6 +142,7 @@ begin
                 req_data_o <= (others => '0');
                 req_valid <= '0';
                 req_data <= (others => '0');
+                req_crc <= (others => '0');
             else
                 case state is    
                     when COMMA =>            
@@ -147,13 +150,21 @@ begin
                         req_data_o <= req_data(31 downto 0);  
                     when HEADER => 
                         req_en_o <= '0';
-                        req_valid <= rx_data_i(15);        
+                        req_valid <= rx_data_i(15);    
+                        req_crc <= (others => '0');
                     when DATA_0 => 
                         req_en_o <= '0';
                         req_data(31 downto 16) <= rx_data_i;
+                        req_crc <= req_crc xor rx_data_i;
                     when DATA_1 => 
                         req_en_o <= '0';
                         req_data(15 downto 0) <= rx_data_i;
+                        req_crc <= req_crc xor rx_data_i;
+                    when CRC =>                           
+                        req_en_o <= '0';
+                        if (req_crc /= rx_data_i) then                           
+                            req_valid <= '0';
+                        end if;
                     when others => req_en_o <= '0';
                 end case;
             end if;
