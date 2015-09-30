@@ -68,7 +68,7 @@ COMPONENT fifo8192x16
     empty : OUT STD_LOGIC;
     valid : OUT STD_LOGIC;
     underflow : OUT STD_LOGIC;
-    rd_data_count : OUT STD_LOGIC_VECTOR(12 DOWNTO 0)
+    rd_data_count : OUT STD_LOGIC_VECTOR(15 DOWNTO 0)
   );
 END COMPONENT;
 -- COMP_TAG_END ------ End COMPONENT Declaration ------------

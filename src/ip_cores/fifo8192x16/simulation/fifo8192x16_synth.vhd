@@ -97,7 +97,7 @@ ARCHITECTURE simulation_arch OF fifo8192x16_synth IS
     -- FIFO interface signal declarations
     SIGNAL wr_clk_i                       :   STD_LOGIC;
     SIGNAL rd_clk_i                       :   STD_LOGIC;
-    SIGNAL rd_data_count                  :   STD_LOGIC_VECTOR(13-1 DOWNTO 0);
+    SIGNAL rd_data_count                  :   STD_LOGIC_VECTOR(16-1 DOWNTO 0);
     SIGNAL valid                          :   STD_LOGIC;
     SIGNAL rst	                          :   STD_LOGIC;
     SIGNAL underflow                      :   STD_LOGIC;
@@ -254,8 +254,8 @@ ARCHITECTURE simulation_arch OF fifo8192x16_synth IS
               C_APPLICATION_TYPE  => 0,
 	      C_DOUT_WIDTH        => 32,
 	      C_DIN_WIDTH         => 16,
-	      C_WR_PNTR_WIDTH     => 14,
-    	      C_RD_PNTR_WIDTH     => 13,
+	      C_WR_PNTR_WIDTH     => 17,
+    	      C_RD_PNTR_WIDTH     => 16,
  	      C_CH_TYPE           => 0,
               FREEZEON_ERROR      => FREEZEON_ERROR,
 	      TB_SEED             => TB_SEED, 

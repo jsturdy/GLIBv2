@@ -46,8 +46,7 @@ architecture Behavioral of gtx_rx_tracking is
     
     signal state        : state_t;
     
-    signal tk_counter   : integer range 0 to 287;
-    signal pkt_counter  : integer range 0 to 11;
+    signal tk_counter   : integer range 0 to 13;
         
     signal evt_valid    : std_logic;
     signal req_valid    : std_logic;
@@ -74,7 +73,7 @@ begin
                         state <= TK_DATA;
                         tk_counter <= 0;
                     when TK_DATA =>
-                        if (tk_counter = 287) then
+                        if (tk_counter = 13) then
                             state <= DATA_0;
                         else
                             tk_counter <= tk_counter + 1;
@@ -89,27 +88,6 @@ begin
             end if;
         end if;
     end process;
-    
-    --== PACKET STATE ==--
-    
-    process(gtx_clk_i)
-    begin
-        if (rising_edge(gtx_clk_i)) then
-            if (reset_i = '1') then
-                pkt_counter <= 0;
-            else
-                case state is
-                    when TK_DATA =>
-                        if (pkt_counter = 11) then
-                            pkt_counter <= 0;
-                        else
-                            pkt_counter <= pkt_counter + 1;
-                        end if;
-                    when others => pkt_counter <= 0;
-                end case;
-            end if;
-        end if;
-    end process;    
     
     --== ERROR ==--    
     
@@ -185,13 +163,8 @@ begin
                     when HEADER => 
                         evt_en_o <= '0';                    
                         evt_valid <= rx_data_i(14);
-                    when TK_DATA =>
-                        if (pkt_counter = 0 and rx_data_i = x"0000") then
-                            evt_en_o <= '0';
-                            evt_valid <= '0';
-                        else                            
-                            evt_en_o <= evt_valid;
-                        end if;
+                    when TK_DATA =>                         
+                        evt_en_o <= evt_valid;
                         evt_data_o <= rx_data_i;
                     when others => 
                         evt_en_o <= '0';
