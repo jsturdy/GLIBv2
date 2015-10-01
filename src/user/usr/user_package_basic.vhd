@@ -21,10 +21,34 @@ package user_package is
 	
 		--=== ipb slaves =============--
     
-	constant number_of_ipb_slaves		: positive := 2;
+	constant number_of_ipb_slaves		: positive := 5;
    
-	constant ipb_gtx_forward            : integer  := 0;
-	constant ipb_tk_data                : integer  := 1;
+	constant ipb_gtx_forward_0          : integer  := 0;
+	constant ipb_gtx_forward_1          : integer  := 1;
+	constant ipb_evt_data_0             : integer  := 2;
+	constant ipb_evt_data_1             : integer  := 3;
+    constant ipb_counters               : integer  := 4;
+
+    --============--
+    --== Common ==--
+    --============--   
+    
+    type std_array_t is array(integer range <>) of std_logic;
+    
+    type std32_array_t is array(integer range <>) of std_logic_vector(31 downto 0);
+        
+    --================--
+    --== T1 command ==--
+    --================--
+    
+    type t1_t is record
+        lv1a        : std_logic;
+        calpulse    : std_logic;
+        resync      : std_logic;
+        bc0         : std_logic;
+    end record;
+    
+    type t1_array_t is array(integer range <>) of t1_t;
 	
 end user_package;
    
