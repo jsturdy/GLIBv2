@@ -38,7 +38,8 @@ port(
     vfat2_t1_i      : in t1_t;
     
     gtx_tk_error_i  : in std_logic_vector(1 downto 0);
-    gtx_tr_error_i  : in std_logic_vector(1 downto 0)
+    gtx_tr_error_i  : in std_logic_vector(1 downto 0);
+    gtx_evt_rcvd_i  : in std_logic_vector(1 downto 0)
     
 );
 end ipbus_counters;
@@ -123,5 +124,9 @@ begin
     gtx_tr_0_error_cnt_inst : entity work.counter port map(ref_clk_i => gtx_clk_i, reset_i => reg_reset(16), en_i => gtx_tr_error_i(0), data_o => reg_data(16));
     
     gtx_tr_1_error_cnt_inst : entity work.counter port map(ref_clk_i => gtx_clk_i, reset_i => reg_reset(17), en_i => gtx_tr_error_i(1), data_o => reg_data(17));
+    
+    gtx_evt_rcvd_0_inst : entity work.counter port map(ref_clk_i => gtx_clk_i, reset_i => reg_reset(18), en_i => gtx_evt_rcvd_i(0), data_o => reg_data(18));
+    
+    gtx_evt_rcvd_1_inst : entity work.counter port map(ref_clk_i => gtx_clk_i, reset_i => reg_reset(19), en_i => gtx_evt_rcvd_i(1), data_o => reg_data(19));
 
 end Behavioral;

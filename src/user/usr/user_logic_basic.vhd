@@ -206,6 +206,7 @@ architecture user_logic_arch of user_logic is
     signal gtx_usr_clk  : std_logic;
     signal gtx_tk_error : std_logic_vector(1 downto 0);
     signal gtx_tr_error : std_logic_vector(1 downto 0);
+    signal gtx_evt_rcvd : std_logic_vector(1 downto 0);
 
     --== TTC signals ==--
 
@@ -246,6 +247,7 @@ begin
         gtx_usr_clk_o   => gtx_usr_clk,
         tk_error_o      => gtx_tk_error,
         tr_error_o      => gtx_tr_error,
+        evt_rcvd_o      => gtx_evt_rcvd,
         vfat2_t1_i      => vfat2_t1,
 		rx_n_i          => sfp_rx_n(1 to 4),
 		rx_p_i          => sfp_rx_p(1 to 4),
@@ -291,7 +293,8 @@ begin
 		ipb_o           => ipb_miso,
 		vfat2_t1_i      => vfat2_t1,
 		gtx_tk_error_i  => gtx_tk_error,
-		gtx_tr_error_i  => gtx_tr_error
+		gtx_tr_error_i  => gtx_tr_error,
+        gtx_evt_rcvd_i  => gtx_evt_rcvd
 	);
     
 end user_logic_arch;

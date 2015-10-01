@@ -44,6 +44,7 @@ port(
     gtx_usr_clk_o   : out std_logic;
     tk_error_o      : out std_logic_vector(1 downto 0);
     tr_error_o      : out std_logic_vector(1 downto 0);
+    evt_rcvd_o      : out std_logic_vector(1 downto 0);
    
     rx_n_i          : in std_logic_vector(3 downto 0);
     rx_p_i          : in std_logic_vector(3 downto 0);
@@ -118,6 +119,7 @@ begin
             vfat2_t1_i      => vfat2_t1_i,    
             tk_error_o      => tk_error_o(I),
             tr_error_o      => tr_error_o(I),    
+            evt_rcvd_o      => evt_rcvd_o(I),    
             tx_kchar_o      => tx_kchar((4 * I + 3) downto (4 * I)),
             tx_data_o       => tx_data((32 * I + 31) downto (32 * I)),    
             rx_kchar_i      => rx_kchar((4 * I + 3) downto (4 * I)),

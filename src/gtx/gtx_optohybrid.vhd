@@ -41,6 +41,7 @@ port(
     
     tk_error_o      : out std_logic;
     tr_error_o      : out std_logic;
+    evt_rcvd_o      : out std_logic;
     
     tx_kchar_o      : out std_logic_vector(3 downto 0);
     tx_data_o       : out std_logic_vector(31 downto 0);
@@ -111,6 +112,7 @@ begin
         evt_en_o    => evt_en,
         evt_data_o  => evt_data,
         tk_error_o  => tk_error_o,
+        evt_rcvd_o  => evt_rcvd_o,
         rx_kchar_i  => rx_kchar_i(1 downto 0),   
         rx_data_i   => rx_data_i(15 downto 0)        
     );
