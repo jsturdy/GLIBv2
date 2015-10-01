@@ -61,16 +61,8 @@ begin
                 wr_data <= (others => '0');                
                 last_ipb_stobe <= '0';                
             else         
-                -- Request to forward
-                if (last_ipb_stobe = '0' and ipb_mosi_i.ipb_strobe = '1') then 
-                    -- Format request
-                    wr_en <= '1';
-                    wr_data <= ipb_mosi_i.ipb_write & ipb_mosi_i.ipb_addr & ipb_mosi_i.ipb_wdata;
-                -- No request
-                else                    
-                    wr_en <= '0';
-                end if;     
-                -- Keep track fo the IPBus strobe
+                wr_en <= ((not last_ipb_stobe) and ipb_mosi_i.ipb_strobe);
+                wr_data <= ipb_mosi_i.ipb_write & ipb_mosi_i.ipb_addr(31 downto 24) & "0000" & ipb_mosi_i.ipb_addr(19 downto 0) & ipb_mosi_i.ipb_wdata;
                 last_ipb_stobe <= ipb_mosi_i.ipb_strobe;            
             end if;        
         end if;        
@@ -118,12 +110,7 @@ begin
             if (reset_i = '1') then
                 ipb_miso_o <= (ipb_err => '0', ipb_ack => '0', ipb_rdata => (others => '0'));                
             else                               
-                -- Return to IPBus when valid data
-                if (ipb_mosi_i.ipb_strobe = '1' and rd_valid = '1') then  
-                    ipb_miso_o <= (ipb_err => '0', ipb_ack => '1', ipb_rdata => rd_data); 
-                else
-                    ipb_miso_o.ipb_ack <= '0';
-                end if;
+                ipb_miso_o <= (ipb_err => '0', ipb_ack => (ipb_mosi_i.ipb_strobe and rd_valid), ipb_rdata => rd_data);
             end if;
         end if;
     end process;  

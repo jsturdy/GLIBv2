@@ -75,6 +75,7 @@ entity fifo8192x16_exdes is
    PORT (
            WR_CLK                    : IN  std_logic;
      	   RD_CLK                    : IN  std_logic;
+           RD_DATA_COUNT             : OUT std_logic_vector(16-1 DOWNTO 0);
            VALID                     : OUT std_logic;
            RST                       : IN  std_logic;
            UNDERFLOW                 : OUT std_logic;
@@ -100,6 +101,7 @@ architecture xilinx of fifo8192x16_exdes is
    PORT (
            WR_CLK                    : IN  std_logic;
      	   RD_CLK                    : IN  std_logic;
+           RD_DATA_COUNT             : OUT std_logic_vector(16-1 DOWNTO 0);
            VALID                     : OUT std_logic;
            RST                       : IN  std_logic;
            UNDERFLOW                 : OUT std_logic;
@@ -132,6 +134,7 @@ begin
     PORT MAP (
            WR_CLK                    => wr_clk_i,
            RD_CLK                    => rd_clk_i,
+           RD_DATA_COUNT             => rd_data_count,
            VALID                     => valid,
            RST                       => rst,
            UNDERFLOW                 => underflow,
