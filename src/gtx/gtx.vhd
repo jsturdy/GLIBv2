@@ -27,8 +27,7 @@ entity gtx is
 port(
 
     mgt_refclk_n_i  : in std_logic;
-    mgt_refclk_p_i  : in std_logic;
-    
+    mgt_refclk_p_i  : in std_logic;    
     ipb_clk_i       : in std_logic;
     
     reset_i         : in std_logic;
@@ -87,6 +86,7 @@ begin
     port map(
 		mgt_refclk_n_i  => mgt_refclk_n_i,
 		mgt_refclk_p_i  => mgt_refclk_p_i,
+        ipb_clk_i       => ipb_clk_i,
 		reset_i         => reset_i,
 		tx_kchar_i      => tx_kchar,
 		tx_data_i       => tx_data,
