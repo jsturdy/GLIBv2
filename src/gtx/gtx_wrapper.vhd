@@ -25,6 +25,7 @@ port(
 
     mgt_refclk_n_i  : in std_logic;
     mgt_refclk_p_i  : in std_logic;
+    ipb_clk_i       : in std_logic;
     
     reset_i         : in std_logic;
     
@@ -48,6 +49,7 @@ end gtx_wrapper;
 architecture Behavioral of gtx_wrapper is
 
     signal mgt_refclk       : std_logic;
+    signal mgt_reset        : std_logic;
    
     signal rx_disperr       : std_logic_vector(7 downto 0); 
     signal rx_notintable    : std_logic_vector(7 downto 0);
@@ -95,7 +97,7 @@ begin
         GTX0_RXUSRCLK2_IN           => usr_clk2,
         GTX0_RXN_IN                 => rx_n_i(0),
         GTX0_RXP_IN                 => rx_p_i(0),
-        GTX0_GTXRXRESET_IN          => reset_i,
+        GTX0_GTXRXRESET_IN          => (mgt_reset or reset_i),
         GTX0_MGTREFCLKRX_IN         => mgt_refclk,
         GTX0_PLLRXRESET_IN          => reset_i,
         GTX0_RXPLLLKDET_OUT         => open,
@@ -106,7 +108,7 @@ begin
         GTX0_TXUSRCLK2_IN           => usr_clk2,
         GTX0_TXN_OUT                => tx_n_o(0),
         GTX0_TXP_OUT                => tx_p_o(0),
-        GTX0_GTXTXRESET_IN          => reset_i,
+        GTX0_GTXTXRESET_IN          => (mgt_reset or reset_i),
         GTX0_TXRESETDONE_OUT        => open,
         --        
         GTX1_RXCHARISK_OUT          => rx_kchar_o(3 downto 2),
@@ -120,7 +122,7 @@ begin
         GTX1_RXUSRCLK2_IN           => usr_clk2,
         GTX1_RXN_IN                 => rx_n_i(1),
         GTX1_RXP_IN                 => rx_p_i(1),
-        GTX1_GTXRXRESET_IN          => reset_i,
+        GTX1_GTXRXRESET_IN          => (mgt_reset or reset_i),
         GTX1_MGTREFCLKRX_IN         => mgt_refclk,
         GTX1_PLLRXRESET_IN          => reset_i,
         GTX1_RXPLLLKDET_OUT         => open,
@@ -131,7 +133,7 @@ begin
         GTX1_TXUSRCLK2_IN           => usr_clk2,
         GTX1_TXN_OUT                => tx_n_o(1),
         GTX1_TXP_OUT                => tx_p_o(1),
-        GTX1_GTXTXRESET_IN          => reset_i,
+        GTX1_GTXTXRESET_IN          => (mgt_reset or reset_i),
         GTX1_TXRESETDONE_OUT        => open,
         --        
         GTX2_RXCHARISK_OUT          => rx_kchar_o(5 downto 4),
@@ -145,7 +147,7 @@ begin
         GTX2_RXUSRCLK2_IN           => usr_clk2,
         GTX2_RXN_IN                 => rx_n_i(2),
         GTX2_RXP_IN                 => rx_p_i(2),
-        GTX2_GTXRXRESET_IN          => reset_i,
+        GTX2_GTXRXRESET_IN          => (mgt_reset or reset_i),
         GTX2_MGTREFCLKRX_IN         => mgt_refclk,
         GTX2_PLLRXRESET_IN          => reset_i,
         GTX2_RXPLLLKDET_OUT         => open,
@@ -156,7 +158,7 @@ begin
         GTX2_TXUSRCLK2_IN           => usr_clk2,
         GTX2_TXN_OUT                => tx_n_o(2),
         GTX2_TXP_OUT                => tx_p_o(2),
-        GTX2_GTXTXRESET_IN          => reset_i,
+        GTX2_GTXTXRESET_IN          => (mgt_reset or reset_i),
         GTX2_TXRESETDONE_OUT        => open,
         --       
         GTX3_RXCHARISK_OUT          => rx_kchar_o(7 downto 6),
@@ -170,7 +172,7 @@ begin
         GTX3_RXUSRCLK2_IN           => usr_clk2,
         GTX3_RXN_IN                 => rx_n_i(3),
         GTX3_RXP_IN                 => rx_p_i(3),
-        GTX3_GTXRXRESET_IN          => reset_i,
+        GTX3_GTXRXRESET_IN          => (mgt_reset or reset_i),
         GTX3_MGTREFCLKRX_IN         => mgt_refclk,
         GTX3_PLLRXRESET_IN          => reset_i,
         GTX3_RXPLLLKDET_OUT         => open,
@@ -181,8 +183,24 @@ begin
         GTX3_TXUSRCLK2_IN           => usr_clk2,
         GTX3_TXN_OUT                => tx_n_o(3),
         GTX3_TXP_OUT                => tx_p_o(3),
-        GTX3_GTXTXRESET_IN          => reset_i,
+        GTX3_GTXTXRESET_IN          => (mgt_reset or reset_i),
         GTX3_TXRESETDONE_OUT        => open
     );
+    
+    --== Control Reset signal ==--
+
+    process(ipb_clk_i)
+        variable delay  : integer range 0 to 31 := 0;
+    begin
+        if (rising_edge(ipb_clk_i)) then
+            if (delay < 30) then
+                mgt_reset <= '1';
+                delay := delay + 1;
+            else
+                mgt_reset <= '0';
+                delay := 30;
+            end if;
+        end if;
+    end process;   
     
 end Behavioral;
