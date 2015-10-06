@@ -46,7 +46,7 @@ end ipbus_counters;
 
 architecture Behavioral of ipbus_counters is
     
-    type state_t is (IDLE, ACK, RST);
+    type state_t is (IDLE, RSPD, RST);
     
     signal state            : state_t;
     
@@ -71,9 +71,9 @@ begin
                     when IDLE =>                    
                         reg_sel <= to_integer(unsigned(ipb_mosi_i.ipb_addr(4 downto 0)));
                         if (ipb_mosi_i.ipb_strobe = '1') then
-                            state <= ACK;
+                            state <= RSPD;
                         end if;
-                    when ACK =>
+                    when RSPD =>
                         ipb_miso_o <= (ipb_ack => '1', ipb_err => '0', ipb_rdata => reg_data(reg_sel));
                         reg_reset(reg_sel) <= ipb_mosi_i.ipb_write;  
                         state <= RST;

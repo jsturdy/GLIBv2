@@ -42,7 +42,7 @@ end gtx_forward;
 
 architecture Behavioral of gtx_forward is
 
-    type state_t is (IDLE, WAIT_DATA, ACK, RST);
+    type state_t is (IDLE, RSPD, ACK, RST);
     
     signal state            : state_t;
     
@@ -70,9 +70,9 @@ begin
                         if (ipb_mosi_i.ipb_strobe = '1') then
                             wr_en <= '1';
                             wr_data <= ipb_mosi_i.ipb_write & ipb_mosi_i.ipb_addr(31 downto 24) & "0000" & ipb_mosi_i.ipb_addr(19 downto 0) & ipb_mosi_i.ipb_wdata;
-                            state <= WAIT_DATA;
+                            state <= RSPD;
                         end if;
-                    when WAIT_DATA =>
+                    when RSPD =>
                         wr_en <= '0';                        
                         if (ipb_mosi_i.ipb_strobe = '0') then
                             state <= IDLE;                        

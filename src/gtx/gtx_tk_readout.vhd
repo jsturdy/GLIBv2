@@ -39,11 +39,12 @@ end gtx_tk_readout;
 
 architecture Behavioral of gtx_tk_readout is 
 
-    type state_t is (IDLE, WAIT_DATA, ACK, RST);
+    type state_t is (IDLE, RSPD, RST);
     
     signal state            : state_t;
     
     signal rd_en            : std_logic;
+    signal rd_reset         : std_logic;
     signal rd_valid         : std_logic;
     signal rd_underflow     : std_logic;
     signal rd_data          : std_logic_vector(31 downto 0);
@@ -57,7 +58,7 @@ begin
     
     fifo8192x16_inst : entity work.fifo8192x16
     port map(
-        rst             => (reset_i or (ipb_mosi_i.ipb_strobe and ipb_mosi_i.ipb_write)),
+        rst             => (reset_i or rd_reset),
         wr_clk          => gtx_clk_i,
         wr_en           => evt_en_i,
         din             => evt_data_i,        
@@ -79,15 +80,22 @@ begin
             if (reset_i = '1') then  
                 ipb_miso_o <= (ipb_ack => '0', ipb_err => '0', ipb_rdata => (others => '0'));
                 state <= IDLE;  
-                rd_en <= '0';           
+                rd_en <= '0';    
+                rd_reset <= '0';                
             else     
                 case state is
                     when IDLE =>    
                         if (ipb_mosi_i.ipb_strobe = '1') then
                             case ipb_mosi_i.ipb_addr(1 downto 0) is
-                                when "00" =>
-                                    rd_en <= '1';
-                                    state <= WAIT_DATA;
+                                when "00" =>                                
+                                    if (ipb_mosi_i.ipb_write = '1') then
+                                        ipb_miso_o <= (ipb_ack => '1', ipb_err => '0', ipb_rdata => (others => '0'));
+                                        rd_reset <= '1';
+                                        state <= RST;
+                                    else
+                                        rd_en <= '1';
+                                        state <= RSPD;
+                                    end if;
                                 when "01" => 
                                    ipb_miso_o <= (ipb_ack => '1', ipb_err => '0', ipb_rdata => x"0000" & rd_data_count);
                                    state <= RST;
@@ -101,9 +109,8 @@ begin
                                     ipb_miso_o <= (ipb_ack => '0', ipb_err => '0', ipb_rdata => (others => '0'));
                                     rd_en <= '0';  
                             end case;
-                            state <= ACK;
-                        end if;
-                    when WAIT_DATA =>
+                        end if;                      
+                    when RSPD =>
                         rd_en <= '0';
                         if (ipb_mosi_i.ipb_strobe = '0') then
                             state <= IDLE;
@@ -117,16 +124,16 @@ begin
                     when RST =>
                         ipb_miso_o.ipb_ack <= '0';
                         ipb_miso_o.ipb_err <= '0';
+                        rd_reset <= '0';
                         state <= IDLE;  
-                        rd_en <= '0';   
                     when others =>
                         ipb_miso_o <= (ipb_ack => '0', ipb_err => '0', ipb_rdata => (others => '0'));
                         state <= IDLE;    
-                        rd_en <= '0';   
+                        rd_en <= '0';  
+                        rd_reset <= '0'; 
                 end case;
             end if;        
         end if;        
     end process;
 
 end Behavioral;
-
