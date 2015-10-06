@@ -45,19 +45,16 @@ port(
 end ipbus_counters;
 
 architecture Behavioral of ipbus_counters is
-      
-    signal last_ipb_stobe   : std_logic;
-    signal reg_sel          : integer range 0 to 31;
     
+    type state_t is (IDLE, ACK, RST);
+    
+    signal state            : state_t;
+    
+    signal reg_sel          : integer range 0 to 31;    
     signal reg_reset        : std_logic_vector(31 downto 0);
     signal reg_data         : std32_array_t(31 downto 0);
     
-    signal last_strobes     : std_logic_vector(4 downto 0);
-    signal last_acks        : std_logic_vector(4 downto 0);
-    
 begin
-
-	reg_sel <= to_integer(unsigned(ipb_mosi_i.ipb_addr(4 downto 0)));
 
     --== Read process ==--
 
@@ -65,29 +62,31 @@ begin
     begin    
         if (rising_edge(ipb_clk_i)) then      
             if (reset_i = '1') then    
-                ipb_miso_o <= (ipb_ack => '0', ipb_err => '0', ipb_rdata => (others => '0'));                 
-                last_ipb_stobe <= '0';               
+                ipb_miso_o <= (ipb_ack => '0', ipb_err => '0', ipb_rdata => (others => '0'));    
+                state <= IDLE;
+                reg_sel <= 0;
                 reg_reset <= (others => '0');           
             else         
-                ipb_miso_o <= (ipb_ack => ((not last_ipb_stobe) and ipb_mosi_i.ipb_strobe), ipb_err => '0', ipb_rdata => reg_data(reg_sel));
-                reg_reset(reg_sel) <= ipb_mosi_i.ipb_write and ((not last_ipb_stobe) and ipb_mosi_i.ipb_strobe);
-                last_ipb_stobe <= ipb_mosi_i.ipb_strobe;    
-            end if;        
-        end if;        
-    end process;
-    
-    --== Allows for strobe & ack counting ==--
-    
-    process(ipb_clk_i)       
-    begin    
-        if (rising_edge(ipb_clk_i)) then      
-            if (reset_i = '1') then             
-                last_strobes <= (others => '0');           
-            else         
-                for I in 0 to 4 loop
-                    last_strobes(I) <= ipb_i(I).ipb_strobe;    
-                    last_acks(I) <= ipb_o(I).ipb_ack;    
-                end loop;
+                case state is
+                    when IDLE =>                    
+                        reg_sel <= to_integer(unsigned(ipb_mosi_i.ipb_addr(4 downto 0)));
+                        if (ipb_mosi_i.ipb_strobe = '1') then
+                            state <= ACK;
+                        end if;
+                    when ACK =>
+                        ipb_miso_o <= (ipb_ack => '1', ipb_err => '0', ipb_rdata => reg_data(reg_sel));
+                        reg_reset(reg_sel) <= ipb_mosi_i.ipb_write;  
+                        state <= RST;
+                    when RST =>
+                        ipb_miso_o.ipb_ack <= '0';
+                        reg_reset(reg_sel) <= '0';  
+                        state <= IDLE;
+                    when others => 
+                        ipb_miso_o <= (ipb_ack => '0', ipb_err => '0', ipb_rdata => (others => '0'));    
+                        state <= IDLE;
+                        reg_sel <= 0;
+                        reg_reset <= (others => '0');  
+                    end case;
             end if;        
         end if;        
     end process;
@@ -99,9 +98,9 @@ begin
     ipb_counters_loop : for I in 0 to 4 generate
     begin
     
-        ipb_counters_strobe_inst : entity work.counter port map(ref_clk_i => ipb_clk_i, reset_i => reg_reset(I), en_i => ((not last_strobes(I)) and ipb_i(I).ipb_strobe), data_o => reg_data(I));
+        ipb_counters_strobe_inst : entity work.counter port map(ref_clk_i => ipb_clk_i, reset_i => reg_reset(I), en_i => (ipb_i(I).ipb_strobe and ipb_o(I).ipb_ack), data_o => reg_data(I));
         
-        ipb_counters_ack_inst : entity work.counter port map(ref_clk_i => ipb_clk_i, reset_i => reg_reset(I + 5), en_i => ((not last_acks(I)) and ipb_o(I).ipb_ack), data_o => reg_data(I + 5));
+        ipb_counters_ack_inst : entity work.counter port map(ref_clk_i => ipb_clk_i, reset_i => reg_reset(I + 5), en_i => ipb_o(I).ipb_ack, data_o => reg_data(I + 5));
 
     end generate;
     

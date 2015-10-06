@@ -39,7 +39,9 @@ end gtx_tk_readout;
 
 architecture Behavioral of gtx_tk_readout is 
 
-    signal last_ipb_stobe   : std_logic;
+    type state_t is (IDLE, WAIT_DATA, ACK, RST);
+    
+    signal state            : state_t;
     
     signal rd_en            : std_logic;
     signal rd_valid         : std_logic;
@@ -49,11 +51,7 @@ architecture Behavioral of gtx_tk_readout is
     signal rd_full          : std_logic;
     signal rd_empty         : std_logic;
     
-    signal reg_sel          : integer range 0 to 3;
-    
 begin
-
-	reg_sel <= to_integer(unsigned(ipb_mosi_i.ipb_addr(1 downto 0)));
     
     --== RX buffer ==--
     
@@ -80,27 +78,52 @@ begin
         if (rising_edge(ipb_clk_i)) then      
             if (reset_i = '1') then  
                 ipb_miso_o <= (ipb_ack => '0', ipb_err => '0', ipb_rdata => (others => '0'));
-                last_ipb_stobe <= '0';     
+                state <= IDLE;  
                 rd_en <= '0';           
             else     
-                case reg_sel is
-                    when 0 =>
-                        rd_en <= ((not last_ipb_stobe) and ipb_mosi_i.ipb_strobe); -- !0 and 1
-                        ipb_miso_o <= (ipb_ack => rd_valid, ipb_err => rd_underflow, ipb_rdata => rd_data);
-                    when 1 => 
+                case state is
+                    when IDLE =>    
+                        if (ipb_mosi_i.ipb_strobe = '1') then
+                            case ipb_mosi_i.ipb_addr(1 downto 0) is
+                                when "00" =>
+                                    rd_en <= '1';
+                                    state <= WAIT_DATA;
+                                when "01" => 
+                                   ipb_miso_o <= (ipb_ack => '1', ipb_err => '0', ipb_rdata => x"0000" & rd_data_count);
+                                   state <= RST;
+                                when "10" => 
+                                   ipb_miso_o <= (ipb_ack => '1', ipb_err => '0', ipb_rdata => (0 => rd_full, others => '0'));
+                                   state <= RST;
+                                when "11" => 
+                                   ipb_miso_o <= (ipb_ack => '1', ipb_err => '0', ipb_rdata => (0 => rd_empty, others => '0'));
+                                   state <= RST;
+                                when others => 
+                                    ipb_miso_o <= (ipb_ack => '0', ipb_err => '0', ipb_rdata => (others => '0'));
+                                    rd_en <= '0';  
+                            end case;
+                            state <= ACK;
+                        end if;
+                    when WAIT_DATA =>
                         rd_en <= '0';
-                        ipb_miso_o <= (ipb_ack => ((not last_ipb_stobe) and ipb_mosi_i.ipb_strobe), ipb_err => '0', ipb_rdata => x"0000" & rd_data_count);
-                    when 2 => 
-                        rd_en <= '0';
-                        ipb_miso_o <= (ipb_ack => ((not last_ipb_stobe) and ipb_mosi_i.ipb_strobe), ipb_err => '0', ipb_rdata => (0 => rd_full, others => '0'));
-                    when 3 =>  
-                        rd_en <= '0';
-                        ipb_miso_o <= (ipb_ack => ((not last_ipb_stobe) and ipb_mosi_i.ipb_strobe), ipb_err => '0', ipb_rdata => (0 => rd_empty, others => '0'));
-                    when others => 
-                        rd_en <= '0';
+                        if (ipb_mosi_i.ipb_strobe = '0') then
+                            state <= IDLE;
+                        elsif (rd_valid = '1') then
+                            ipb_miso_o <= (ipb_ack => '1', ipb_err => '0', ipb_rdata => rd_data);
+                            state <= RST;                            
+                        elsif (rd_underflow = '1') then
+                            ipb_miso_o <= (ipb_ack => '0', ipb_err => '1', ipb_rdata => (others => '0'));
+                            state <= RST;
+                        end if;
+                    when RST =>
+                        ipb_miso_o.ipb_ack <= '0';
+                        ipb_miso_o.ipb_err <= '0';
+                        state <= IDLE;  
+                        rd_en <= '0';   
+                    when others =>
                         ipb_miso_o <= (ipb_ack => '0', ipb_err => '0', ipb_rdata => (others => '0'));
+                        state <= IDLE;    
+                        rd_en <= '0';   
                 end case;
-                last_ipb_stobe <= ipb_mosi_i.ipb_strobe; 
             end if;        
         end if;        
     end process;
