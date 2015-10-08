@@ -1,5 +1,74 @@
 INFO:sim:172 - Generating IP...
 Applying current project options...
 Finished applying current project options.
-Cancelled executing Tcl generator.
-Wrote CGP file for project 'fifo8192x16'.
+WARNING:sim - A core named 'fifo_tk_gtx' already exists in the project. Output
+   products for this core may be overwritten.
+Resolving generics for 'fifo_tk_gtx'...
+WARNING:sim - A core named 'fifo_tk_gtx' already exists in the project. Output
+   products for this core may be overwritten.
+Applying external generics to 'fifo_tk_gtx'...
+Delivering associated files for 'fifo_tk_gtx'...
+Delivering EJava files for 'fifo_tk_gtx'...
+Generating implementation netlist for 'fifo_tk_gtx'...
+INFO:sim - Pre-processing HDL files for 'fifo_tk_gtx'...
+WARNING:sim - BlackBox generator run option '-ifmt' found multiple times. Only
+   the first occurence is considered.
+Running synthesis for 'fifo_tk_gtx'
+Running ngcbuild...
+Writing VHO instantiation template for 'fifo_tk_gtx'...
+Writing VHDL behavioral simulation model for 'fifo_tk_gtx'...
+WARNING:sim - Overwriting existing file
+   C:/Users/Administrator/Documents/firmware/GLIBv2/src/ip_cores/tmp/_cg/fifo_tk
+   _gtx/doc/fifo_generator_v9_3_vinfo.html with file from view
+   xilinx_documentation
+Delivered 3 files into directory
+C:/Users/Administrator/Documents/firmware/GLIBv2/src/ip_cores/tmp/_cg/fifo_tk_gt
+x
+Delivered 1 file into directory
+C:/Users/Administrator/Documents/firmware/GLIBv2/src/ip_cores/tmp/_cg/fifo_tk_gt
+x
+Generating ASY schematic symbol...
+INFO:sim:949 - Finished generation of ASY schematic symbol.
+Generating SYM schematic symbol for 'fifo_tk_gtx'...
+Generating metadata file...
+Regenerating ISE project file for 'fifo_tk_gtx'...
+Generating ISE project...
+XCO file found: fifo_tk_gtx.xco
+XMDF file found: fifo_tk_gtx_xmdf.tcl
+Adding
+C:/Users/Administrator/Documents/firmware/GLIBv2/src/ip_cores/tmp/_cg/fifo_tk_gt
+x.asy -view all -origin_type imported
+Adding
+C:/Users/Administrator/Documents/firmware/GLIBv2/src/ip_cores/tmp/_cg/fifo_tk_gt
+x.ngc -view all -origin_type created
+Checking file
+"C:/Users/Administrator/Documents/firmware/GLIBv2/src/ip_cores/tmp/_cg/fifo_tk_g
+tx.ngc" for project device match ...
+File
+"C:/Users/Administrator/Documents/firmware/GLIBv2/src/ip_cores/tmp/_cg/fifo_tk_g
+tx.ngc" device information matches project device.
+Adding
+C:/Users/Administrator/Documents/firmware/GLIBv2/src/ip_cores/tmp/_cg/fifo_tk_gt
+x.sym -view all -origin_type imported
+Adding
+C:/Users/Administrator/Documents/firmware/GLIBv2/src/ip_cores/tmp/_cg/fifo_tk_gt
+x.vhd -view all -origin_type created
+INFO:HDLCompiler:1061 - Parsing VHDL file
+   "C:/Users/Administrator/Documents/firmware/GLIBv2/src/ip_cores/tmp/_cg/fifo_t
+   k_gtx.vhd" into library work
+INFO:ProjectMgmt - Parsing design hierarchy completed successfully.
+Adding
+C:/Users/Administrator/Documents/firmware/GLIBv2/src/ip_cores/tmp/_cg/fifo_tk_gt
+x.vho -view all -origin_type imported
+INFO:TclTasksC:2116 - The automatic calculation of top has been turned-off.
+   Please set the new top explicitly by running the "project set top" command.
+   To re-calculate the new top automatically, set the "Auto Implementation Top"
+   property to true.
+Top level has been set to "/fifo_tk_gtx"
+Generating README file...
+Generating FLIST file...
+INFO:sim:948 - Finished FLIST file generation.
+Launching README viewer...
+Moving files to output directory...
+Finished moving files to output directory
+Wrote CGP file for project 'fifo_tk_gtx'.

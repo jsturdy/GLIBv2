@@ -48,7 +48,7 @@ architecture Behavioral of gtx_tk_readout is
     signal rd_valid         : std_logic;
     signal rd_underflow     : std_logic;
     signal rd_data          : std_logic_vector(31 downto 0);
-    signal rd_data_count    : std_logic_vector(15 downto 0);
+    signal rd_data_count    : std_logic_vector(16 downto 0);
     signal rd_full          : std_logic;
     signal rd_empty         : std_logic;
     
@@ -56,7 +56,7 @@ begin
     
     --== RX buffer ==--
     
-    fifo8192x16_inst : entity work.fifo8192x16
+    fifo_inst : entity work.fifo
     port map(
         rst             => (reset_i or rd_reset),
         wr_clk          => gtx_clk_i,
@@ -97,7 +97,7 @@ begin
                                         state <= RSPD;
                                     end if;
                                 when "01" => 
-                                   ipb_miso_o <= (ipb_ack => '1', ipb_err => '0', ipb_rdata => x"0000" & rd_data_count);
+                                   ipb_miso_o <= (ipb_ack => '1', ipb_err => '0', ipb_rdata => x"000" & "000" & rd_data_count);
                                    state <= RST;
                                 when "10" => 
                                    ipb_miso_o <= (ipb_ack => '1', ipb_err => '0', ipb_rdata => (0 => rd_full, others => '0'));

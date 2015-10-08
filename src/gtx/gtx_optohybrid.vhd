@@ -80,9 +80,22 @@ begin
         gtx_clk_i   => gtx_usr_clk_i,   
         reset_i     => reset_i,           
         vfat2_t1_i  => vfat2_t1_i,          
-        tx_kchar_o  => tx_kchar_o(1 downto 0),   
-        tx_data_o   => tx_data_o(15 downto 0)        
+        tx_kchar_o  => tx_kchar_o(3 downto 2),   
+        tx_data_o   => tx_data_o(31 downto 16)        
     );  
+    
+    --=========================--
+    --== SFP RX Trigger Link ==--
+    --=========================--
+    
+    gtx_rx_trigger_inst : entity work.gtx_rx_trigger
+    port map(
+        gtx_clk_i   => gtx_usr_clk_i,   
+        reset_i     => reset_i,  
+        tr_error_o  => tr_error_o,        
+        rx_kchar_i  => rx_kchar_i(3 downto 2),   
+        rx_data_i   => rx_data_i(31 downto 16)      
+    );
     
     --==========================--
     --== SFP TX Tracking link ==--
@@ -95,8 +108,8 @@ begin
         req_en_o    => g2o_req_en,   
         req_valid_i => g2o_req_valid,   
         req_data_i  => g2o_req_data,           
-        tx_kchar_o  => tx_kchar_o(3 downto 2),   
-        tx_data_o   => tx_data_o(31 downto 16)        
+        tx_kchar_o  => tx_kchar_o(1 downto 0),   
+        tx_data_o   => tx_data_o(15 downto 0)        
     );  
     
     --==========================--
@@ -113,8 +126,8 @@ begin
         evt_data_o  => evt_data,
         tk_error_o  => tk_error_o,
         evt_rcvd_o  => evt_rcvd_o,
-        rx_kchar_i  => rx_kchar_i(3 downto 2),   
-        rx_data_i   => rx_data_i(31 downto 16)        
+        rx_kchar_i  => rx_kchar_i(1 downto 0),   
+        rx_data_i   => rx_data_i(15 downto 0)        
     );
     
     --============================--

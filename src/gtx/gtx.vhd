@@ -71,8 +71,7 @@ architecture Behavioral of gtx is
     signal cs_ctrl0     : std_logic_vector(35 downto 0);
     signal cs_ctrl1     : std_logic_vector(35 downto 0); 
     signal cs_async_out : std_logic_vector(7 downto 0);
-    signal cs_trig0     : std_logic_vector(31 downto 0);
-    signal cs_trig1     : std_logic_vector(31 downto 0);
+    signal cs_trig0     : std_logic_vector(127 downto 0);
     
 begin    
     
@@ -87,7 +86,7 @@ begin
 		mgt_refclk_n_i  => mgt_refclk_n_i,
 		mgt_refclk_p_i  => mgt_refclk_p_i,
         ipb_clk_i       => ipb_clk_i,
-		reset_i         => reset_i,
+		reset_i         => cs_async_out(0),
 		tx_kchar_i      => tx_kchar,
 		tx_data_i       => tx_data,
 		rx_kchar_o      => rx_kchar,
@@ -148,11 +147,9 @@ begin
     port map(
         control => cs_ctrl1,
         clk     => gtx_usr_clk,
-        trig0   => cs_trig0,
-        trig1   => cs_trig1
+        trig0   => cs_trig0
     );
     
-    cs_trig0 <= rx_data(15 downto 0) & tx_data(15 downto 0);
-    cs_trig1 <= rx_data(47 downto 32) & tx_data(47 downto 32);
+    cs_trig0 <= tx_data & rx_data;
 
 end Behavioral;
