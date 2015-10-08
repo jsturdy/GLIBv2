@@ -41,12 +41,15 @@ port(
 end gtx_forward;
 
 architecture Behavioral of gtx_forward is
+
+    type state_t is (IDLE, RSPD, ACK, RST);
+    
+    signal state            : state_t;
     
     signal wr_en            : std_logic;    
-    signal wr_data          : std_logic_vector(64 downto 0);    
-    signal last_ipb_stobe   : std_logic;
+    signal wr_data          : std_logic_vector(64 downto 0);  
     
-    signal rd_valid         : std_logic;    
+    signal rd_valid         : std_logic;     
     signal rd_data          : std_logic_vector(31 downto 0); 
     
 begin
@@ -56,14 +59,36 @@ begin
     process(ipb_clk_i)       
     begin    
         if (rising_edge(ipb_clk_i)) then      
-            if (reset_i = '1') then                
+            if (reset_i = '1') then    
+                ipb_miso_o <= (ipb_err => '0', ipb_ack => '0', ipb_rdata => (others => '0')); 
+                state <= IDLE;
                 wr_en <= '0';                
-                wr_data <= (others => '0');                
-                last_ipb_stobe <= '0';                
+                wr_data <= (others => '0');             
             else         
-                wr_en <= ((not last_ipb_stobe) and ipb_mosi_i.ipb_strobe);
-                wr_data <= ipb_mosi_i.ipb_write & ipb_mosi_i.ipb_addr(31 downto 24) & "0000" & ipb_mosi_i.ipb_addr(19 downto 0) & ipb_mosi_i.ipb_wdata;
-                last_ipb_stobe <= ipb_mosi_i.ipb_strobe;            
+                case state is
+                    when IDLE =>    
+                        if (ipb_mosi_i.ipb_strobe = '1') then
+                            wr_en <= '1';
+                            wr_data <= ipb_mosi_i.ipb_write & ipb_mosi_i.ipb_addr(31 downto 24) & "0000" & ipb_mosi_i.ipb_addr(19 downto 0) & ipb_mosi_i.ipb_wdata;
+                            state <= RSPD;
+                        end if;
+                    when RSPD =>
+                        wr_en <= '0';                        
+                        if (ipb_mosi_i.ipb_strobe = '0') then
+                            state <= IDLE;                        
+                        elsif (rd_valid = '1') then
+                            ipb_miso_o <= (ipb_ack => '1', ipb_err => '0', ipb_rdata => rd_data);
+                            state <= RST;
+                        end if;
+                    when RST =>
+                        ipb_miso_o.ipb_ack <= '0';
+                        state <= IDLE;  
+                    when others =>
+                        ipb_miso_o <= (ipb_err => '0', ipb_ack => '0', ipb_rdata => (others => '0')); 
+                        state <= IDLE;
+                        wr_en <= '0';                
+                        wr_data <= (others => '0');  
+                end case;                      
             end if;        
         end if;        
     end process;
@@ -101,18 +126,5 @@ begin
         full    => open,
         empty   => open
     );
-    
-    --== RX process ==--
-    
-    process(ipb_clk_i)
-    begin    
-        if (rising_edge(ipb_clk_i)) then        
-            if (reset_i = '1') then
-                ipb_miso_o <= (ipb_err => '0', ipb_ack => '0', ipb_rdata => (others => '0'));                
-            else                               
-                ipb_miso_o <= (ipb_err => '0', ipb_ack => (ipb_mosi_i.ipb_strobe and rd_valid), ipb_rdata => rd_data);
-            end if;
-        end if;
-    end process;  
     
 end Behavioral;
