@@ -75,7 +75,7 @@ begin
     --== SFP TX Trigger link ==--
     --==========================--
        
-    gtx_tx_trigger_inst : entity work.gtx_tx_trigger
+    link_tx_trigger_inst : entity work.link_tx_trigger
     port map(
         gtx_clk_i   => gtx_usr_clk_i,   
         reset_i     => reset_i,           
@@ -88,7 +88,7 @@ begin
     --== SFP RX Trigger Link ==--
     --=========================--
     
-    gtx_rx_trigger_inst : entity work.gtx_rx_trigger
+    link_rx_trigger_inst : entity work.link_rx_trigger
     port map(
         gtx_clk_i   => gtx_usr_clk_i,   
         reset_i     => reset_i,  
@@ -101,7 +101,7 @@ begin
     --== SFP TX Tracking link ==--
     --==========================--
        
-    gtx_tx_tracking_inst : entity work.gtx_tx_tracking
+    link_tx_tracking_inst : entity work.link_tx_tracking
     port map(
         gtx_clk_i   => gtx_usr_clk_i,   
         reset_i     => reset_i,           
@@ -116,7 +116,7 @@ begin
     --== SFP RX Tracking link ==--
     --==========================--
        
-    gtx_rx_tracking_inst : entity work.gtx_rx_tracking
+    link_rx_tracking_inst : entity work.link_rx_tracking
     port map(
         gtx_clk_i   => gtx_usr_clk_i,   
         reset_i     => reset_i,           
@@ -134,7 +134,7 @@ begin
     --== GTX request forwarding ==--
     --============================--
     
-    gtx_forward_inst : entity work.gtx_forward
+    link_request_inst : entity work.link_request
     port map(
         ipb_clk_i   => ipb_clk_i,
         gtx_clk_i   => gtx_usr_clk_i,
@@ -152,7 +152,7 @@ begin
     --== Tracking data buffer IPBus ==--
     --================================--
     
-	gtx_tk_readout_inst : entity work.gtx_tk_readout 
+	link_tkdata_inst : entity work.link_tkdata 
     port map(
 		ipb_clk_i   => ipb_clk_i,
 		gtx_clk_i   => gtx_usr_clk_i,

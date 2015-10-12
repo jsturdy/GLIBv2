@@ -25,7 +25,7 @@ port(
 
     mgt_refclk_n_i  : in std_logic;
     mgt_refclk_p_i  : in std_logic;
-    ipb_clk_i       : in std_logic;
+    ref_clk_i       : in std_logic;
     
     reset_i         : in std_logic;
     
@@ -50,6 +50,7 @@ architecture Behavioral of gtx_wrapper is
 
     signal mgt_refclk       : std_logic;
     signal mgt_reset        : std_logic;
+    signal mgt_rst_cnt      : integer range 0 to 67_108_863;
    
     signal rx_disperr       : std_logic_vector(7 downto 0); 
     signal rx_notintable    : std_logic_vector(7 downto 0);
@@ -188,19 +189,18 @@ begin
     );
     
     --== Control Reset signal ==--
-
-    process(ipb_clk_i)
-        variable delay  : integer range 0 to 31 := 0;
+    
+    process(ref_clk_i)
     begin
-        if (rising_edge(ipb_clk_i)) then
-            if (delay < 30) then
-                mgt_reset <= '1';
-                delay := delay + 1;
+        if (rising_edge(ref_clk_i)) then
+            if (mgt_rst_cnt = 60_000_000) then
+              mgt_reset <= '0';
+              mgt_rst_cnt <= 60_000_000;
             else
-                mgt_reset <= '0';
-                delay := 30;
+              mgt_reset <= '1';
+              mgt_rst_cnt <= mgt_rst_cnt + 1;
             end if;
         end if;
-    end process;   
+    end process;
     
 end Behavioral;

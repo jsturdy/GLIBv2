@@ -4,7 +4,7 @@
 -- 
 -- Create Date:    14:48:50 09/21/2015 
 -- Design Name:    GLIB v2
--- Module Name:    gtx_tk_readout - Behavioral 
+-- Module Name:    link_tkdata - Behavioral 
 -- Project Name:   GLIB v2
 -- Target Devices: xc6vlx130t-1ff1156
 -- Tool versions:  ISE  P.20131013
@@ -21,7 +21,7 @@ use work.ipbus.all;
 use work.system_package.all;
 use work.user_package.all;
 
-entity gtx_tk_readout is
+entity link_tkdata is
 port(
 
 	ipb_clk_i   : in std_logic;
@@ -35,9 +35,9 @@ port(
     evt_data_i   : in std_logic_vector(15 downto 0)
     
 );
-end gtx_tk_readout;
+end link_tkdata;
 
-architecture Behavioral of gtx_tk_readout is 
+architecture Behavioral of link_tkdata is 
 
     type state_t is (IDLE, RSPD, RST);
     

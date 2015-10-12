@@ -4,7 +4,7 @@
 -- 
 -- Create Date:    08:37:33 07/07/2015 
 -- Design Name:    GLIB v2
--- Module Name:    gtx_forward - Behavioral 
+-- Module Name:    link_request - Behavioral 
 -- Project Name:   GLIB v2
 -- Target Devices: xc6vlx130t-1ff1156
 -- Tool versions:  ISE  P.20131013
@@ -20,7 +20,7 @@ use work.ipbus.all;
 use work.system_package.all;
 use work.user_package.all;
 
-entity gtx_forward is
+entity link_request is
 port(
 
 	ipb_clk_i   : in std_logic;
@@ -38,9 +38,9 @@ port(
     rx_data_i   : in std_logic_vector(31 downto 0)
     
 );
-end gtx_forward;
+end link_request;
 
-architecture Behavioral of gtx_forward is
+architecture Behavioral of link_request is
 
     type state_t is (IDLE, RSPD, ACK, RST);
     

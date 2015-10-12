@@ -4,7 +4,7 @@
 -- 
 -- Create Date:    08:37:33 07/07/2015 
 -- Design Name:    GLIB v2
--- Module Name:    gtx_rx_tracking - Behavioral 
+-- Module Name:    link_rx_tracking - Behavioral 
 -- Project Name:   GLIB v2
 -- Target Devices: xc6vlx130t-1ff1156
 -- Tool versions:  ISE  P.20131013
@@ -20,7 +20,7 @@ use unisim.vcomponents.all;
 
 library work;
 
-entity gtx_rx_tracking is
+entity link_rx_tracking is
 port(
 
     gtx_clk_i       : in std_logic;    
@@ -39,9 +39,9 @@ port(
     rx_data_i       : in std_logic_vector(15 downto 0)
     
 );
-end gtx_rx_tracking;
+end link_rx_tracking;
 
-architecture Behavioral of gtx_rx_tracking is    
+architecture Behavioral of link_rx_tracking is    
 
     type state_t is (COMMA, HEADER, TK_DATA, DATA_0, DATA_1, CRC);
     

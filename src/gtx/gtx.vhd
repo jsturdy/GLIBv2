@@ -85,7 +85,7 @@ begin
     port map(
 		mgt_refclk_n_i  => mgt_refclk_n_i,
 		mgt_refclk_p_i  => mgt_refclk_p_i,
-        ipb_clk_i       => ipb_clk_i,
+        ref_clk_i       => ipb_clk_i,
 		reset_i         => cs_async_out(0),
 		tx_kchar_i      => tx_kchar,
 		tx_data_i       => tx_data,

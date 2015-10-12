@@ -4,7 +4,7 @@
 -- 
 -- Create Date:    08:37:33 07/07/2015 
 -- Design Name:    GLIB v2
--- Module Name:    gtx_tx_trigger - Behavioral 
+-- Module Name:    link_rx_trigger - Behavioral 
 -- Project Name:   GLIB v2
 -- Target Devices: xc6vlx130t-1ff1156
 -- Tool versions:  ISE  P.20131013
@@ -15,32 +15,26 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-library unisim;
-use unisim.vcomponents.all;
-
-library work;
-use work.user_package.all;
-
-entity gtx_tx_trigger is
+entity link_rx_trigger is
 port(
 
-    gtx_clk_i   : in std_logic;    
-    reset_i     : in std_logic;
+    gtx_clk_i       : in std_logic;    
+    reset_i         : in std_logic;
     
-    vfat2_t1_i  : in t1_t;
+    tr_error_o      : out std_logic;
     
-    tx_kchar_o  : out std_logic_vector(1 downto 0);
-    tx_data_o   : out std_logic_vector(15 downto 0)
+    rx_kchar_i      : in std_logic_vector(1 downto 0);
+    rx_data_i       : in std_logic_vector(15 downto 0)
     
 );
-end gtx_tx_trigger;
+end link_rx_trigger;
 
-architecture Behavioral of gtx_tx_trigger is    
+architecture Behavioral of link_rx_trigger is    
 
-    type state_t is (COMMA, DATA_0, DATA_1, DATA_2);
+    type state_t is (COMMA, DATA_0, DATA_1, DATA_2);    
     
     signal state    : state_t;
-    
+
 begin  
 
     --== STATE ==--
@@ -52,7 +46,10 @@ begin
                 state <= COMMA;
             else
                 case state is
-                    when COMMA => state <= DATA_0;
+                    when COMMA =>
+                        if (rx_kchar_i = "01" and rx_data_i = x"00BC") then
+                            state <= DATA_0;
+                        end if;
                     when DATA_0 => state <= DATA_1;
                     when DATA_1 => state <= DATA_2;
                     when DATA_2 => state <= COMMA;
@@ -61,29 +58,26 @@ begin
             end if;
         end if;
     end process;
-        
-    --== TRIGGER COMMANDS ==--    
     
+    --== ERROR ==--
+
     process(gtx_clk_i)
     begin
         if (rising_edge(gtx_clk_i)) then
             if (reset_i = '1') then
-                tx_kchar_o <= "00";
-                tx_data_o <= x"0000";
+                tr_error_o <= '0';
             else
                 case state is
-                    when COMMA => 
-                        tx_kchar_o <= "01";
-                        tx_data_o <= x"00BC";
-                    when DATA_0 => 
-                        tx_kchar_o <= "00";
-                        tx_data_o <= vfat2_t1_i.lv1a & vfat2_t1_i.calpulse & vfat2_t1_i.resync & vfat2_t1_i.bc0 & x"000";
-                    when others => 
-                        tx_kchar_o <= "00";
-                        tx_data_o <= x"0000";
+                    when COMMA =>
+                        if (rx_kchar_i = "01" and rx_data_i = x"00BC") then
+                            tr_error_o <= '0';
+                        else
+                            tr_error_o <= '1';
+                        end if;
+                    when others => tr_error_o <= '0';
                 end case;
             end if;
         end if;
-    end process;   
+    end process;
     
 end Behavioral;
