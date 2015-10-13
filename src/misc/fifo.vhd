@@ -149,9 +149,9 @@ begin
                 fifo_1_rd_en <= '0';
                 fifo_2_rd_en <= '0';
             else
-                fifo_0_rd_en <= not fifo_1_full;
-                fifo_1_rd_en <= not fifo_2_full;
-                fifo_2_rd_en <= not fifo_3_full;
+                fifo_0_rd_en <= (not fifo_1_full) and (not fifo_0_rd_en) and (not fifo_0_valid);
+                fifo_1_rd_en <= (not fifo_2_full) and (not fifo_1_rd_en) and (not fifo_1_valid);
+                fifo_2_rd_en <= (not fifo_3_full) and (not fifo_2_rd_en) and (not fifo_2_valid);
             end if;
         end if;
     end process;
