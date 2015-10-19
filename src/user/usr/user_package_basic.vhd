@@ -13,13 +13,13 @@ package user_package is
 	constant i2c_master_enable			: boolean  := true;
 	constant auto_eeprom_read_enable    : boolean  := true;    
 
-	--=== wishbone slaves ========--
+    --=== wishbone slaves ========--
     
 	constant number_of_wb_slaves		: positive := 1;
 
 	constant user_wb_regs               : integer  := 0;
 	
-		--=== ipb slaves =============--
+    --=== ipb slaves =============--
     
 	constant number_of_ipb_slaves		: positive := 5;
    
@@ -29,6 +29,10 @@ package user_package is
 	constant ipb_evt_data_1             : integer  := 3;
     constant ipb_counters               : integer  := 4;
 
+    --=== gtx links =============--
+    
+    constant number_of_optohybrids      : integer  := 2;    
+    
     --============--
     --== Common ==--
     --============--   
@@ -37,6 +41,8 @@ package user_package is
     
     type std32_array_t is array(integer range <>) of std_logic_vector(31 downto 0);
         
+    type std16_array_t is array(integer range <>) of std_logic_vector(15 downto 0);
+
     --================--
     --== T1 command ==--
     --================--

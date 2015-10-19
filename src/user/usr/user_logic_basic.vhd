@@ -211,12 +211,26 @@ architecture user_logic_arch of user_logic is
     --== TTC signals ==--
 
     signal ttc_clk      : std_logic;
+    signal ttc_l1a      : std_logic;
+    signal ttc_bc0      : std_logic;
+    signal ttc_ec0      : std_logic;
+    signal ttc_resync   : std_logic;
+    
+    signal ttc_bx_id    : std_logic_vector(11 downto 0);
+    signal ttc_orbit_id : std_logic_vector(15 downto 0);
+    signal ttc_l1a_id   : std_logic_vector(23 downto 0);
+    
     signal vfat2_t1     : t1_t;
     
     --== IPBus buffer for counting ==--    
     
     signal ipb_miso     : ipb_rbus_array(0 to number_of_ipb_slaves - 1);
-                
+    
+    --== DAQ signals ==--    
+    
+    signal tk_evt_en    : std_logic_vector(number_of_optohybrids - 1 downto 0);
+    signal tk_evt_data  : std16_array_t(0 to number_of_optohybrids - 1);
+    
 begin
     
     --==================--
@@ -228,47 +242,6 @@ begin
 
     
     ipb_miso_o <= ipb_miso;
-    
-    
-   -- TTC LEDs
-    process(ttc_clk)
-        variable clk_led_countdown : integer := 0;
-        variable l1a_led_countdown : integer := 0;
-    begin
-        if (rising_edge(ttc_clk)) then
-            -- control the clk LED
-            if (clk_led_countdown < 2_500_000) then
-                user_v6_led_o(1) <= '0';
-            else
-                user_v6_led_o(1) <= '1';
-            end if;
-            -- control the L1A LED
-            if (l1a_led_countdown > 0) then
-                user_v6_led_o(2) <= '1';
-            else
-                user_v6_led_o(2) <= '0';
-            end if;            
-           
-            -- manage the clk countdown
-            if (vfat2_t1.bc0 = '1') then
-                clk_led_countdown := 400_000;
-            elsif (clk_led_countdown = 0) then
-                clk_led_countdown := 5_000_000;
-            else
-                clk_led_countdown := clk_led_countdown - 1;
-            end if;
- 
-            -- manage the L1A countdown
-            if (vfat2_t1.lv1a = '1') then
-                l1a_led_countdown := 400_000;
-            elsif (l1a_led_countdown > 0) then
-                l1a_led_countdown := l1a_led_countdown - 1;
-            else
-                l1a_led_countdown := 0;
-            end if;
-        end if;
-    end process;   
-    
     
     --=========--
     --== GTX ==--
@@ -289,6 +262,8 @@ begin
         tr_error_o      => gtx_tr_error,
         evt_rcvd_o      => gtx_evt_rcvd,
         vfat2_t1_i      => vfat2_t1,
+        tk_evt_en_o     => tk_evt_en,
+        tk_evt_data_o   => tk_evt_data,
 		rx_n_i          => sfp_rx_n(1 to 4),
 		rx_p_i          => sfp_rx_p(1 to 4),
 		tx_n_o          => sfp_tx_n(1 to 4),
@@ -300,23 +275,32 @@ begin
     -- from ngFEC_logic.vhd (HCAL)
     --================================--
     
-    amc13_inst : entity work.amc13_top
+    ttc_inst : entity work.ttc_wrapper
     port map(
-        ref_clk_i   => user_clk125_i,
-        ttc_clk_p   => xpoint1_clk3_p,
-        ttc_clk_n   => xpoint1_clk3_n,
-        ttc_data_p  => amc_port_rx_p(3),
-        ttc_data_n  => amc_port_rx_n(3),
-        ttc_clk     => ttc_clk,
-        ttcready    => open,
-        l1accept    => vfat2_t1.lv1a,
-        bcntres     => vfat2_t1.bc0,
-        evcntres    => open, 
-        sinerrstr   => open,
-        dberrstr    => open,
-        brcststr    => open,
-        brcst       => open
+        ref_clk_i       => user_clk125_i,
+        ttc_clk_p_i     => xpoint1_clk3_p,
+        ttc_clk_n_i     => xpoint1_clk3_n,
+        ttc_data_p_i    => amc_port_rx_p(3),
+        ttc_data_n_i    => amc_port_rx_n(3),
+        ttc_clk_o       => ttc_clk,
+        ttc_ready_o     => open,
+        l1a_o           => ttc_l1a,
+        bc0_o           => ttc_bc0,
+        ec0_o           => ttc_ec0, 
+        resync_o        => ttc_resync,
+        hard_reset_o    => open,
+        single_err_o    => open,
+        double_err_o    => open,
+        led_l1a_o       => user_v6_led_o(2),
+        led_clk_bc0_o   => user_v6_led_o(1),
+        bx_id_o         => ttc_bx_id,
+        orbit_id_o      => ttc_orbit_id,
+        l1a_id_o        => ttc_l1a_id
     );    
+    
+    vfat2_t1.lv1a <= ttc_l1a;
+    vfat2_t1.bc0 <= ttc_bc0;
+    vfat2_t1.resync <= ttc_resync;
     
     --==========--
     -- Counters --

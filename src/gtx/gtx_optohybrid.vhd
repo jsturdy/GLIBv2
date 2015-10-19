@@ -47,7 +47,10 @@ port(
     tx_data_o       : out std_logic_vector(31 downto 0);
     
     rx_kchar_i      : in std_logic_vector(3 downto 0);
-    rx_data_i       : in std_logic_vector(31 downto 0)
+    rx_data_i       : in std_logic_vector(31 downto 0);
+
+    tk_evt_en_o     : out std_logic;
+    tk_evt_data_o   : out std_logic_vector(15 downto 0)
     
 );
 end gtx_optohybrid;
@@ -70,7 +73,7 @@ architecture Behavioral of gtx_optohybrid is
     signal evt_data         : std_logic_vector(15 downto 0);
     
 begin  
-    
+        
     --==========================--
     --== SFP TX Trigger link ==--
     --==========================--
@@ -115,6 +118,9 @@ begin
     --==========================--
     --== SFP RX Tracking link ==--
     --==========================--
+
+    tk_evt_en_o <= evt_en;
+    tk_evt_data_o <= evt_data;
        
     link_rx_tracking_inst : entity work.link_rx_tracking
     port map(
