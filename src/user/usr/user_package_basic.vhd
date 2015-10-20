@@ -21,13 +21,14 @@ package user_package is
 	
     --=== ipb slaves =============--
     
-	constant number_of_ipb_slaves		: positive := 5;
+	constant number_of_ipb_slaves		: positive := 6;
    
 	constant ipb_gtx_forward_0          : integer  := 0;
 	constant ipb_gtx_forward_1          : integer  := 1;
 	constant ipb_evt_data_0             : integer  := 2;
 	constant ipb_evt_data_1             : integer  := 3;
     constant ipb_counters               : integer  := 4;
+    constant ipb_daq                    : integer  := 5;
 
     --=== gtx links =============--
     

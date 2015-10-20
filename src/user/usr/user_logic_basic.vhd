@@ -210,6 +210,7 @@ architecture user_logic_arch of user_logic is
 
     --== TTC signals ==--
 
+    signal ttc_ready    : std_logic;
     signal ttc_clk      : std_logic;
     signal ttc_l1a      : std_logic;
     signal ttc_bc0      : std_logic;
@@ -271,8 +272,7 @@ begin
 	);
     
     --================================--
-    -- TTC/TTT signal handling 	
-    -- from ngFEC_logic.vhd (HCAL)
+    -- TTC signal handling 	
     --================================--
     
     ttc_inst : entity work.ttc_wrapper
@@ -283,7 +283,7 @@ begin
         ttc_data_p_i    => amc_port_rx_p(3),
         ttc_data_n_i    => amc_port_rx_n(3),
         ttc_clk_o       => ttc_clk,
-        ttc_ready_o     => open,
+        ttc_ready_o     => ttc_ready,
         l1a_o           => ttc_l1a,
         bc0_o           => ttc_bc0,
         ec0_o           => ttc_ec0, 
@@ -299,8 +299,56 @@ begin
     );    
     
     vfat2_t1.lv1a <= ttc_l1a;
-    vfat2_t1.bc0 <= ttc_bc0;
     vfat2_t1.resync <= ttc_resync;
+    -- TODO: previously bc0 was not working, so keep it disconnected from VFATs for now
+    -- (there was a problem once that BC0 was clearing the VFAT EC, which would screw up event building)
+    vfat2_t1.bc0 <= '0';
+    --vfat2_t1.bc0 <= ttc_bc0;
+    
+    --==========--
+    --    DAQ   --
+    --==========--
+    
+    daq : entity work.daq
+    port map
+    (
+        -- Reset
+        reset_i                     => reset_i,
+        resync_i                    => ttc_resync,
+        
+        -- Clocks
+        mgt_ref_clk125_i            => clk125_2_i,
+        clk125_i                    => user_clk125_i,
+        ipb_clk_i                   => ipb_clk_i,
+
+        -- Pins
+        daq_gtx_tx_pin_p            => amc_port_tx_p(1),
+        daq_gtx_tx_pin_n            => amc_port_tx_n(1),
+        daq_gtx_rx_pin_p            => amc_port_rx_p(1),
+        daq_gtx_rx_pin_n            => amc_port_rx_n(1),
+
+        -- TTC
+        ttc_ready_i                 => ttc_ready,
+        ttc_clk_i                   => ttc_clk,
+        ttc_l1a_i                   => ttc_l1a,
+        ttc_bc0_i                   => ttc_bc0,
+        ttc_ec0_i                   => ttc_ec0,
+        ttc_bx_id_i                 => ttc_bx_id,
+        ttc_orbit_id_i              => ttc_orbit_id,
+        ttc_l1a_id_i                => ttc_l1a_id,
+
+        -- Track data
+        track_rx_clk_i              => gtx_usr_clk,
+        track_rx_en_i               => tk_evt_en(0),
+        track_rx_data_i             => tk_evt_data(0),  -- TODO: take data from all OHs, not just the first one
+        
+        -- IPbus
+        ipb_mosi_i                  => ipb_mosi_i(ipb_daq),
+        ipb_miso_o                  => ipb_miso(ipb_daq), 
+
+        -- Other
+        board_sn_i                  => sn
+    );
     
     --==========--
     -- Counters --

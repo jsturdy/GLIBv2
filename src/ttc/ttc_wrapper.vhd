@@ -69,8 +69,6 @@ begin
     l1a_o <= l1a;
     bc0_o <= bc0;
     ec0_o <= ec0;
-    resync_o <= '0';     -- TODO: figure out the encoding for resync
-    hard_reset_o <= '0'; -- TODO: figure out the encoding for hard reset
     
     bx_id_o <= std_logic_vector(bx_id);
     orbit_id_o <= std_logic_vector(orbit_id);
@@ -88,7 +86,7 @@ begin
         TTC_CLK_out => ttc_clk,
         TTCready    => ttc_ready_o,
         L1Accept    => l1a,
-        BCntRes     => bc0,
+        BCntRes     => open, -- CSC encodes BC0 as 0x4 instead of the usual 0x1
         EvCntRes    => ec0,
         SinErrStr   => single_err_o,
         DbErrStr    => double_err_o,
@@ -187,6 +185,37 @@ begin
                 bx_id <= bx_id + 1;
             end if;
             
+        end if;
+    end process;
+
+    --== Command decoding ==--    
+    -- NOTE: this decoding is adapted to CSC TTC encoding and may not necessarily be the same for another TTC/TCDS partition
+    
+    process(ttc_clk)
+    begin
+        if (rising_edge(ttc_clk)) then
+        
+            if (brcststr = '1') then
+                -- the lowest two bits are dropped by the decoder, so if you encode a command as 0xC, it will come out as 0x3!
+                case brcst is
+                    -- normally BC0 is encoded as 0x1 (in which case we should just use the bc0 output of the decoder), but CSC encodes it as 0x4 (so comes as 0x1 with two lower bits wiped away)
+                    when "00" & x"1" =>
+                        bc0 <= '1';
+                    when "00" & x"3" =>
+                        resync_o <= '1';
+                    when "00" & x"4" =>
+                        hard_reset_o <= '1';
+                    when others =>
+                        resync_o <= '0';
+                        hard_reset_o <= '0';
+                        bc0 <= '0';
+                end case;
+            else
+                resync_o <= '0';
+                hard_reset_o <= '0';
+                bc0 <= '0';
+            end if;
+        
         end if;
     end process;
 
