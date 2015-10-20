@@ -75,35 +75,48 @@ begin
     --== SFP TX Trigger link ==--
     --==========================--
        
-    gtx_tx_trigger_inst : entity work.gtx_tx_trigger
+    link_tx_trigger_inst : entity work.link_tx_trigger
     port map(
         gtx_clk_i   => gtx_usr_clk_i,   
         reset_i     => reset_i,           
         vfat2_t1_i  => vfat2_t1_i,          
-        tx_kchar_o  => tx_kchar_o(1 downto 0),   
-        tx_data_o   => tx_data_o(15 downto 0)        
+        tx_kchar_o  => tx_kchar_o(3 downto 2),   
+        tx_data_o   => tx_data_o(31 downto 16)        
     );  
+    
+    --=========================--
+    --== SFP RX Trigger Link ==--
+    --=========================--
+    
+    link_rx_trigger_inst : entity work.link_rx_trigger
+    port map(
+        gtx_clk_i   => gtx_usr_clk_i,   
+        reset_i     => reset_i,  
+        tr_error_o  => tr_error_o,        
+        rx_kchar_i  => rx_kchar_i(3 downto 2),   
+        rx_data_i   => rx_data_i(31 downto 16)      
+    );
     
     --==========================--
     --== SFP TX Tracking link ==--
     --==========================--
        
-    gtx_tx_tracking_inst : entity work.gtx_tx_tracking
+    link_tx_tracking_inst : entity work.link_tx_tracking
     port map(
         gtx_clk_i   => gtx_usr_clk_i,   
         reset_i     => reset_i,           
         req_en_o    => g2o_req_en,   
         req_valid_i => g2o_req_valid,   
         req_data_i  => g2o_req_data,           
-        tx_kchar_o  => tx_kchar_o(3 downto 2),   
-        tx_data_o   => tx_data_o(31 downto 16)        
+        tx_kchar_o  => tx_kchar_o(1 downto 0),   
+        tx_data_o   => tx_data_o(15 downto 0)        
     );  
     
     --==========================--
     --== SFP RX Tracking link ==--
     --==========================--
        
-    gtx_rx_tracking_inst : entity work.gtx_rx_tracking
+    link_rx_tracking_inst : entity work.link_rx_tracking
     port map(
         gtx_clk_i   => gtx_usr_clk_i,   
         reset_i     => reset_i,           
@@ -113,15 +126,15 @@ begin
         evt_data_o  => evt_data,
         tk_error_o  => tk_error_o,
         evt_rcvd_o  => evt_rcvd_o,
-        rx_kchar_i  => rx_kchar_i(3 downto 2),   
-        rx_data_i   => rx_data_i(31 downto 16)        
+        rx_kchar_i  => rx_kchar_i(1 downto 0),   
+        rx_data_i   => rx_data_i(15 downto 0)        
     );
     
     --============================--
     --== GTX request forwarding ==--
     --============================--
     
-    gtx_forward_inst : entity work.gtx_forward
+    link_request_inst : entity work.link_request
     port map(
         ipb_clk_i   => ipb_clk_i,
         gtx_clk_i   => gtx_usr_clk_i,
@@ -139,7 +152,7 @@ begin
     --== Tracking data buffer IPBus ==--
     --================================--
     
-	gtx_tk_readout_inst : entity work.gtx_tk_readout 
+	link_tkdata_inst : entity work.link_tkdata 
     port map(
 		ipb_clk_i   => ipb_clk_i,
 		gtx_clk_i   => gtx_usr_clk_i,

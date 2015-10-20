@@ -81,7 +81,7 @@ begin
 	begin
 	if reset='1' then
 		regs(3 )						<= x"00000000";	--	reg test
-		regs(4 )						<= x"10aa3071";	--	reg ctrl                 (default: xxx1|x0xx|1010|1010|xx00|xxx0|0111|x001)
+		regs(4 )						<= x"10ba3071";	--	reg ctrl                 (default: xxx1|x0xx|1010|1010|xx00|xxx0|0111|x001)
 		regs(5 )						<= x"00000002";	--	reg ctrl 2
 		regs(8 ) 					<= x"00000000";	-- reg ctrl sram
 		regs(10) 					<= x"00000000";	-- reg spi txdata
