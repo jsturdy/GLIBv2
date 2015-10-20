@@ -226,9 +226,49 @@ begin
     ip_addr_o <= x"c0a800a" & amc_slot_i;  -- 192.168.0.[160:175]
     mac_addr_o <= x"080030F100a" & amc_slot_i;  -- 08:00:30:F1:00:0[A0:AF] 
 
-    user_v6_led_o <= "10";
     
     ipb_miso_o <= ipb_miso;
+    
+    
+   -- TTC LEDs
+    process(ttc_clk)
+        variable clk_led_countdown : integer := 0;
+        variable l1a_led_countdown : integer := 0;
+    begin
+        if (rising_edge(ttc_clk)) then
+            -- control the clk LED
+            if (clk_led_countdown < 2_500_000) then
+                user_v6_led_o(1) <= '0';
+            else
+                user_v6_led_o(1) <= '1';
+            end if;
+            -- control the L1A LED
+            if (l1a_led_countdown > 0) then
+                user_v6_led_o(2) <= '1';
+            else
+                user_v6_led_o(2) <= '0';
+            end if;            
+           
+            -- manage the clk countdown
+            if (vfat2_t1.bc0 = '1') then
+                clk_led_countdown := 400_000;
+            elsif (clk_led_countdown = 0) then
+                clk_led_countdown := 5_000_000;
+            else
+                clk_led_countdown := clk_led_countdown - 1;
+            end if;
+ 
+            -- manage the L1A countdown
+            if (vfat2_t1.lv1a = '1') then
+                l1a_led_countdown := 400_000;
+            elsif (l1a_led_countdown > 0) then
+                l1a_led_countdown := l1a_led_countdown - 1;
+            else
+                l1a_led_countdown := 0;
+            end if;
+        end if;
+    end process;   
+    
     
     --=========--
     --== GTX ==--
@@ -262,19 +302,20 @@ begin
     
     amc13_inst : entity work.amc13_top
     port map(
-        ttc_clk_p  => xpoint1_clk3_p,
-        ttc_clk_n  => xpoint1_clk3_n,
-        ttc_data_p => amc_port_rx_p(3),
-        ttc_data_n => amc_port_rx_n(3),
-        ttc_clk    => ttc_clk,
-        ttcready   => open,
-        l1accept   => vfat2_t1.lv1a,
-        bcntres    => vfat2_t1.bc0,
-        evcntres   => open, 
-        sinerrstr  => open,
-        dberrstr   => open,
-        brcststr   => open,
-        brcst      => open
+        ref_clk_i   => user_clk125_i,
+        ttc_clk_p   => xpoint1_clk3_p,
+        ttc_clk_n   => xpoint1_clk3_n,
+        ttc_data_p  => amc_port_rx_p(3),
+        ttc_data_n  => amc_port_rx_n(3),
+        ttc_clk     => ttc_clk,
+        ttcready    => open,
+        l1accept    => vfat2_t1.lv1a,
+        bcntres     => vfat2_t1.bc0,
+        evcntres    => open, 
+        sinerrstr   => open,
+        dberrstr    => open,
+        brcststr    => open,
+        brcst       => open
     );    
     
     --==========--

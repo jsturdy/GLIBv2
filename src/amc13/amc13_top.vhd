@@ -20,82 +20,64 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
-
--- Uncomment the following library declaration if instantiating
--- any Xilinx primitives in this code.
-library UNISIM;
-use UNISIM.VComponents.all;
+library work;
 
 entity amc13_top is
-    Port ( TTC_CLK_p  : in  STD_LOGIC;
-           TTC_CLK_n  : in  STD_LOGIC;
-           TTC_data_p : in  STD_LOGIC;
-           TTC_data_n : in  STD_LOGIC;
-           TTC_CLK   : out  STD_LOGIC;
-           TTCready  : out  STD_LOGIC;
-           L1Accept  : out  STD_LOGIC;
-           BCntRes   : out  STD_LOGIC;
-           EvCntRes  : out  STD_LOGIC;
-           SinErrStr : out  STD_LOGIC;
-           DbErrStr  : out  STD_LOGIC;
-           BrcstStr  : out  STD_LOGIC;
-           Brcst     : out  STD_LOGIC_VECTOR (7 downto 2));
+port( 
+    ref_clk_i   : in std_logic;
+    ttc_clk_p   : in  std_logic;
+    ttc_clk_n   : in  std_logic;
+    ttc_data_p  : in  std_logic;
+    ttc_data_n  : in  std_logic;
+    ttc_clk     : out  std_logic;
+    ttcready    : out  std_logic;
+    l1accept    : out  std_logic;
+    bcntres     : out  std_logic;
+    evcntres    : out  std_logic;
+    sinerrstr   : out  std_logic;
+    dberrstr    : out  std_logic;
+    brcststr    : out  std_logic;
+    brcst       : out  std_logic_vector (7 downto 2)
+);
 end amc13_top;
 
 architecture Behavioral of amc13_top is
-	COMPONENT TTC_decoder
-	PORT(
-		TTC_CLK_p  : IN std_logic;
-		TTC_CLK_n  : IN std_logic;
-		TTC_data_p : IN std_logic;
-		TTC_data_n : IN std_logic;          
-		Clock40   : OUT std_logic;
-		TTCready  : OUT std_logic;
-		L1Accept  : OUT std_logic;
-		BCntRes   : OUT std_logic;
-		EvCntRes  : OUT std_logic;
-		SinErrStr : OUT std_logic;
-		DbErrStr  : OUT std_logic;
-		BrcstStr  : OUT std_logic;
-		Brcst     : OUT std_logic_vector(7 downto 2)
-		);
-	END COMPONENT;
-signal Clock40 : std_logic;
+    
+    signal ttc_rst      : std_logic;
+    signal ttc_rst_cnt  : integer range 0 to 67_108_863;
+    
 begin
-Inst_TTC_decoder: TTC_decoder PORT MAP(
-		TTC_CLK_p  => TTC_CLK_p,
-		TTC_CLK_n  => TTC_CLK_n,
-		TTC_data_p => TTC_data_p,
-		TTC_data_n => TTC_data_n,
-	--	Clock40   => Clock40,
-		Clock40   => TTC_CLK,
-		TTCready  => TTCready,
-		L1Accept  => L1Accept,
-		BCntRes   => BCntRes,
-		EvCntRes  => EvCntRes,
-		SinErrStr => SinErrStr,
-		DbErrStr  => DbErrStr,
-		BrcstStr  => BrcstStr,
-		Brcst     => Brcst
-	);
---ODDR_inst : ODDR
---   generic map(
---      DDR_CLK_EDGE => "OPPOSITE_EDGE", -- "OPPOSITE_EDGE" or "SAME_EDGE" 
---      INIT => '0',   -- Initial value for Q port ('1' or '0')
---      SRTYPE => "SYNC") -- Reset Type ("ASYNC" or "SYNC")
---   port map (
---      Q => TTC_CLK,   -- 1-bit DDR output
---      C => Clock40,    -- 1-bit clock input
---      CE => '1',  -- 1-bit clock enable input
---      D1 => '1',  -- 1-bit data input (positive edge)
---      D2 => '0',  -- 1-bit data input (negative edge)
---      R => '0',    -- 1-bit reset input
---      S => '0'     -- 1-bit set input
---   );
 
-
+    ttc_decoder_inst : entity work.ttc_decoder 
+    port map(
+        ttc_clk_p   => ttc_clk_p,
+        ttc_clk_n   => ttc_clk_n,
+        ttc_rst     => ttc_rst,
+        ttc_data_p  => ttc_data_p,
+        ttc_data_n  => ttc_data_n,
+        ttc_clk_out => ttc_clk,
+        ttcready    => ttcready,
+        l1accept    => l1accept,
+        bcntres     => bcntres,
+        evcntres    => evcntres,
+        sinerrstr   => sinerrstr,
+        dberrstr    => dberrstr,
+        brcststr    => brcststr,
+        brcst       => brcst
+    );
+    
+    process(ref_clk_i)
+    begin
+        if (rising_edge(ref_clk_i)) then
+            if (ttc_rst_cnt = 60_000_000) then
+              ttc_rst <= '0';
+              ttc_rst_cnt <= 60_000_000;
+            else
+              ttc_rst <= '1';
+              ttc_rst_cnt <= ttc_rst_cnt + 1;
+            end if;
+        end if;
+    end process;
+        
 end Behavioral;
 

@@ -1350,8 +1350,8 @@ port map
 																& "00" & ip_from_usr & mac_from_usr
 																&	mac_addr(47 downto 32);  
 	regs_to_ipbus(29)  					<= 				mac_addr(31 downto  0);
-	regs_to_ipbus(30)  					<= x"0000" & eui48(47 downto 32);	--ip_addr;
-	regs_to_ipbus(31)  					<=           eui48(31 downto  0);	--(others => '0'); 
+	regs_to_ipbus(30)  					<= ip_addr; --x"0000" & eui48(47 downto 32);	--ip_addr;
+	regs_to_ipbus(31)  					<= (others => '0'); --          eui48(31 downto  0);	--(others => '0'); 
       
 	-- reg_ctrl                         (default: xxxx|x0xx|1010|1010|xx11|xx0x|0111|x001)
 
