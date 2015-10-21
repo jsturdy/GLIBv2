@@ -1,5 +1,5 @@
 #ChipScope Core Inserter Project File Version 3.0
-#Wed Oct 21 01:15:54 CEST 2015
+#Wed Oct 21 11:15:35 CEST 2015
 Project.device.designInputFile=/home/evka/code/GLIBv2/prj/glib_top_cs.ngc
 Project.device.designOutputFile=/home/evka/code/GLIBv2/prj/glib_top_cs.ngc
 Project.device.deviceFamily=17
@@ -26,7 +26,7 @@ Project.filter<6>=daq_ready*
 Project.filter<7>=daq_event_trailer*
 Project.filter<8>=daq_event_header*
 Project.filter<9>=daq_event_write_en*
-Project.icon.boundaryScanChain=1
+Project.icon.boundaryScanChain=2
 Project.icon.enableExtTriggerIn=false
 Project.icon.enableExtTriggerOut=false
 Project.icon.triggerInPinName=

@@ -24,6 +24,7 @@
   <files xmlns="http://www.xilinx.com/XMLSchema">
     <file xil_pn:fileType="FILE_USERDOC" xil_pn:name="../src/ip_cores/chipscope_ila_readme.txt"/>
     <file xil_pn:fileType="FILE_LOG" xil_pn:name="../src/ip_cores/coregen.log"/>
+    <file xil_pn:fileType="FILE_SYMBOL" xil_pn:name="../src/ip_cores/daq_event_fifo.sym" xil_pn:origination="imported"/>
     <file xil_pn:fileType="FILE_SYMBOL" xil_pn:name="../src/ip_cores/daq_input_fifo.sym" xil_pn:origination="imported"/>
     <file xil_pn:fileType="FILE_SYMBOL" xil_pn:name="../src/ip_cores/fifo16x65.sym" xil_pn:origination="imported"/>
     <file xil_pn:fileType="FILE_SYMBOL" xil_pn:name="../src/ip_cores/fifo8192x16.sym" xil_pn:origination="imported"/>
@@ -81,6 +82,8 @@
     <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_BITGEN_REPORT" xil_pn:name="glib_top.ut" xil_pn:subbranch="FPGAConfiguration"/>
     <file xil_pn:fileType="FILE_XPI" xil_pn:name="glib_top.xpi"/>
     <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_XST" xil_pn:name="glib_top.xst"/>
+    <file xil_pn:fileType="FILE_BLIF" xil_pn:name="glib_top_cs.blc"/>
+    <file xil_pn:fileType="FILE_NGC" xil_pn:name="glib_top_cs.ngc"/>
     <file xil_pn:fileType="FILE_HTML" xil_pn:name="glib_top_envsettings.html"/>
     <file xil_pn:fileType="FILE_NCD" xil_pn:name="glib_top_guide.ncd" xil_pn:origination="imported"/>
     <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_MAP_REPORT" xil_pn:name="glib_top_map.map" xil_pn:subbranch="Map"/>
@@ -118,7 +121,7 @@
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
     </transform>
-    <transform xil_pn:end_ts="1445379159" xil_pn:in_ck="6173678530994034101" xil_pn:name="TRAN_regenerateCores" xil_pn:prop_ck="-738508652297565762" xil_pn:start_ts="1445379159">
+    <transform xil_pn:end_ts="1445382782" xil_pn:in_ck="6173678530994034101" xil_pn:name="TRAN_regenerateCores" xil_pn:prop_ck="-738508652297565762" xil_pn:start_ts="1445382782">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
       <outfile xil_pn:name="../src/ip_cores/chipscope_icon.ngc"/>
@@ -172,7 +175,7 @@
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
     </transform>
-    <transform xil_pn:end_ts="1445379407" xil_pn:in_ck="3371550627684074488" xil_pn:name="TRANEXT_xstsynthesize_virtex6" xil_pn:prop_ck="-1895621303767648803" xil_pn:start_ts="1445379264">
+    <transform xil_pn:end_ts="1445382927" xil_pn:in_ck="3371550627684074488" xil_pn:name="TRANEXT_xstsynthesize_virtex6" xil_pn:prop_ck="-1895621303767648803" xil_pn:start_ts="1445382782">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="WarningsGenerated"/>
       <status xil_pn:value="ReadyToRun"/>
