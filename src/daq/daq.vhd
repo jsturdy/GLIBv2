@@ -838,6 +838,7 @@ begin
     --== DAQ control ==--
     ipb_read_reg_data(0)(0) <= daq_enable;
     ipb_read_reg_data(0)(31) <= reset_ipb;
+    ipb_read_reg_data(0)(7 downto 4) <= tts_override;
     daq_enable <= ipb_write_reg_data(0)(0);
     reset_ipb <= ipb_write_reg_data(0)(31);
     tts_override <= ipb_write_reg_data(0)(7 downto 4);
