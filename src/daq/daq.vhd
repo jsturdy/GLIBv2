@@ -907,7 +907,8 @@ begin
                 ipb_miso_o <= (ipb_ack => '0', ipb_err => '0', ipb_rdata => (others => '0'));    
                 ipb_state <= IDLE;
                 ipb_reg_sel <= 0;
-                ipb_write_reg_data(0)(0) <= '1'; -- enable DAQ by default
+                ipb_write_reg_data <= (others => (others => '0'));
+                --ipb_write_reg_data(0)(0) <= '1'; -- enable DAQ by default
             else         
                 case ipb_state is
                     when IDLE =>                    
