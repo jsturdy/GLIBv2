@@ -103,7 +103,7 @@ architecture Behavioral of daq is
     signal tts_warning          : std_logic := '0'; -- overflow warning - STOP TRIGGERS
     signal tts_out_of_sync      : std_logic := '0'; -- out-of-sync - RESYNC NEEDED
     signal tts_busy             : std_logic := '0'; -- I'm busy - NO TRIGGERS FOR NOW, PLEASE
-
+    signal tts_override         : std_logic_vector(3 downto 0) := x"0"; -- this can be set via IPbus and will override the TTS state if it's not x"0" (regardless of reset_daq and daq_enable)
     
     -- DAQ conf
     signal daq_enable           : std_logic := '1'; -- enable sending data to DAQ on L1A
@@ -116,7 +116,6 @@ architecture Behavioral of daq is
     signal daq_state            : unsigned(3 downto 0) := (others => '0');
     signal daq_curr_vfat_block  : unsigned(11 downto 0) := (others => '0');
     signal daq_curr_block_word  : integer range 0 to 2 := 0;
-
     
     -- DAQ global state
     signal gs_oos_glib_vfat        : std_logic := '0'; -- GLIB is out of sync with vfat(s)
@@ -313,7 +312,8 @@ begin
     
     tts_busy <= reset_daq; -- not used for now (except for reset), but will be needed during resyncs (not implemented yet)
                           
-    tts_state <= x"8" when (daq_enable = '0') else
+    tts_state <= tts_override when (tts_override /= x"0") else
+                 x"8" when (daq_enable = '0') else
                  x"4" when (tts_busy = '1') else
                  x"c" when (tts_critical_error = '1') else
                  x"2" when (tts_out_of_sync = '1') else
@@ -840,6 +840,7 @@ begin
     ipb_read_reg_data(0)(31) <= reset_ipb;
     daq_enable <= ipb_write_reg_data(0)(0);
     reset_ipb <= ipb_write_reg_data(0)(31);
+    tts_override <= ipb_write_reg_data(0)(7 downto 4);
     
     --== DAQ and FIFO current status ==--
     ipb_read_reg_data(1) <= x"00000" & 
