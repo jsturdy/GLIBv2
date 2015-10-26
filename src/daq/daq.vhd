@@ -886,6 +886,10 @@ begin
     --== Number of received triggers (L1A ID) ==--
     ipb_read_reg_data(6) <= x"00" & ttc_l1a_id_i;
         
+    --== DAQLink error counters ==--
+    ipb_read_reg_data(7)(15 downto 0) <= daq_notintable_err_cnt;
+    ipb_read_reg_data(8)(15 downto 0) <= daq_disper_err_cnt;
+    
     --== Debug: last VFAT block ==--
     ipb_read_reg_data(10) <= ep_vfat_block_data(31 downto 0);
     ipb_read_reg_data(11) <= ep_vfat_block_data(63 downto 32);
