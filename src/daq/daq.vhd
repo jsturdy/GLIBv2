@@ -161,6 +161,7 @@ architecture Behavioral of daq is
     signal ep_vfat_block_en      : std_logic := '0';
     signal ep_vfat_word          : integer range 0 to 14 := 14;
     signal ep_last_ec            : std_logic_vector(7 downto 0) := (others => '0');
+    signal ep_last_bc            : std_logic_vector(11 downto 0) := (others => '0');
     signal ep_first_ever_block   : std_logic := '1'; -- it's the first ever event
     signal ep_end_of_event       : std_logic := '0';
     signal ep_last_rx_data       : std_logic_vector(223 downto 0) := (others => '0');
@@ -223,6 +224,7 @@ architecture Behavioral of daq is
     attribute MARK_DEBUG of evtfifo_underflow : signal is "TRUE";
     
     attribute MARK_DEBUG of ep_last_ec : signal is "TRUE";
+    attribute MARK_DEBUG of ep_last_bc : signal is "TRUE";
     attribute MARK_DEBUG of ep_first_ever_block : signal is "TRUE";
     attribute MARK_DEBUG of ep_end_of_event : signal is "TRUE";
     attribute MARK_DEBUG of ep_invalid_vfat_block : signal is "TRUE";
@@ -258,8 +260,9 @@ begin
 
     -- TODO main tasks:
     --   * GLIB, chamber and Run headers
-    --   * Reset and soft reset handling
     --   * Resync handling
+    --   * Stop building events if input fifo is full -- let it drain to some level and only then restart building (otherwise you're pointing to inexisting data). I guess it's better to loose some data than to have something that doesn't make any sense..
+    --   * Support multiple OHs
 
     --================================--
     -- Resets
@@ -407,18 +410,24 @@ begin
             else
                 if (track_rx_en_i = '1') then
                 
-                    -- receiving data
-                    if (ep_vfat_word > 0) then
-                        ep_vfat_block_data(((ep_vfat_word * 16) - 1) downto ((ep_vfat_word - 1) * 16)) <= track_rx_data_i;
+                    -- receiving VFAT data
+                    if (ep_vfat_word > 2) then
+                        ep_vfat_block_data((((ep_vfat_word - 2) * 16) - 1) downto ((ep_vfat_word - 3) * 16)) <= track_rx_data_i;
                         ep_vfat_word <= ep_vfat_word - 1;
+                    -- receiving OH BX data
+                    elsif (ep_vfat_word > 0) then
+                        ep_vfat_block_data((((ep_vfat_word + 12) * 16) - 1) downto ((ep_vfat_word + 11) * 16)) <= track_rx_data_i;
+                        ep_vfat_word <= ep_vfat_word - 1;
+                    -- still receiving data even though we expect that the block should have ended already
                     else
-                        -- still receiving data even though we expect that the block should have ended already
                         gs_vfat_block_too_big <= '1';
                     end if;
                     
                     -- the last word
                     if (ep_vfat_word = 1) then
                         ep_vfat_block_en <= '1';
+                    else
+                        ep_vfat_block_en <= '0';
                     end if;
                     
                 else
@@ -458,6 +467,7 @@ begin
                 cnt_corrupted_vfat <= (others => '0');
                 ep_invalid_vfat_block <= '0';
                 ep_last_ec <= (others => '0');
+                ep_last_bc <= (others => '0');
                 ep_first_ever_block <= '1';
             else
 
@@ -486,13 +496,16 @@ begin
                         cnt_corrupted_vfat <= cnt_corrupted_vfat + 1;
                     else -- valid block
                         ep_invalid_vfat_block <= '0';
-                        ep_last_ec <= ep_vfat_block_data(171 downto 164);                    
+                        ep_last_ec <= ep_vfat_block_data(171 downto 164);
+                        ep_last_bc <= ep_vfat_block_data(187 downto 176);
                         
                         if (ep_first_ever_block = '1') then
                             ep_first_ever_block <= '0';
                         end if;
                         
-                        if ((ep_first_ever_block = '0') and (ep_last_ec /= ep_vfat_block_data(171 downto 164))) then
+--                        if ((ep_first_ever_block = '0') and (ep_last_ec /= ep_vfat_block_data(171 downto 164))) then
+-- for now checking for end of event using BC, but later should use an L1A counter (on VFAT2 EC is reset with BC0, so we can't use that for now)
+                        if ((ep_first_ever_block = '0') and (ep_last_bc /= ep_vfat_block_data(187 downto 176))) then
                             ep_end_of_event <= '1';
                         else
                             ep_end_of_event <= '0';
@@ -560,7 +573,7 @@ begin
                     end if;
                     
                     -- do we have more than 24 VFAT blocks?
-                    if (eb_vfat_words_64 > x"17") then
+                    if (eb_vfat_words_64 > x"45") then
                         eb_event_bigger_than_24 <= '1';
                         gs_event_bigger_than_24 <= '1';
                     end if;

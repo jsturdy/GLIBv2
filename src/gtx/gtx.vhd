@@ -135,25 +135,25 @@ begin
     --== ChipScope ==--
     --===============--
     
-    chipscope_icon_inst : entity work.chipscope_icon
-    port map(
-        control0    => cs_ctrl0,
-        control1    => cs_ctrl1
-    );
-    
-    chipscope_vio_inst : entity work.chipscope_vio
-    port map(
-        control     => cs_ctrl0,
-        async_out   => cs_async_out
-    );
-    
-    chipscope_ila_inst : entity work.chipscope_ila
-    port map(
-        control => cs_ctrl1,
-        clk     => gtx_usr_clk,
-        trig0   => cs_trig0
-    );
-    
-    cs_trig0 <= tx_data & rx_data;
+--    chipscope_icon_inst : entity work.chipscope_icon
+--    port map(
+--        control0    => cs_ctrl0,
+--        control1    => cs_ctrl1
+--    );
+--    
+--    chipscope_vio_inst : entity work.chipscope_vio
+--    port map(
+--        control     => cs_ctrl0,
+--        async_out   => cs_async_out
+--    );
+--    
+--    chipscope_ila_inst : entity work.chipscope_ila
+--    port map(
+--        control => cs_ctrl1,
+--        clk     => gtx_usr_clk,
+--        trig0   => cs_trig0
+--    );
+--    
+--    cs_trig0 <= tx_data & rx_data;
 
 end Behavioral;
