@@ -299,11 +299,11 @@ begin
     );    
     
     vfat2_t1.lv1a <= ttc_l1a;
-    vfat2_t1.resync <= ttc_resync;
+    --vfat2_t1.resync <= ttc_resync;
     -- TODO: previously bc0 was not working, so keep it disconnected from VFATs for now
     -- (there was a problem once that BC0 was clearing the VFAT EC, which would screw up event building)
-    --vfat2_t1.bc0 <= ttc_bc0;
-    vfat2_t1.bc0 <= '0';
+    vfat2_t1.bc0 <= ttc_bc0;
+    --vfat2_t1.bc0 <= '0';
     
     fpga_clkout_o <= ttc_clk;
     

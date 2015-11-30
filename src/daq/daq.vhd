@@ -263,6 +263,7 @@ begin
     --   * Resync handling
     --   * Stop building events if input fifo is full -- let it drain to some level and only then restart building (otherwise you're pointing to inexisting data). I guess it's better to loose some data than to have something that doesn't make any sense..
     --   * Support multiple OHs
+    --   * Timeouts
 
     --================================--
     -- Resets
@@ -855,10 +856,31 @@ begin
     daq_enable <= ipb_write_reg_data(0)(0);
     reset_ipb <= ipb_write_reg_data(0)(31);
     tts_override <= ipb_write_reg_data(0)(7 downto 4);
+
+    --== DAQ and TTS state ==--
+    ipb_read_reg_data(1) <= tts_state &
+                            x"000000" & 
+                            daq_almost_full &
+                            ttc_ready_i & 
+                            daq_clock_locked & 
+                            daq_ready;
+
+    --== DAQLink error counters ==--
+    ipb_read_reg_data(2)(15 downto 0) <= daq_notintable_err_cnt;
+    ipb_read_reg_data(3)(15 downto 0) <= daq_disper_err_cnt;
     
-    --== DAQ and FIFO current status ==--
-    ipb_read_reg_data(1) <= x"00000" & 
-                            evtfifo_empty &             -- Event FIFO
+    --== Number of received triggers (L1A ID) ==--
+    ipb_read_reg_data(4) <= x"00" & ttc_l1a_id_i;
+
+    --== Number of sent events ==--
+    ipb_read_reg_data(5) <= std_logic_vector(cnt_sent_event);
+    
+    
+    
+    --******** registers below are input specific ********--
+    
+    --== FIFO current status and global flags ==--
+    ipb_read_reg_data(16) <= evtfifo_empty &             -- Event FIFO
                             gs_event_fifo_near_full &
                             evtfifo_full &
                             evtfifo_underflow &
@@ -866,18 +888,11 @@ begin
                             gs_input_fifo_near_full &
                             infifo_full &
                             infifo_underflow &
-                            daq_almost_full &          -- DAQ
-                            ttc_ready_i & 
-                            daq_clock_locked & 
-                            daq_ready;
-    
-    --== Global flags ==--
-    ipb_read_reg_data(2) <= tts_state & x"000" &
+                            x"000" &
                             gs_event_too_big &          -- Critical
                             gs_event_fifo_full &        -- Critical
                             gs_input_fifo_underflow &   -- Critical
                             gs_input_fifo_full &        -- Critical
-                            x"0" & 
                             gs_corrupted_vfat_data &    -- Corruption
                             gs_vfat_block_too_big &     -- Corruption
                             gs_vfat_block_too_small &   -- Corruption
@@ -886,31 +901,21 @@ begin
                             gs_oos_glib_vfat &          -- Out-of-sync
                             gs_oos_glib_oh &            -- Out-of-sync (might be normal for some time)
                             gs_oos_oh_vfat;             -- Out-of-sync (normal for now)
-                            
+                                
     --== Corrupted VFAT counter ==--    
-    ipb_read_reg_data(3) <= std_logic_vector(cnt_corrupted_vfat);
+    ipb_read_reg_data(17) <= std_logic_vector(cnt_corrupted_vfat);
 
     --== Current event builder event number ==--
-    ipb_read_reg_data(4) <= x"00" & std_logic_vector(eb_event_num);
-    
-    --== Number of sent events ==--
-    ipb_read_reg_data(5) <= std_logic_vector(cnt_sent_event);
-    
-    --== Number of received triggers (L1A ID) ==--
-    ipb_read_reg_data(6) <= x"00" & ttc_l1a_id_i;
+    ipb_read_reg_data(18) <= x"00" & std_logic_vector(eb_event_num);
         
-    --== DAQLink error counters ==--
-    ipb_read_reg_data(7)(15 downto 0) <= daq_notintable_err_cnt;
-    ipb_read_reg_data(8)(15 downto 0) <= daq_disper_err_cnt;
-    
     --== Debug: last VFAT block ==--
-    ipb_read_reg_data(10) <= ep_vfat_block_data(31 downto 0);
-    ipb_read_reg_data(11) <= ep_vfat_block_data(63 downto 32);
-    ipb_read_reg_data(12) <= ep_vfat_block_data(95 downto 64);
-    ipb_read_reg_data(13) <= ep_vfat_block_data(127 downto 96);
-    ipb_read_reg_data(14) <= ep_vfat_block_data(159 downto 128);
-    ipb_read_reg_data(15) <= ep_vfat_block_data(191 downto 160);
-    ipb_read_reg_data(16) <= ep_vfat_block_data(223 downto 192);
+    ipb_read_reg_data(25) <= ep_vfat_block_data(31 downto 0);
+    ipb_read_reg_data(26) <= ep_vfat_block_data(63 downto 32);
+    ipb_read_reg_data(27) <= ep_vfat_block_data(95 downto 64);
+    ipb_read_reg_data(28) <= ep_vfat_block_data(127 downto 96);
+    ipb_read_reg_data(29) <= ep_vfat_block_data(159 downto 128);
+    ipb_read_reg_data(30) <= ep_vfat_block_data(191 downto 160);
+    ipb_read_reg_data(31) <= ep_vfat_block_data(223 downto 192);
 
 
     --================================--
