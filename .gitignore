@@ -5,3 +5,4 @@
 prj/*
 !prj/GLIB_v2.gise
 !prj/GLIB_v2.xise
+!prj/*.cdc

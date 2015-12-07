@@ -68,7 +68,7 @@ COMPONENT fifo_tk_large
     empty : OUT STD_LOGIC;
     valid : OUT STD_LOGIC;
     underflow : OUT STD_LOGIC;
-    rd_data_count : OUT STD_LOGIC_VECTOR(14 DOWNTO 0)
+    rd_data_count : OUT STD_LOGIC_VECTOR(13 DOWNTO 0)
   );
 END COMPONENT;
 -- COMP_TAG_END ------ End COMPONENT Declaration ------------

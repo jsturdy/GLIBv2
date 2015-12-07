@@ -200,7 +200,7 @@ PACKAGE fifo_tk_large_pkg IS
    PORT (
            WR_CLK                    : IN  std_logic;
      	   RD_CLK                    : IN  std_logic;
-           RD_DATA_COUNT             : OUT std_logic_vector(15-1 DOWNTO 0);
+           RD_DATA_COUNT             : OUT std_logic_vector(14-1 DOWNTO 0);
            VALID                     : OUT std_logic;
            RST                       : IN  std_logic;
            UNDERFLOW                 : OUT std_logic;
