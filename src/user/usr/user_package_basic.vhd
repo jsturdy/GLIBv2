@@ -34,6 +34,10 @@ package user_package is
     
     constant number_of_optohybrids      : integer  := 2;    
     
+    --=== gtx links =============--
+
+    constant daq_format_version         : std_logic_vector(3 downto 0)  := x"0";
+
     --============--
     --== Common ==--
     --============--   
