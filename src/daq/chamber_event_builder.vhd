@@ -42,9 +42,7 @@ port(
     evtfifo_underflow_o         : out std_logic;
 
     -- Track data
-    track_rx_clk_i              : in std_logic;
-    track_rx_en_i               : in std_logic;
-    track_rx_data_i             : in std_logic_vector(15 downto 0);
+    tk_data_link_i              : in data_link_t;
     
     -- TTS
     tts_state_o                 : out std_logic_vector(3 downto 0);
@@ -56,11 +54,11 @@ port(
     err_evtfifo_underflow_o     : out std_logic; -- Tried to read too many events from the event fifo (indicates a problem in the AMC event builder)
     err_event_too_big_o         : out std_logic; -- detected an event with too many VFAT blocks (more than 4095 blocks!)
     err_vfat_block_too_small_o  : out std_logic; -- didn't get the full 14 VFAT words for some block
-    err_vfat_block_too_big_o    : out std_logic -- got more than 14 VFAT words for one block
+    err_vfat_block_too_big_o    : out std_logic; -- got more than 14 VFAT words for one block
     
     -- IPbus
-	--ipb_mosi_i                  : in ipb_wbus;
-	--ipb_miso_o                  : out ipb_rbus
+    ipb_read_reg_data_o         : out std32_array_t(15 downto 0);
+    ipb_write_reg_data_i        : in std32_array_t(15 downto 0)
 );
 
 end chamber_event_builder;
@@ -173,7 +171,7 @@ begin
     daq_input_fifo_inst : entity work.daq_input_fifo
     PORT MAP (
         rst => reset_i,
-        wr_clk => track_rx_clk_i,
+        wr_clk => tk_data_link_i.clk,
         rd_clk => fifo_rd_clk_i,
         din => infifo_din,
         wr_en => infifo_wr_en,
@@ -195,7 +193,7 @@ begin
     daq_event_fifo_inst : entity work.daq_event_fifo
     PORT MAP (
         rst => reset_i,
-        wr_clk => track_rx_clk_i,
+        wr_clk => tk_data_link_i.clk,
         rd_clk => fifo_rd_clk_i,
         din => evtfifo_din,
         wr_en => evtfifo_wr_en,
@@ -234,9 +232,9 @@ begin
     -- Glue input data into VFAT blocks
     --================================--
     -- TODO: this should be merged with Input Processor later
-    process(track_rx_clk_i)
+    process(tk_data_link_i.clk)
     begin
-        if (rising_edge(track_rx_clk_i)) then
+        if (rising_edge(tk_data_link_i.clk)) then
         
             if (reset_i = '1') then
                 ep_vfat_block_data <= (others => '0');
@@ -245,15 +243,15 @@ begin
                 err_vfat_block_too_big <= '0';
                 err_vfat_block_too_small <= '0';
             else
-                if (track_rx_en_i = '1') then
+                if (tk_data_link_i.data_en = '1') then
                 
                     -- receiving VFAT data
                     if (ep_vfat_word > 2) then
-                        ep_vfat_block_data((((ep_vfat_word - 2) * 16) - 1) downto ((ep_vfat_word - 3) * 16)) <= track_rx_data_i;
+                        ep_vfat_block_data((((ep_vfat_word - 2) * 16) - 1) downto ((ep_vfat_word - 3) * 16)) <= tk_data_link_i.data;
                         ep_vfat_word <= ep_vfat_word - 1;
                     -- receiving OH BX data
                     elsif (ep_vfat_word > 0) then
-                        ep_vfat_block_data((((ep_vfat_word + 12) * 16) - 1) downto ((ep_vfat_word + 11) * 16)) <= track_rx_data_i;
+                        ep_vfat_block_data((((ep_vfat_word + 12) * 16) - 1) downto ((ep_vfat_word + 11) * 16)) <= tk_data_link_i.data;
                         ep_vfat_word <= ep_vfat_word - 1;
                     -- still receiving data even though we expect that the block should have ended already
                     else
@@ -289,9 +287,9 @@ begin
     -- Input processor
     --================================--
     
-    process(track_rx_clk_i)
+    process(tk_data_link_i.clk)
     begin
-        if (rising_edge(track_rx_clk_i)) then
+        if (rising_edge(tk_data_link_i.clk)) then
 
             if (reset_i = '1') then
                 ep_last_rx_data <= (others => '0');
@@ -362,9 +360,9 @@ begin
     --================================--
     -- Event Builder
     --================================--
-    process(track_rx_clk_i)
+    process(tk_data_link_i.clk)
     begin
-        if (rising_edge(track_rx_clk_i)) then
+        if (rising_edge(tk_data_link_i.clk)) then
         
             if (reset_i = '1') then
                 evtfifo_din <= (others => '0');
@@ -494,6 +492,48 @@ begin
             end if;
         end if;
     end process;
+
+    --================================--
+    -- Monitoring & Control
+    --================================--
+
+    --== FIFO current status and global flags ==--
+    ipb_read_reg_data_o(0) <= evtfifo_empty &             -- Event FIFO
+                              err_evtfifo_near_full &
+                              evtfifo_full &
+                              evtfifo_underflow &
+                              infifo_empty &              -- Input FIFO
+                              err_infifo_near_full &
+                              infifo_full &
+                              infifo_underflow &
+                              x"000" &
+                              err_event_too_big &          -- Critical
+                              err_evtfifo_full &           -- Critical
+                              err_infifo_underflow &       -- Critical
+                              err_infifo_full &            -- Critical
+                              err_corrupted_vfat_data &    -- Corruption
+                              err_vfat_block_too_big &     -- Corruption
+                              err_vfat_block_too_small &   -- Corruption
+                              err_event_bigger_than_24 &   -- Corruption
+                              err_mixed_oh_bc &            -- Mixed OH BC
+                              err_mixed_vfat_bc &          -- Mixed VFAT BC
+                              err_mixed_vfat_ec &          -- Mixed VFAT EC
+                              "0";
+                                
+    --== Corrupted VFAT counter ==--    
+    ipb_read_reg_data_o(1) <= std_logic_vector(cnt_corrupted_vfat);
+
+    --== Current event builder event number ==--
+    ipb_read_reg_data_o(2) <= x"00" & std_logic_vector(eb_event_num);
+        
+    --== Debug: last VFAT block ==--
+    ipb_read_reg_data_o(9)  <= ep_vfat_block_data(31 downto 0);
+    ipb_read_reg_data_o(10) <= ep_vfat_block_data(63 downto 32);
+    ipb_read_reg_data_o(11) <= ep_vfat_block_data(95 downto 64);
+    ipb_read_reg_data_o(12) <= ep_vfat_block_data(127 downto 96);
+    ipb_read_reg_data_o(13) <= ep_vfat_block_data(159 downto 128);
+    ipb_read_reg_data_o(14) <= ep_vfat_block_data(191 downto 160);
+    ipb_read_reg_data_o(15) <= ep_vfat_block_data(223 downto 192);
 
 end Behavioral;
 
