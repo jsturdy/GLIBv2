@@ -26,6 +26,7 @@
     <file xil_pn:fileType="FILE_LOG" xil_pn:name="../src/ip_cores/coregen.log"/>
     <file xil_pn:fileType="FILE_SYMBOL" xil_pn:name="../src/ip_cores/daq_event_fifo.sym" xil_pn:origination="imported"/>
     <file xil_pn:fileType="FILE_SYMBOL" xil_pn:name="../src/ip_cores/daq_input_fifo.sym" xil_pn:origination="imported"/>
+    <file xil_pn:fileType="FILE_SYMBOL" xil_pn:name="../src/ip_cores/daq_l1a_fifo.sym" xil_pn:origination="imported"/>
     <file xil_pn:fileType="FILE_SYMBOL" xil_pn:name="../src/ip_cores/fifo16x65.sym" xil_pn:origination="imported"/>
     <file xil_pn:fileType="FILE_SYMBOL" xil_pn:name="../src/ip_cores/fifo8192x16.sym" xil_pn:origination="imported"/>
     <file xil_pn:fileType="FILE_SYMBOL" xil_pn:name="../src/ip_cores/fifo_tk_gtx.sym" xil_pn:origination="imported"/>
@@ -130,7 +131,7 @@
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
     </transform>
-    <transform xil_pn:end_ts="1445434881" xil_pn:in_ck="6173678530994034101" xil_pn:name="TRAN_regenerateCores" xil_pn:prop_ck="-738508652297565762" xil_pn:start_ts="1445434880">
+    <transform xil_pn:end_ts="1455195492" xil_pn:in_ck="-8594492027987159672" xil_pn:name="TRAN_regenerateCores" xil_pn:prop_ck="-738508652297565762" xil_pn:start_ts="1455195492">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
       <outfile xil_pn:name="../src/ip_cores/chipscope_icon.ngc"/>
@@ -143,6 +144,8 @@
       <outfile xil_pn:name="../src/ip_cores/daq_event_fifo.vhd"/>
       <outfile xil_pn:name="../src/ip_cores/daq_input_fifo.ngc"/>
       <outfile xil_pn:name="../src/ip_cores/daq_input_fifo.vhd"/>
+      <outfile xil_pn:name="../src/ip_cores/daq_l1a_fifo.ngc"/>
+      <outfile xil_pn:name="../src/ip_cores/daq_l1a_fifo.vhd"/>
       <outfile xil_pn:name="../src/ip_cores/fifo_gtx_rx.ngc"/>
       <outfile xil_pn:name="../src/ip_cores/fifo_gtx_rx.vhd"/>
       <outfile xil_pn:name="../src/ip_cores/fifo_gtx_tx.ngc"/>
@@ -184,7 +187,7 @@
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
     </transform>
-    <transform xil_pn:end_ts="1454699143" xil_pn:in_ck="2130716898727945960" xil_pn:name="TRANEXT_xstsynthesize_virtex6" xil_pn:prop_ck="-1895621303767648803" xil_pn:start_ts="1454699039">
+    <transform xil_pn:end_ts="1455211445" xil_pn:in_ck="8389618857199776595" xil_pn:name="TRANEXT_xstsynthesize_virtex6" xil_pn:prop_ck="-1895621303767648803" xil_pn:start_ts="1455211334">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="WarningsGenerated"/>
       <status xil_pn:value="ReadyToRun"/>
@@ -208,6 +211,7 @@
       <status xil_pn:value="FailedRun"/>
       <status xil_pn:value="ReadyToRun"/>
       <status xil_pn:value="OutOfDateForInputs"/>
+      <status xil_pn:value="InputAdded"/>
       <status xil_pn:value="InputChanged"/>
       <outfile xil_pn:name="_ngo"/>
       <outfile xil_pn:name="_xmsgs/ngdbuild.xmsgs"/>

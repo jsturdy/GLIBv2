@@ -13,6 +13,7 @@
 ----------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
+use IEEE.std_logic_misc.all;
 
 library work;
 use work.ipbus.all;
@@ -108,7 +109,7 @@ architecture Behavioral of daq is
     signal run_params           : std_logic_vector(23 downto 0) := x"000000"; -- optional run parameters (set by software and included in the AMC header)
     
     -- DAQ counters
-    signal cnt_sent_event       : unsigned(31 downto 0) := (others => '0');
+    signal cnt_sent_events      : unsigned(31 downto 0) := (others => '0');
     signal cnt_corrupted_vfat   : unsigned(31 downto 0) := (others => '0');
 
     -- DAQ event sending state machine
@@ -123,10 +124,48 @@ architecture Behavioral of daq is
     signal ipb_read_reg_data        : std32_array_t((16 * number_of_optohybrids) + 15 downto 0); -- 16 regs for AMC evt builder and 16 regs for each chamber evt builder
     signal ipb_write_reg_data       : std32_array_t((16 * number_of_optohybrids) + 15 downto 0); -- 16 regs for AMC evt builder and 16 regs for each chamber evt builder
     
+    -- L1A FIFO
+    signal l1afifo_din          : std_logic_vector(51 downto 0) := (others => '0');
+    signal l1afifo_wr_en        : std_logic := '0';
+    signal l1afifo_rd_en        : std_logic := '0';
+    signal l1afifo_dout         : std_logic_vector(51 downto 0);
+    signal l1afifo_full         : std_logic;
+    signal l1afifo_overflow     : std_logic;
+    signal l1afifo_empty        : std_logic;
+    signal l1afifo_valid        : std_logic;
+    signal l1afifo_underflow    : std_logic;
+    signal l1afifo_near_full    : std_logic;
+    
+    -- DAQ Error Flags
+    signal err_l1afifo_full     : std_logic;
+    
+    -- Timeouts
+    signal dav_timer            : unsigned(23 downto 0) := (others => '0'); -- TODO: probably don't need this to be so large.. (need to test)
+    signal max_dav_timer        : unsigned(23 downto 0) := (others => '0'); -- TODO: probably don't need this to be so large.. (need to test)
+    signal last_dav_timer       : unsigned(23 downto 0) := (others => '0'); -- TODO: probably don't need this to be so large.. (need to test)
+    signal dav_timeout          : unsigned(23 downto 0) := x"03d090"; -- 10ms (very large)
+    signal dav_timeout_flags    : std_logic_vector(23 downto 0) := (others => '0'); -- inputs which have timed out
+    
+    ---=== AMC Event Builder signals ===---
+    
+    -- index of the input currently being processed
+    signal e_input_idx                : integer range 0 to 23 := 0;
+    
+    -- word count of the event being sent
+    signal e_word_count               : unsigned(19 downto 0) := (others => '0');
+
+    -- bitmask indicating chambers with data for the event being sent
+    signal e_dav_mask                 : std_logic_vector(23 downto 0) := (others => '0');
+    -- number of chambers with data for the event being sent
+    signal e_dav_count                : integer range 0 to 24;
+           
     ---=== Chamber Event Builder signals ===---
     
     signal chamber_infifos      : chamber_infifo_rd_array_t(0 to number_of_optohybrids - 1);
     signal chamber_evtfifos     : chamber_evtfifo_rd_array_t(0 to number_of_optohybrids - 1);
+    signal chmb_evtfifos_empty  : std_logic_vector(number_of_optohybrids - 1 downto 0) := (others => '1'); -- you should probably just move this flag out of the chamber_evtfifo_rd_array_t struct 
+    signal chmb_evtfifos_rd_en  : std_logic_vector(number_of_optohybrids - 1 downto 0) := (others => '0'); -- you should probably just move this flag out of the chamber_evtfifo_rd_array_t struct 
+    signal chmb_infifos_rd_en   : std_logic_vector(number_of_optohybrids - 1 downto 0) := (others => '0'); -- you should probably just move this flag out of the chamber_evtfifo_rd_array_t struct 
     
     signal err_event_too_big    : std_logic;
     signal err_evtfifo_underflow: std_logic;
@@ -198,10 +237,13 @@ begin
 
     -- TODO main tasks:
     --   * Support multiple OHs
+    --   * Implement buffer status in the AMC header
+    --   * TTS State aggregation
     --   * Timeouts
     --   * L1A FIFO
     --   * Tag bx and orbit based on L1A
     --   * Check for VFAT and OH BX vs L1A bx mismatches
+    --   * OOS handling
     --   * Resync handling
     --   * Stop building events if input fifo is full -- let it drain to some level and only then restart building (otherwise you're pointing to inexisting data). I guess it's better to loose some data than to have something that doesn't make any sense..
 
@@ -241,6 +283,51 @@ begin
         LOCKED             => daq_clock_locked
     );    
 
+    --================================--
+    -- L1A FIFO
+    --================================--
+    
+    daq_l1a_fifo_inst : entity work.daq_l1a_fifo
+    PORT MAP (
+        rst => reset_daq,
+        wr_clk => ttc_clk_i,
+        rd_clk => daq_clk_bufg,
+        din => l1afifo_din,
+        wr_en => l1afifo_wr_en,
+        wr_ack => open,
+        rd_en => l1afifo_rd_en,
+        dout => l1afifo_dout,
+        full => l1afifo_full,
+        overflow => l1afifo_overflow,
+        almost_full => open,
+        empty => l1afifo_empty,
+        valid => l1afifo_valid,
+        underflow => l1afifo_underflow,
+        prog_full => l1afifo_near_full
+    );
+    
+    -- fill the L1A FIFO
+    process(ttc_clk_i)
+    begin
+        if (rising_edge(ttc_clk_i)) then
+            if (reset_daq = '1') then
+                err_l1afifo_full <= '0';
+            else
+                if (ttc_l1a_i = '1') then
+                    if (l1afifo_full = '0') then
+                        l1afifo_din <= ttc_l1a_id_i & ttc_orbit_id_i & ttc_bx_id_i;
+                        l1afifo_wr_en <= '1';
+                    else
+                        err_l1afifo_full <= '1';
+                        l1afifo_wr_en <= '0';
+                    end if;
+                else
+                    l1afifo_wr_en <= '0';
+                end if;
+            end if;
+        end if;
+    end process;
+    
     --================================--
     -- Chamber Event Builders
     --================================--
@@ -290,6 +377,10 @@ begin
             ipb_write_reg_data_i        => ipb_write_reg_data(31 + (I * 16) downto 16 + (I * 16))
         );
     
+        chmb_evtfifos_empty(I) <= chamber_evtfifos(I).empty;
+        chamber_evtfifos(I).rd_en <= chmb_evtfifos_rd_en(I);
+        chamber_infifos(I).rd_en <= chmb_infifos_rd_en(I);
+        
     end generate;
     
     --================================--
@@ -351,25 +442,27 @@ begin
     process(daq_clk_bufg)
     
         -- event info
-        variable e_id                  : std_logic_vector(23 downto 0) := (others => '0');
-        variable e_bx                  : std_logic_vector(11 downto 0) := (others => '0');
-        variable e_payload_size        : unsigned(19 downto 0) := (others => '0');
-        variable e_evtfifo_almost_full : std_logic := '0';
-        variable e_evtfifo_full        : std_logic := '0';
-        variable e_infifo_full         : std_logic := '0';
-        variable e_evtfifo_near_full   : std_logic := '0';
-        variable e_infifo_near_full    : std_logic := '0';
-        variable e_infifo_underflow    : std_logic := '0';
-        variable e_invalid_vfat_block  : std_logic := '0';
-        variable e_event_too_big       : std_logic := '0';
-        variable e_event_bigger_than_24: std_logic := '0';
-        variable e_mixed_oh_bc         : std_logic := '0';
-        variable e_mixed_vfat_bc       : std_logic := '0';
-        variable e_mixed_vfat_ec       : std_logic := '0';
-        
-        -- counters
-        variable word_count            : unsigned(19 downto 0) := (others => '0');
-        
+        variable e_l1a_id                   : std_logic_vector(23 downto 0) := (others => '0');        
+        variable e_bx_id                    : std_logic_vector(11 downto 0) := (others => '0');        
+        variable e_orbit_id                 : std_logic_vector(15 downto 0) := (others => '0');        
+
+        -- event chamber info; TODO: convert these to signals (but would require additional state)
+        variable e_chmb_l1a_id              : std_logic_vector(23 downto 0) := (others => '0');
+        variable e_chmb_bx_id               : std_logic_vector(11 downto 0) := (others => '0');
+        variable e_chmb_payload_size        : unsigned(19 downto 0) := (others => '0');
+        variable e_chmb_evtfifo_afull       : std_logic := '0';
+        variable e_chmb_evtfifo_full        : std_logic := '0';
+        variable e_chmb_infifo_full         : std_logic := '0';
+        variable e_chmb_evtfifo_near_full   : std_logic := '0';
+        variable e_chmb_infifo_near_full    : std_logic := '0';
+        variable e_chmb_infifo_underflow    : std_logic := '0';
+        variable e_chmb_invalid_vfat_block  : std_logic := '0';
+        variable e_chmb_evt_too_big         : std_logic := '0';
+        variable e_chmb_evt_bigger_24       : std_logic := '0';
+        variable e_chmb_mixed_oh_bc         : std_logic := '0';
+        variable e_chmb_mixed_vfat_bc       : std_logic := '0';
+        variable e_chmb_mixed_vfat_ec       : std_logic := '0';
+              
     begin
     
         if (rising_edge(daq_clk_bufg)) then
@@ -380,19 +473,25 @@ begin
                 daq_event_header <= '0';
                 daq_event_trailer <= '0';
                 daq_event_write_en <= '0';
-                chamber_evtfifos(0).rd_en <= '0';
+                chmb_evtfifos_rd_en <= (others => '0');
+                l1afifo_rd_en <= '0';
                 daq_curr_vfat_block <= (others => '0');
-                chamber_infifos(0).rd_en <= '0';
+                chmb_infifos_rd_en <= (others => '0');
                 daq_curr_block_word <= 0;
-                cnt_sent_event <= (others => '0');
+                cnt_sent_events <= (others => '0');
+                e_word_count <= (others => '0');
             else
             
                 -- state machine for sending data
                 -- state 0: idle
-                -- state 1: sending the first AMC13 header
-                -- state 2: sending the second AMC13 header
-                -- state 3: sending the payload
-                -- state 4: sending the AMC13 trailer
+                -- state 1: send the first AMC header
+                -- state 2: send the second AMC header
+                -- state 3: send the GEM Event header
+                -- state 4: send the GEM Chamber header
+                -- state 5: send the payload
+                -- state 6: send the GEM Chamber trailer
+                -- state 7: send the GEM Event trailer
+                -- state 8: send the AMC trailer
                 if (daq_state = x"0") then
                 
                     -- zero out everything, especially the write enable :)
@@ -400,166 +499,262 @@ begin
                     daq_event_header <= '0';
                     daq_event_trailer <= '0';
                     daq_event_write_en <= '0';
+                    e_word_count <= (others => '0');
+                    e_input_idx <= 0;
                     
-                    -- if the DAQlink state is ok and the event fifo is not empty - start the DAQ state machine
-                    if (chamber_evtfifos(0).empty = '0' and daq_ready = '1' and daq_almost_full = '0' and daq_enable = '1') then
-                        daq_state <= x"1";
-                        chamber_evtfifos(0).rd_en <= '1'; -- read in the event info
-                    else
-                        chamber_evtfifos(0).rd_en <= '0'; -- don't read unless it's a new event (DAQ is in state 0 and events are available)
+                    
+                    -- have an L1A and data from all enabled inputs is ready (or these inputs have timed out)
+                    if (l1afifo_empty = '0' and ((input_mask and ((not chmb_evtfifos_empty) or dav_timeout_flags)) = input_mask)) then
+                        if (daq_ready = '1' and daq_almost_full = '0' and daq_enable = '1') then -- everybody ready?.... GO! :)
+                            -- start the DAQ state machine
+                            daq_state <= x"1";
+                            
+                            -- fetch the data from the L1A FIFO
+                            l1afifo_rd_en <= '1';
+                            
+                            -- set the DAV mask
+                            e_dav_mask <= input_mask and ((not chmb_evtfifos_empty) and (not dav_timeout_flags));
+                            
+                            -- save timer stats
+                            last_dav_timer <= dav_timer;
+                            if ((dav_timer > max_dav_timer) and (or_reduce(dav_timeout_flags) = '0')) then
+                                max_dav_timer <= dav_timer;
+                            end if;
+                        end if;
+                    -- have an L1A, but waiting for data -- start counting the time
+                    elsif (l1afifo_empty = '0') then
+                        dav_timer <= dav_timer + 1;
                     end if;
                     
-                else
+                    -- set the timeout flags if the timer has reached the dav_timeout value
+                    if (dav_timer >= dav_timeout) then
+                        dav_timeout_flags <= chmb_evtfifos_empty and input_mask;
+                    end if;
+                                        
+                else -- lets send some data!
                 
-                    chamber_evtfifos(0).rd_en <= '0'; -- make sure you're not reading the event fifo
-                    -- lets send some data!
-                    -- send the first AMC header
+                    l1afifo_rd_en <= '0';
                     
+                    ----==== send the first AMC header ====----
                     if (daq_state = x"1") then
                         
-                        -- wait for the chamber_evtfifos(0).valid flag and then populate the variables
-                        if (chamber_evtfifos(0).valid = '1') then
-                            e_id := chamber_evtfifos(0).dout(59 downto 36);
-                            e_bx := chamber_evtfifos(0).dout(35 downto 24);
-                            e_payload_size(11 downto 0) := unsigned(chamber_evtfifos(0).dout(23 downto 12));
-                            e_evtfifo_almost_full := chamber_evtfifos(0).dout(11);
-                            e_evtfifo_full        := chamber_evtfifos(0).dout(10);
-                            e_infifo_full         := chamber_evtfifos(0).dout(9);
-                            e_evtfifo_near_full   := chamber_evtfifos(0).dout(8);
-                            e_infifo_near_full    := chamber_evtfifos(0).dout(7);
-                            e_infifo_underflow    := chamber_evtfifos(0).dout(6);
-                            e_event_too_big       := chamber_evtfifos(0).dout(5);
-                            e_invalid_vfat_block  := chamber_evtfifos(0).dout(4);
-                            e_event_bigger_than_24:= chamber_evtfifos(0).dout(3);
-                            e_mixed_oh_bc         := chamber_evtfifos(0).dout(2);
-                            e_mixed_vfat_bc       := chamber_evtfifos(0).dout(1);
-                            e_mixed_vfat_ec       := chamber_evtfifos(0).dout(0);
-                            
-                            daq_curr_vfat_block <= unsigned(chamber_evtfifos(0).dout(23 downto 12)) - 3;
+                        -- wait for the valid flag from the L1A FIFO and then populate the variables and AMC header
+                        if (l1afifo_valid = '1') then
                         
+                            -- fetch the L1A data
+                            e_l1a_id        := l1afifo_dout(51 downto 28);
+                            e_orbit_id      := l1afifo_dout(27 downto 12);
+                            e_bx_id         := l1afifo_dout(11 downto 0);
+
+                            -- send the data
                             daq_event_data <= x"00" & 
-                                              e_id &   -- L1A ID
-                                              e_bx &   -- BX ID
-                                              std_logic_vector(e_payload_size + 7); -- fragment size (all VFAT payload plus 7 words of headers and trailers)
+                                              e_l1a_id &   -- L1A ID
+                                              e_bx_id &   -- BX ID
+                                              x"11111";
                             daq_event_header <= '1';
                             daq_event_trailer <= '0';
                             daq_event_write_en <= '1';
+                            
+                            -- move to the next state
+                            e_word_count <= e_word_count + 1;
                             daq_state <= x"2";
+                            
                         end if;
                         
-                    -- send the second AMC header
+                    ----==== send the second AMC header ====----
                     elsif (daq_state = x"2") then
                     
+                        -- calculate the DAV count (I know it's ugly...)
+                        e_dav_count <= to_integer(unsigned(e_dav_mask(0 downto 0))) + to_integer(unsigned(e_dav_mask(1 downto 1))) + to_integer(unsigned(e_dav_mask(2 downto 2))) + to_integer(unsigned(e_dav_mask(3 downto 3))) + to_integer(unsigned(e_dav_mask(4 downto 4))) + to_integer(unsigned(e_dav_mask(5 downto 5))) + to_integer(unsigned(e_dav_mask(6 downto 6))) + to_integer(unsigned(e_dav_mask(7 downto 7))) + to_integer(unsigned(e_dav_mask(8 downto 8))) + to_integer(unsigned(e_dav_mask(9 downto 9))) + to_integer(unsigned(e_dav_mask(10 downto 10))) + to_integer(unsigned(e_dav_mask(11 downto 11))) + to_integer(unsigned(e_dav_mask(12 downto 12))) + to_integer(unsigned(e_dav_mask(13 downto 13))) + to_integer(unsigned(e_dav_mask(14 downto 14))) + to_integer(unsigned(e_dav_mask(15 downto 15))) + to_integer(unsigned(e_dav_mask(16 downto 16))) + to_integer(unsigned(e_dav_mask(17 downto 17))) + to_integer(unsigned(e_dav_mask(18 downto 18))) + to_integer(unsigned(e_dav_mask(19 downto 19))) + to_integer(unsigned(e_dav_mask(20 downto 20))) + to_integer(unsigned(e_dav_mask(21 downto 21))) + to_integer(unsigned(e_dav_mask(22 downto 22))) + to_integer(unsigned(e_dav_mask(23 downto 23)));
+                        
+                        -- send the data
                         daq_event_data <= daq_format_version &
                                           run_type &
                                           run_params &
-                                          ttc_orbit_id_i(15 downto 0) & 
+                                          e_orbit_id & 
                                           x"00" & 
                                           board_sn_i;
                         daq_event_header <= '0';
                         daq_event_trailer <= '0';
                         daq_event_write_en <= '1';
+                        
+                        -- move to the next state
+                        e_word_count <= e_word_count + 1;
                         daq_state <= x"3";
                     
-                    -- send the GEM Event header
+                    ----==== send the GEM Event header ====----
                     elsif (daq_state = x"3") then
                         
-                        daq_event_data <= x"000001" & -- DAV mask
-                                          -- buffer status (set if we've ever had a buffer overflow)
-                                          x"00000" & "000" &
-                                          (err_event_too_big or e_evtfifo_full or e_infifo_underflow or e_infifo_full) &
-                                          "00001" &   -- DAV count
-                                          -- GLIB status
-                                          "0000000" & -- Not used yet
-                                          tts_state;
-                        daq_event_header <= '0';
-                        daq_event_trailer <= '0';
-                        daq_event_write_en <= '1';
-                        daq_state <= x"4";
+                        -- if this input doesn't have data and we're not at the last input yet, then go to the next input
+                        if ((e_input_idx < 23) and (e_dav_mask(e_input_idx) = '0')) then 
+                        
+                            e_input_idx <= e_input_idx + 1;
+                            
+                        else
+
+                            -- send the data
+                            daq_event_data <= e_dav_mask & -- DAV mask
+                                              -- buffer status (set if we've ever had a buffer overflow)
+                                              x"000000" & -- TODO: implement buffer status flag
+                                              --(err_event_too_big or e_chmb_evtfifo_full or e_chmb_infifo_underflow or e_chmb_infifo_full) &
+                                              std_logic_vector(to_unsigned(e_dav_count, 5)) &   -- DAV count
+                                              -- GLIB status
+                                              "0000000" & -- Not used yet
+                                              tts_state;
+                            daq_event_header <= '0';
+                            daq_event_trailer <= '0';
+                            daq_event_write_en <= '1';
+                            e_word_count <= e_word_count + 1;
+                            
+                            -- if we have data then read the event fifo and send the chamber data
+                            if (e_dav_mask(e_input_idx) = '1') then
+                            
+                                -- read the first chamber event fifo
+                                chmb_evtfifos_rd_en(e_input_idx) <= '1';
+
+                                -- move to the next state
+                                daq_state <= x"4";
+                            
+                            -- no data on this input - skip to event trailer                            
+                            else
+                            
+                                daq_state <= x"7";
+                                
+                            end if;
+                        
+                        end if;
                     
-                    -- send the GEM Chamber header
+                    ----==== send the GEM Chamber header ====----
                     elsif (daq_state = x"4") then
+                    
+                        -- reset the read enable
+                        chmb_evtfifos_rd_en(e_input_idx) <= '0';
+                        
+                        -- wait for the valid flag and then fetch the chamber event data
+                        if (chamber_evtfifos(0).valid = '1') then
+                        
+                            e_chmb_l1a_id                       := chamber_evtfifos(e_input_idx).dout(59 downto 36);
+                            e_chmb_bx_id                        := chamber_evtfifos(e_input_idx).dout(35 downto 24);
+                            e_chmb_payload_size(11 downto 0)    := unsigned(chamber_evtfifos(e_input_idx).dout(23 downto 12));
+                            e_chmb_evtfifo_afull                := chamber_evtfifos(e_input_idx).dout(11);
+                            e_chmb_evtfifo_full                 := chamber_evtfifos(e_input_idx).dout(10);
+                            e_chmb_infifo_full                  := chamber_evtfifos(e_input_idx).dout(9);
+                            e_chmb_evtfifo_near_full            := chamber_evtfifos(e_input_idx).dout(8);
+                            e_chmb_infifo_near_full             := chamber_evtfifos(e_input_idx).dout(7);
+                            e_chmb_infifo_underflow             := chamber_evtfifos(e_input_idx).dout(6);
+                            e_chmb_evt_too_big                  := chamber_evtfifos(e_input_idx).dout(5);
+                            e_chmb_invalid_vfat_block           := chamber_evtfifos(e_input_idx).dout(4);
+                            e_chmb_evt_bigger_24                := chamber_evtfifos(e_input_idx).dout(3);
+                            e_chmb_mixed_oh_bc                  := chamber_evtfifos(e_input_idx).dout(2);
+                            e_chmb_mixed_vfat_bc                := chamber_evtfifos(e_input_idx).dout(1);
+                            e_chmb_mixed_vfat_ec                := chamber_evtfifos(e_input_idx).dout(0);
 
-                        daq_event_data <= x"000000" & -- Zero suppression flags
-                                          "00000" &    -- Input ID
-                                          -- OH word count
-                                          std_logic_vector(e_payload_size(11 downto 0)) &
-                                          -- input status
-                                          e_evtfifo_full &
-                                          e_infifo_full &
-                                          "0" & -- L1A fifo full
-                                          e_event_too_big &
-                                          e_evtfifo_near_full &
-                                          e_infifo_near_full &
-                                          "0" &  -- L1A fifo near full
-                                          e_event_bigger_than_24 &
-                                          e_invalid_vfat_block &
-                                          "0" & -- OOS GLIB-VFAT
-                                          "0" & -- OOS GLIB-OH
-                                          "0" & -- GLIB-VFAT BX mismatch
-                                          "0" & -- GLIB-OH BX mismatch
-                                          x"00" & "00"; -- Not used
+                            daq_curr_vfat_block <= unsigned(chamber_evtfifos(0).dout(23 downto 12)) - 3;
+                            
+                            -- send the data
+                            daq_event_data <= x"000000" & -- Zero suppression flags
+                                              std_logic_vector(to_unsigned(e_input_idx, 5)) &    -- Input ID
+                                              -- OH word count
+                                              std_logic_vector(e_chmb_payload_size(11 downto 0)) &
+                                              -- input status
+                                              e_chmb_evtfifo_full &
+                                              e_chmb_infifo_full &
+                                              "0" & -- L1A fifo full
+                                              e_chmb_evt_too_big &
+                                              e_chmb_evtfifo_near_full &
+                                              e_chmb_infifo_near_full &
+                                              "0" &  -- L1A fifo near full
+                                              e_chmb_evt_bigger_24 &
+                                              e_chmb_invalid_vfat_block &
+                                              "0" & -- OOS GLIB-VFAT
+                                              "0" & -- OOS GLIB-OH
+                                              "0" & -- GLIB-VFAT BX mismatch
+                                              "0" & -- GLIB-OH BX mismatch
+                                              x"00" & "00"; -- Not used
 
-                        daq_event_header <= '0';
-                        daq_event_trailer <= '0';
-                        daq_event_write_en <= '1';
-                        daq_state <= x"5";
+                            daq_event_header <= '0';
+                            daq_event_trailer <= '0';
+                            daq_event_write_en <= '1';
+                            
+                            -- move to the next state
+                            e_word_count <= e_word_count + 1;
+                            daq_state <= x"5";
 
-                        -- read a block from the input fifo
-                        chamber_infifos(0).rd_en <= '1';
-                        daq_curr_block_word <= 2;
-                        word_count := x"00000";
+                            -- read a block from the input fifo
+                            chmb_infifos_rd_en(e_input_idx) <= '1';
+                            daq_curr_block_word <= 2;
+                            
+                        end if; 
 
-                    -- send the payload
+                    ----==== send the payload ====----
                     elsif (daq_state = x"5") then
                     
                         -- read the next vfat block from the infifo if we're already working with the last word, but it's not yet the last block
                         if ((daq_curr_block_word = 0) and (daq_curr_vfat_block > x"0")) then
-                            chamber_infifos(0).rd_en <= '1';
+                            chmb_infifos_rd_en(e_input_idx) <= '1';
                             daq_curr_block_word <= 2;
                             daq_curr_vfat_block <= daq_curr_vfat_block - 3; -- this looks strange, but it's because this is not actually vfat_block but number of 64bit words of vfat data
                         -- we are done sending everything -- move on to the next state
                         elsif ((daq_curr_block_word = 0) and (daq_curr_vfat_block = x"0")) then
-                            chamber_infifos(0).rd_en <= '0';
+                            chmb_infifos_rd_en(e_input_idx) <= '0';
                             daq_state <= x"6";
-                        -- we've just asserted chamber_infifos(0).rd_en, if the valid is still 0, then just wait (make sure chamber_infifos(0).rd_en is 0)
-                        elsif ((daq_curr_block_word = 2) and (chamber_infifos(0).valid = '0')) then
-                            chamber_infifos(0).rd_en <= '0';
+                        -- we've just asserted chmb_infifos_rd_en(e_input_idx), if the valid is still 0, then just wait (make sure chmb_infifos_rd_en(e_input_idx) is 0)
+                        elsif ((daq_curr_block_word = 2) and (chamber_infifos(e_input_idx).valid = '0')) then
+                            chmb_infifos_rd_en(e_input_idx) <= '0';
                         -- lets move to the next vfat word
                         else
-                            chamber_infifos(0).rd_en <= '0';
+                            chmb_infifos_rd_en(e_input_idx) <= '0';
                             daq_curr_block_word <= daq_curr_block_word - 1;
                         end if;
                         
                         -- send the data!
-                        if ((daq_curr_block_word < 2) or (chamber_infifos(0).valid = '1')) then
-                            daq_event_data <= chamber_infifos(0).dout((((daq_curr_block_word + 1) * 64) - 1) downto (daq_curr_block_word * 64));
+                        if ((daq_curr_block_word < 2) or (chamber_infifos(e_input_idx).valid = '1')) then
+                            daq_event_data <= chamber_infifos(e_input_idx).dout((((daq_curr_block_word + 1) * 64) - 1) downto (daq_curr_block_word * 64));
                             daq_event_header <= '0';
                             daq_event_trailer <= '0';
                             daq_event_write_en <= '1';
-                            word_count := word_count + 1;
+                            e_word_count <= e_word_count + 1;
                         else
                             daq_event_write_en <= '0';
                         end if;
 
-                    -- send the GEM Chamber trailer
+                    ----==== send the GEM Chamber trailer ====----
                     elsif (daq_state = x"6") then
-                    
-                        daq_event_data <= x"0000" & -- OH CRC
-                                          std_logic_vector(word_count(11 downto 0)) & -- OH word count
-                                          -- GEM chamber status
-                                          err_evtfifo_underflow &
-                                          "0" &  -- stuck data
-                                          "00" & x"00000000";
-                        daq_event_header <= '0';
-                        daq_event_trailer <= '0';
-                        daq_event_write_en <= '1';
-                        daq_state <= x"7";
-
-                    -- send the GEM Event trailer
+                        
+                        -- increment the input index if it hasn't maxed out yet
+                        if (e_input_idx < 23) then
+                            e_input_idx <= e_input_idx + 1;
+                        end if;
+                        
+                        -- if we have data for the next input or if we've reached the last input
+                        if ((e_input_idx >= 23) or (e_dav_mask(e_input_idx + 1) = '1')) then
+                        
+                            -- send the data
+                            daq_event_data <= x"0000" & -- OH CRC
+                                              std_logic_vector(e_chmb_payload_size(11 downto 0)) & -- OH word count
+                                              -- GEM chamber status
+                                              err_evtfifo_underflow &
+                                              "0" &  -- stuck data
+                                              "00" & x"00000000";
+                            daq_event_header <= '0';
+                            daq_event_trailer <= '0';
+                            daq_event_write_en <= '1';
+                            e_word_count <= e_word_count + 1;
+                                
+                            -- if we have data for the next input then read the infifo and go to chamber data sending
+                            if (e_dav_mask(e_input_idx + 1) = '1') then
+                                chmb_evtfifos_rd_en(e_input_idx + 1) <= '1';
+                                daq_state <= x"4";                            
+                            else -- if next input doesn't have data we can only get here if we're at the last input, so move to the event trailer
+                                daq_state <= x"7";
+                            end if;
+                            
+                        end if;
+                        
+                    ----==== send the GEM Event trailer ====----
                     elsif (daq_state = x"7") then
 
-                        daq_event_data <= x"000000" & -- Chamber timeout
+                        daq_event_data <= dav_timeout_flags & -- Chamber timeout
                                           -- Event status (hmm)
                                           x"0" & "000" &
                                           "0" & -- GLIB OOS (different L1A IDs for different inputs)
@@ -573,17 +768,26 @@ begin
                         daq_event_header <= '0';
                         daq_event_trailer <= '0';
                         daq_event_write_en <= '1';
+                        e_word_count <= e_word_count + 1;
                         daq_state <= x"8";
                         
-                    -- send the AMC trailer
+                    ----==== send the AMC trailer ====----
                     elsif (daq_state = x"8") then
                     
-                        daq_event_data <= x"00000000" & e_id(7 downto 0) & x"0" & std_logic_vector(word_count + 7); --& std_logic_vector(e_payload_size + 3);
+                        -- send the AMC trailer data
+                        daq_event_data <= x"00000000" & e_chmb_l1a_id(7 downto 0) & x"0" & std_logic_vector(e_word_count + 1);
                         daq_event_header <= '0';
                         daq_event_trailer <= '1';
                         daq_event_write_en <= '1';
+                        
+                        -- go back to DAQ idle state
                         daq_state <= x"0";
-                        cnt_sent_event <= cnt_sent_event + 1;
+                        
+                        -- reset things
+                        e_word_count <= (others => '0');
+                        e_input_idx <= 0;
+                        cnt_sent_events <= cnt_sent_events + 1;
+                        dav_timeout_flags <= x"000000";
                         
                     -- hmm
                     else
@@ -629,15 +833,19 @@ begin
     ipb_read_reg_data(4) <= x"00" & ttc_l1a_id_i;
 
     --== Number of sent events ==--
-    ipb_read_reg_data(5) <= std_logic_vector(cnt_sent_event);
+    ipb_read_reg_data(5) <= std_logic_vector(cnt_sent_events);
+    
+    --== DAV Timeout ==--
+    ipb_read_reg_data(6)(23 downto 0) <= std_logic_vector(dav_timeout);
+
+    dav_timeout <= unsigned(ipb_write_reg_data(6)(23 downto 0));
     
     --== Software settable run type and run parameters ==--
     ipb_read_reg_data(15)(27 downto 24) <= run_type;
     ipb_read_reg_data(15)(23 downto 0) <= run_params;
 
     run_type <= ipb_write_reg_data(15)(27 downto 24);
-    run_params <= ipb_write_reg_data(15)(23 downto 0);
-    
+    run_params <= ipb_write_reg_data(15)(23 downto 0);    
 
     --================================--
     -- IPbus
