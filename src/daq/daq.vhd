@@ -120,9 +120,9 @@ architecture Behavioral of daq is
     -- IPbus registers
     type ipb_state_t is (IDLE, RSPD, RST);
     signal ipb_state                : ipb_state_t := IDLE;    
-    signal ipb_reg_sel              : integer range 0 to (16 * number_of_optohybrids) + 15; -- 16 regs for AMC evt builder and 16 regs for each chamber evt builder   
-    signal ipb_read_reg_data        : std32_array_t((16 * number_of_optohybrids) + 15 downto 0); -- 16 regs for AMC evt builder and 16 regs for each chamber evt builder
-    signal ipb_write_reg_data       : std32_array_t((16 * number_of_optohybrids) + 15 downto 0); -- 16 regs for AMC evt builder and 16 regs for each chamber evt builder
+    signal ipb_reg_sel              : integer range 0 to (16 * (number_of_optohybrids + 10)) + 15; -- 16 regs for AMC evt builder and 16 regs for each chamber evt builder   
+    signal ipb_read_reg_data        : std32_array_t(0 to (16 * (number_of_optohybrids + 10)) + 15); -- 16 regs for AMC evt builder and 16 regs for each chamber evt builder
+    signal ipb_write_reg_data       : std32_array_t(0 to (16 * (number_of_optohybrids + 10)) + 15); -- 16 regs for AMC evt builder and 16 regs for each chamber evt builder
     
     -- L1A FIFO
     signal l1afifo_din          : std_logic_vector(51 downto 0) := (others => '0');
@@ -166,6 +166,7 @@ architecture Behavioral of daq is
     signal chmb_evtfifos_empty  : std_logic_vector(number_of_optohybrids - 1 downto 0) := (others => '1'); -- you should probably just move this flag out of the chamber_evtfifo_rd_array_t struct 
     signal chmb_evtfifos_rd_en  : std_logic_vector(number_of_optohybrids - 1 downto 0) := (others => '0'); -- you should probably just move this flag out of the chamber_evtfifo_rd_array_t struct 
     signal chmb_infifos_rd_en   : std_logic_vector(number_of_optohybrids - 1 downto 0) := (others => '0'); -- you should probably just move this flag out of the chamber_evtfifo_rd_array_t struct 
+    signal chmb_tts_states      : std4_array_t(0 to number_of_optohybrids - 1);
     
     signal err_event_too_big    : std_logic;
     signal err_evtfifo_underflow: std_logic;
@@ -332,7 +333,7 @@ begin
     -- Chamber Event Builders
     --================================--
 
-    gtx_optohybrid_loop : for I in 0 to (number_of_optohybrids - 1) generate
+    chamber_evt_builder_loop : for I in 0 to (number_of_optohybrids - 1) generate
     begin
 
         chamber_evt_builder : entity work.chamber_event_builder
@@ -361,7 +362,7 @@ begin
             tk_data_link_i              => tk_data_links_i(I),
             
             -- TTS
-            tts_state_o                 => tts_state,
+            tts_state_o                 => chmb_tts_states(I),
 
             -- Critical error flags
             err_infifo_full_o           => open,
@@ -373,8 +374,10 @@ begin
             err_vfat_block_too_big_o    => open, -- got more than 14 VFAT words for one block
             
             -- IPbus (the first 16 regs are reserved for AMC event builder and then each chamber event builder will get 16 regs above that)
-            ipb_read_reg_data_o         => ipb_read_reg_data(31 + (I * 16) downto 16 + (I * 16)),
-            ipb_write_reg_data_i        => ipb_write_reg_data(31 + (I * 16) downto 16 + (I * 16))
+--            ipb_read_reg_data_o         => ipb_read_reg_data(((I + 1) * 16) to (((I + 2) * 16) - 1)),
+--            ipb_write_reg_data_i        => ipb_write_reg_data(((I + 1) * 16) to (((I + 2) * 16) - 1))
+            ipb_read_reg_data_o         => ipb_read_reg_data((I+1) * 16 to (I+1) * 16 + 15),
+            ipb_write_reg_data_i        => ipb_write_reg_data((I+1) * 16 to (I+1) * 16 + 15)
         );
     
         chmb_evtfifos_empty(I) <= chamber_evtfifos(I).empty;
@@ -480,6 +483,9 @@ begin
                 daq_curr_block_word <= 0;
                 cnt_sent_events <= (others => '0');
                 e_word_count <= (others => '0');
+                dav_timer <= (others => '0');
+                max_dav_timer <= (others => '0');
+                last_dav_timer <= (others => '0');
             else
             
                 -- state machine for sending data
@@ -837,8 +843,12 @@ begin
     
     --== DAV Timeout ==--
     ipb_read_reg_data(6)(23 downto 0) <= std_logic_vector(dav_timeout);
-
     dav_timeout <= unsigned(ipb_write_reg_data(6)(23 downto 0));
+
+    --== DAV Timing stats ==--    
+    ipb_read_reg_data(7)(23 downto 0) <= std_logic_vector(max_dav_timer);
+    ipb_read_reg_data(8)(23 downto 0) <= std_logic_vector(last_dav_timer);
+
     
     --== Software settable run type and run parameters ==--
     ipb_read_reg_data(15)(27 downto 24) <= run_type;
@@ -858,12 +868,14 @@ begin
                 ipb_miso_o <= (ipb_ack => '0', ipb_err => '0', ipb_rdata => (others => '0'));    
                 ipb_state <= IDLE;
                 ipb_reg_sel <= 0;
+                
                 ipb_write_reg_data <= (others => (others => '0'));
-                --ipb_write_reg_data(0)(0) <= '1'; -- enable DAQ by default
+                ipb_write_reg_data(0)(31 downto 8) <= x"000001"; -- enable the first input by default
+                ipb_write_reg_data(6)(23 downto 0) <= x"03d090"; -- default DAV timeout of 10ms
             else         
                 case ipb_state is
                     when IDLE =>                    
-                        ipb_reg_sel <= to_integer(unsigned(ipb_mosi_i.ipb_addr(4 downto 0)));
+                        ipb_reg_sel <= to_integer(unsigned(ipb_mosi_i.ipb_addr(8 downto 0)));
                         if (ipb_mosi_i.ipb_strobe = '1') then
                             ipb_state <= RSPD;
                         end if;

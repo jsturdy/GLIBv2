@@ -57,8 +57,8 @@ port(
     err_vfat_block_too_big_o    : out std_logic; -- got more than 14 VFAT words for one block
     
     -- IPbus
-    ipb_read_reg_data_o         : out std32_array_t(15 downto 0);
-    ipb_write_reg_data_i        : in std32_array_t(15 downto 0)
+    ipb_read_reg_data_o         : out std32_array_t(0 to 15);
+    ipb_write_reg_data_i        : in std32_array_t(0 to 15)
 );
 
 end chamber_event_builder;
@@ -121,6 +121,10 @@ architecture Behavioral of chamber_event_builder is
     signal ep_last_rx_data          : std_logic_vector(223 downto 0) := (others => '0');
     signal ep_last_rx_data_valid    : std_logic := '0';
     signal ep_invalid_vfat_block    : std_logic := '0';
+    
+    -- Event processor timeout
+    signal ep_dav_timer             : unsigned(23 downto 0) := (others => '0');
+    signal ep_dav_timeout           : unsigned(23 downto 0) := x"01e848";
         
     -- Event builder
     signal eb_vfat_words_64         : unsigned(11 downto 0) := (others => '0');

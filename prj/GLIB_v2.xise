@@ -673,9 +673,6 @@
       <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="284"/>
       <association xil_pn:name="Implementation" xil_pn:seqID="65"/>
     </file>
-    <file xil_pn:name="daq_chipscope.cdc" xil_pn:type="FILE_CDC">
-      <association xil_pn:name="Implementation" xil_pn:seqID="0"/>
-    </file>
     <file xil_pn:name="../src/daq/chamber_event_builder.vhd" xil_pn:type="FILE_VHDL">
       <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="304"/>
       <association xil_pn:name="Implementation" xil_pn:seqID="125"/>

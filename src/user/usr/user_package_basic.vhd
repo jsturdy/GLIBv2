@@ -48,6 +48,8 @@ package user_package is
         
     type std16_array_t is array(integer range <>) of std_logic_vector(15 downto 0);
 
+    type std4_array_t is array(integer range <>) of std_logic_vector(3 downto 0);
+
     --====================--
     --== DAQ data input ==--
     --====================--
