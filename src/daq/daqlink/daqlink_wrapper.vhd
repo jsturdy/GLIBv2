@@ -217,10 +217,11 @@ end component;
 
     ----------------
     signal  gtx0_mgt_ref_clk_2b         : std_logic_vector(1 downto 0);
-    signal  gtx_tx_clk_out             : std_logic;
+    signal  gtx_tx_clk_out              : std_logic;
     signal  gtx0_usr_clk                : std_logic;
     signal  daq_ready                   : std_logic;
 
+    signal reset_cooldown_countdown     : unsigned(27 downto 0);
   
 --    attribute MARK_DEBUG : string;
 --    attribute MARK_DEBUG of gtx0_mgt_ref_clk_2b : signal is "TRUE";
@@ -304,12 +305,18 @@ begin
             if (RESET_IN = '1') then
                 gtx_err_disper_count <= (others => '0');
                 gtx_err_not_in_table_count <= (others => '0');
+                reset_cooldown_countdown <= x"27bc86a"; -- about 333ms
             else
-                if ((gtx0_rxdisperr_i(0) or gtx0_rxdisperr_i(1)) = '1' and gtx0_rxresetdone_i = '1') then
-                    gtx_err_disper_count <= std_logic_vector(unsigned(gtx_err_disper_count) + 1);
-                end if;
-                if ((gtx0_rxnotintable_i(0) or gtx0_rxnotintable_i(1)) = '1' and gtx0_rxresetdone_i = '1') then
-                    gtx_err_not_in_table_count <= std_logic_vector(unsigned(gtx_err_not_in_table_count) + 1);
+                -- wait for some time after a reset before starting to count gtx errors
+                if (reset_cooldown_countdown > x"0000000") then
+                    reset_cooldown_countdown <= reset_cooldown_countdown - 1;
+                else
+                    if ((gtx0_rxdisperr_i(0) or gtx0_rxdisperr_i(1)) = '1' and gtx0_rxresetdone_i = '1') then
+                        gtx_err_disper_count <= std_logic_vector(unsigned(gtx_err_disper_count) + 1);
+                    end if;
+                    if ((gtx0_rxnotintable_i(0) or gtx0_rxnotintable_i(1)) = '1' and gtx0_rxresetdone_i = '1') then
+                        gtx_err_not_in_table_count <= std_logic_vector(unsigned(gtx_err_not_in_table_count) + 1);
+                    end if;
                 end if;
             end if;
         end if;
