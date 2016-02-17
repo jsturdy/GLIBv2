@@ -172,10 +172,51 @@ architecture Behavioral of daq is
     signal err_evtfifo_underflow: std_logic;
     
     -- Debug flags for ChipScope
---    attribute MARK_DEBUG : string;
---    attribute MARK_DEBUG of reset_daq : signal is "TRUE";
---    attribute MARK_DEBUG of daq_gtx_clk : signal is "TRUE";
---    attribute MARK_DEBUG of daq_clk_bufg : signal is "TRUE";
+    attribute MARK_DEBUG : string;
+    attribute MARK_DEBUG of reset_daq           : signal is "TRUE";
+    attribute MARK_DEBUG of daq_clk_bufg        : signal is "TRUE";
+
+    attribute MARK_DEBUG of resync_i            : signal is "TRUE";
+    attribute MARK_DEBUG of ttc_ready_i         : signal is "TRUE";
+    attribute MARK_DEBUG of ttc_clk_i           : signal is "TRUE";
+    attribute MARK_DEBUG of ttc_l1a_i           : signal is "TRUE";
+    attribute MARK_DEBUG of ttc_bc0_i           : signal is "TRUE";
+    attribute MARK_DEBUG of ttc_ec0_i           : signal is "TRUE";
+    attribute MARK_DEBUG of ttc_bx_id_i         : signal is "TRUE";
+    attribute MARK_DEBUG of ttc_orbit_id_i      : signal is "TRUE";
+    attribute MARK_DEBUG of ttc_l1a_id_i        : signal is "TRUE";
+    
+    attribute MARK_DEBUG of dav_timer           : signal is "TRUE";
+    attribute MARK_DEBUG of max_dav_timer       : signal is "TRUE";
+    attribute MARK_DEBUG of last_dav_timer      : signal is "TRUE";
+    attribute MARK_DEBUG of dav_timeout         : signal is "TRUE";
+    attribute MARK_DEBUG of dav_timeout_flags   : signal is "TRUE";
+
+    attribute MARK_DEBUG of daq_state           : signal is "TRUE";
+    attribute MARK_DEBUG of daq_curr_vfat_block : signal is "TRUE";
+    attribute MARK_DEBUG of daq_curr_block_word : signal is "TRUE";
+
+    attribute MARK_DEBUG of daq_event_data      : signal is "TRUE";
+    attribute MARK_DEBUG of daq_event_write_en  : signal is "TRUE";
+    attribute MARK_DEBUG of daq_event_header    : signal is "TRUE";
+    attribute MARK_DEBUG of daq_event_trailer   : signal is "TRUE";
+    attribute MARK_DEBUG of daq_ready           : signal is "TRUE";
+    attribute MARK_DEBUG of daq_almost_full     : signal is "TRUE";
+    
+    attribute MARK_DEBUG of input_mask          : signal is "TRUE";
+    attribute MARK_DEBUG of e_input_idx         : signal is "TRUE";
+    attribute MARK_DEBUG of e_word_count        : signal is "TRUE";
+    attribute MARK_DEBUG of e_dav_mask          : signal is "TRUE";
+    attribute MARK_DEBUG of e_dav_count         : signal is "TRUE";
+    
+    attribute MARK_DEBUG of l1afifo_dout        : signal is "TRUE";
+    attribute MARK_DEBUG of l1afifo_rd_en       : signal is "TRUE";
+    attribute MARK_DEBUG of l1afifo_empty       : signal is "TRUE";
+    
+    attribute MARK_DEBUG of chmb_evtfifos_empty : signal is "TRUE";
+    attribute MARK_DEBUG of chmb_evtfifos_rd_en : signal is "TRUE";
+    attribute MARK_DEBUG of chmb_infifos_rd_en  : signal is "TRUE";
+    
 --
 --    attribute MARK_DEBUG of track_rx_clk_i : signal is "TRUE";
 --    attribute MARK_DEBUG of track_rx_en_i : signal is "TRUE";
@@ -223,16 +264,6 @@ architecture Behavioral of daq is
 --    attribute MARK_DEBUG of eb_oos_glib_vfat : signal is "TRUE";
 --    
 --    attribute MARK_DEBUG of gs_corrupted_vfat_data : signal is "TRUE";
---    attribute MARK_DEBUG of daq_state : signal is "TRUE";
---    attribute MARK_DEBUG of daq_curr_vfat_block : signal is "TRUE";
---    attribute MARK_DEBUG of daq_curr_block_word : signal is "TRUE";
---
---    attribute MARK_DEBUG of daq_event_data : signal is "TRUE";
---    attribute MARK_DEBUG of daq_event_write_en : signal is "TRUE";
---    attribute MARK_DEBUG of daq_event_header : signal is "TRUE";
---    attribute MARK_DEBUG of daq_event_trailer : signal is "TRUE";
---    attribute MARK_DEBUG of daq_ready : signal is "TRUE";
---    attribute MARK_DEBUG of daq_almost_full : signal is "TRUE";
 
 begin
 
@@ -313,6 +344,7 @@ begin
         if (rising_edge(ttc_clk_i)) then
             if (reset_daq = '1') then
                 err_l1afifo_full <= '0';
+                l1afifo_wr_en <= '0';
             else
                 if (ttc_l1a_i = '1') then
                     if (l1afifo_full = '0') then
@@ -872,6 +904,10 @@ begin
                 ipb_write_reg_data <= (others => (others => '0'));
                 ipb_write_reg_data(0)(31 downto 8) <= x"000001"; -- enable the first input by default
                 ipb_write_reg_data(6)(23 downto 0) <= x"03d090"; -- default DAV timeout of 10ms
+                
+                for I in 0 to (number_of_optohybrids - 1) loop
+                    ipb_write_reg_data((I+1)*16 + 3)(23 downto 0) <= x"03d090"; -- default DAV timeout of 10ms
+                end loop;
             else         
                 case ipb_state is
                     when IDLE =>                    
