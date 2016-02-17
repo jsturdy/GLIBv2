@@ -142,6 +142,12 @@ architecture Behavioral of chamber_event_builder is
     signal eb_mixed_vfat_ec         : std_logic := '0';
     signal eb_mixed_oh_bc           : std_logic := '0';
 
+    signal eb_timer                 : unsigned(23 downto 0) := (others => '0');
+    signal eb_timeout_delay         : unsigned(23 downto 0) := x"03d090"; -- 10ms (very large)
+    signal eb_timeout_flag          : std_logic := '0';
+    signal eb_last_timer            : unsigned(23 downto 0) := (others => '0');
+    signal eb_max_timer             : unsigned(23 downto 0) := (others => '0');
+    
 begin
 
     --================================--
@@ -390,9 +396,28 @@ begin
                 eb_event_bigger_than_24 <= '0';
                 err_event_bigger_than_24 <= '0';
                 err_evtfifo_full <= '0';
+                eb_timer <= (others => '0');
+                eb_timeout_flag <= '0';
             else
+                
+                if (eb_timer >= eb_timeout_delay) then
+                    eb_timeout_flag <= '1';
+                    eb_last_timer <= eb_timer;
+                    if (eb_timer > eb_max_timer) then
+                        eb_max_timer <= eb_timer;
+                    end if;                    
+                end if;
+                
+                -- No data coming, but we do have data in the buffer, manage the timeout timer
+                if ((ep_last_rx_data_valid = '0') and (eb_vfat_words_64 > x"000")) then
+                    eb_timer <= eb_timer + 1;
+                    
                 -- Continuation of the current event - update flags and counters
-                if ((ep_last_rx_data_valid = '1') and (ep_end_of_event = '0')) then
+                elsif ((ep_last_rx_data_valid = '1') and (ep_end_of_event = '0')) then
+                
+                    -- reset the timer and timeout flag
+                    eb_timer <= (others => '0');
+                    eb_timeout_flag <= '0';
                 
                     -- do not write to event fifo
                     evtfifo_wr_en <= '0';
@@ -445,7 +470,7 @@ begin
                     end if;
                     
                 -- End of event - push to event fifo, reset the flags and populate the new event ids (event num, bx, etc)
-                elsif ((ep_last_rx_data_valid = '1') and (ep_end_of_event = '1')) then
+                elsif (((ep_last_rx_data_valid = '1') and (ep_end_of_event = '1')) or (eb_timeout_flag = '1')) then
                 
                     -- Push to event FIFO
                     if (evtfifo_full = '0') then
@@ -469,23 +494,33 @@ begin
                         err_evtfifo_full <= '1';
                     end if;
 
+                    if (eb_timeout_flag = '0') then
+                        eb_vfat_bc <= ep_last_rx_data(187 downto 176);
+                        eb_oh_bc <= ep_last_rx_data(223 downto 192);
+                        eb_vfat_ec <= ep_last_rx_data(171 downto 164);
+                        eb_counters_valid <= '1';
+                        eb_vfat_words_64 <= x"003"; -- minimum number of VFAT blocks = 1 block (3 64bit words)
+                    else
+                        eb_counters_valid <= '0';
+                        eb_vfat_words_64 <= x"000"; -- no data yet after timeout
+                    end if;
+                    
                     -- Increment the event number, set bx
                     eb_event_num <= eb_event_num + 1;
                     eb_event_num_short <= eb_event_num_short + 1;
-                    eb_vfat_bc <= ep_last_rx_data(187 downto 176);
-                    eb_oh_bc <= ep_last_rx_data(223 downto 192);
-                    eb_vfat_ec <= ep_last_rx_data(171 downto 164);
-                    eb_counters_valid <= '1';
                     
                     -- reset event flags
                     eb_invalid_vfat_block <= '0';
-                    eb_vfat_words_64 <= x"003"; -- minimum number of VFAT blocks = 1 block (3 64bit words)
                     eb_mixed_vfat_bc <= '0';
                     eb_mixed_vfat_ec <= '0';
                     eb_mixed_oh_bc <= '0';
                     eb_event_too_big <= '0';
                     eb_event_bigger_than_24 <= '0';
                     
+                    -- reset the timeout
+                    eb_timeout_flag <= '0';
+                    eb_timer <= (others => '0');
+
                 else
                 
                     -- hmm
@@ -530,6 +565,14 @@ begin
     --== Current event builder event number ==--
     ipb_read_reg_data_o(2) <= x"00" & std_logic_vector(eb_event_num);
         
+    --== Timeout delay ==--
+    ipb_read_reg_data_o(3)(23 downto 0) <= std_logic_vector(eb_timeout_delay);
+    eb_timeout_delay <= unsigned(ipb_write_reg_data_i(3)(23 downto 0));
+
+    --== Timeout stats ==--
+    ipb_read_reg_data_o(7)(23 downto 0) <= std_logic_vector(eb_max_timer);
+    ipb_read_reg_data_o(8)(23 downto 0) <= std_logic_vector(eb_last_timer);
+    
     --== Debug: last VFAT block ==--
     ipb_read_reg_data_o(9)  <= ep_vfat_block_data(31 downto 0);
     ipb_read_reg_data_o(10) <= ep_vfat_block_data(63 downto 32);
