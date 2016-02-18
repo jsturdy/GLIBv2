@@ -824,7 +824,7 @@ begin
                     elsif (daq_state = x"8") then
                     
                         -- send the AMC trailer data
-                        daq_event_data <= x"00000000" & e_chmb_l1a_id(7 downto 0) & x"0" & std_logic_vector(e_word_count + 1);
+                        daq_event_data <= x"00000000" & e_l1a_id(7 downto 0) & x"0" & std_logic_vector(e_word_count + 1);
                         daq_event_header <= '0';
                         daq_event_trailer <= '1';
                         daq_event_write_en <= '1';
