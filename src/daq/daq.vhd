@@ -590,7 +590,7 @@ begin
                             daq_event_data <= x"00" & 
                                               e_l1a_id &   -- L1A ID
                                               e_bx_id &   -- BX ID
-                                              x"11111";
+                                              x"fffff";
                             daq_event_header <= '1';
                             daq_event_trailer <= '0';
                             daq_event_write_en <= '1';
