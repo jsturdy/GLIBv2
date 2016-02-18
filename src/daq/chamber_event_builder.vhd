@@ -122,10 +122,6 @@ architecture Behavioral of chamber_event_builder is
     signal ep_last_rx_data_valid    : std_logic := '0';
     signal ep_invalid_vfat_block    : std_logic := '0';
     
-    -- Event processor timeout
-    signal ep_dav_timer             : unsigned(23 downto 0) := (others => '0');
-    signal ep_dav_timeout           : unsigned(23 downto 0) := x"01e848";
-        
     -- Event builder
     signal eb_vfat_words_64         : unsigned(11 downto 0) := (others => '0');
     signal eb_vfat_bc               : std_logic_vector(11 downto 0) := (others => '0');
@@ -142,12 +138,44 @@ architecture Behavioral of chamber_event_builder is
     signal eb_mixed_vfat_ec         : std_logic := '0';
     signal eb_mixed_oh_bc           : std_logic := '0';
 
+    -- Event processor timeout
     signal eb_timer                 : unsigned(23 downto 0) := (others => '0');
     signal eb_timeout_delay         : unsigned(23 downto 0) := x"03d090"; -- 10ms (very large)
     signal eb_timeout_flag          : std_logic := '0';
     signal eb_last_timer            : unsigned(23 downto 0) := (others => '0');
     signal eb_max_timer             : unsigned(23 downto 0) := (others => '0');
+
+    -- Debug flags for ChipScope
+    attribute MARK_DEBUG : string;
+    attribute MARK_DEBUG of tk_data_link_i              : signal is "TRUE";
+    attribute MARK_DEBUG of eb_timer                    : signal is "TRUE";
+    attribute MARK_DEBUG of eb_last_timer               : signal is "TRUE";
+    attribute MARK_DEBUG of eb_max_timer                : signal is "TRUE";
+    attribute MARK_DEBUG of eb_timeout_flag             : signal is "TRUE";
+    attribute MARK_DEBUG of eb_invalid_vfat_block       : signal is "TRUE";
+    attribute MARK_DEBUG of eb_vfat_words_64            : signal is "TRUE";
+    attribute MARK_DEBUG of eb_vfat_bc                  : signal is "TRUE";
+    attribute MARK_DEBUG of eb_oh_bc                    : signal is "TRUE";
+    attribute MARK_DEBUG of eb_vfat_ec                  : signal is "TRUE";
+    attribute MARK_DEBUG of eb_counters_valid           : signal is "TRUE";
+    attribute MARK_DEBUG of eb_event_num_short          : signal is "TRUE";
+    attribute MARK_DEBUG of ep_vfat_block_en            : signal is "TRUE";
+    attribute MARK_DEBUG of ep_end_of_event             : signal is "TRUE";
+    attribute MARK_DEBUG of ep_last_rx_data_valid       : signal is "TRUE";
+    attribute MARK_DEBUG of tts_state                   : signal is "TRUE";
     
+    attribute MARK_DEBUG of infifo_din                  : signal is "TRUE";
+    attribute MARK_DEBUG of infifo_wr_en                : signal is "TRUE";
+    attribute MARK_DEBUG of infifo_empty                : signal is "TRUE";
+
+    attribute MARK_DEBUG of evtfifo_din                 : signal is "TRUE";
+    attribute MARK_DEBUG of evtfifo_wr_en               : signal is "TRUE";
+    attribute MARK_DEBUG of evtfifo_empty               : signal is "TRUE";
+    
+    attribute MARK_DEBUG of fifo_rd_clk_i               : signal is "TRUE";
+    attribute MARK_DEBUG of infifo_rd_en_i              : signal is "TRUE";
+    attribute MARK_DEBUG of evtfifo_rd_en_i             : signal is "TRUE";
+
 begin
 
     --================================--
@@ -320,6 +348,10 @@ begin
                 ep_last_rx_data <= ep_vfat_block_data; -- TOTO Optimization: instead of duplicating all the data you could only retain the OH 32bits, others you can get form infifo_din
                 ep_last_rx_data_valid <= ep_vfat_block_en;
             
+                if (eb_timeout_flag = '1') then
+                    ep_first_ever_block <= '1';
+                end if;
+                
                 if ((ep_vfat_block_en = '1') and (reset_i = '0')) then
                 
                     -- monitor the input FIFO
@@ -350,7 +382,7 @@ begin
                         
 --                        if ((ep_first_ever_block = '0') and (ep_last_ec /= ep_vfat_block_data(171 downto 164))) then
 -- for now checking for end of event using BC, but later should use an L1A counter or OH orbit counter + OH BC (on VFAT2 EC is reset with BC0, so we can't use that for now)
-                        if ((ep_first_ever_block = '0') and (ep_last_bc /= ep_vfat_block_data(187 downto 176))) then
+                        if ((ep_first_ever_block = '0') and (eb_timeout_flag = '0') and (ep_last_bc /= ep_vfat_block_data(187 downto 176))) then
                             ep_end_of_event <= '1';
                         else
                             ep_end_of_event <= '0';
@@ -405,11 +437,12 @@ begin
                 end if;
                 
                 -- No data coming, but we do have data in the buffer, manage the timeout timer
-                if ((ep_last_rx_data_valid = '0') and (eb_vfat_words_64 > x"000")) then
+                if ((ep_last_rx_data_valid = '0') and (eb_vfat_words_64 /= x"000") and (eb_timeout_flag = '0')) then
                     eb_timer <= eb_timer + 1;
-                    
+                end if;
+                
                 -- Continuation of the current event - update flags and counters
-                elsif ((ep_last_rx_data_valid = '1') and (ep_end_of_event = '0')) then
+                if ((ep_last_rx_data_valid = '1') and (ep_end_of_event = '0')) then
                 
                     -- collect the timer stats and reset it along with the timeout flag
                     eb_last_timer <= eb_timer;

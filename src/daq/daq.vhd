@@ -735,7 +735,7 @@ begin
                     elsif (daq_state = x"5") then
                     
                         -- read the next vfat block from the infifo if we're already working with the last word, but it's not yet the last block
-                        if ((daq_curr_block_word = 0) and (daq_curr_vfat_block > x"0")) then
+                        if ((daq_curr_block_word = 0) and (daq_curr_vfat_block /= x"000")) then
                             chmb_infifos_rd_en(e_input_idx) <= '1';
                             daq_curr_block_word <= 2;
                             daq_curr_vfat_block <= daq_curr_vfat_block - 3; -- this looks strange, but it's because this is not actually vfat_block but number of 64bit words of vfat data
@@ -914,7 +914,7 @@ begin
                 
                 ipb_write_reg_data <= (others => (others => '0'));
                 ipb_write_reg_data(0)(31 downto 8) <= x"000001"; -- enable the first input by default
-                ipb_write_reg_data(6)(23 downto 0) <= x"03d090"; -- default DAV timeout of 10ms
+                ipb_write_reg_data(6)(23 downto 0) <= x"000c35"; -- default DAV timeout of 10ms
                 
                 for I in 0 to (number_of_optohybrids - 1) loop
                     ipb_write_reg_data((I+1)*16 + 3)(23 downto 0) <= x"03d090"; -- default DAV timeout of 10ms
