@@ -401,11 +401,7 @@ begin
             else
                 
                 if (eb_timer >= eb_timeout_delay) then
-                    eb_timeout_flag <= '1';
-                    eb_last_timer <= eb_timer;
-                    if (eb_timer > eb_max_timer) then
-                        eb_max_timer <= eb_timer;
-                    end if;                    
+                    eb_timeout_flag <= '1';                   
                 end if;
                 
                 -- No data coming, but we do have data in the buffer, manage the timeout timer
@@ -415,7 +411,11 @@ begin
                 -- Continuation of the current event - update flags and counters
                 elsif ((ep_last_rx_data_valid = '1') and (ep_end_of_event = '0')) then
                 
-                    -- reset the timer and timeout flag
+                    -- collect the timer stats and reset it along with the timeout flag
+                    eb_last_timer <= eb_timer;
+                    if (eb_timer > eb_max_timer) then
+                        eb_max_timer <= eb_timer;
+                    end if; 
                     eb_timer <= (others => '0');
                     eb_timeout_flag <= '0';
                 

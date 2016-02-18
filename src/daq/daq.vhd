@@ -518,6 +518,7 @@ begin
                 dav_timer <= (others => '0');
                 max_dav_timer <= (others => '0');
                 last_dav_timer <= (others => '0');
+                dav_timeout_flags <= (others => '0');
             else
             
                 -- state machine for sending data
@@ -554,6 +555,7 @@ begin
                             e_dav_mask <= input_mask and ((not chmb_evtfifos_empty) and (not dav_timeout_flags));
                             
                             -- save timer stats
+                            dav_timer <= (others => '0');
                             last_dav_timer <= dav_timer;
                             if ((dav_timer > max_dav_timer) and (or_reduce(dav_timeout_flags) = '0')) then
                                 max_dav_timer <= dav_timer;
@@ -624,8 +626,9 @@ begin
                     elsif (daq_state = x"3") then
                         
                         -- if this input doesn't have data and we're not at the last input yet, then go to the next input
-                        if ((e_input_idx < 23) and (e_dav_mask(e_input_idx) = '0')) then 
+                        if ((e_input_idx < number_of_optohybrids - 1) and (e_dav_mask(e_input_idx) = '0')) then 
                         
+                            daq_event_write_en <= '0';
                             e_input_idx <= e_input_idx + 1;
                             
                         else
@@ -721,6 +724,10 @@ begin
                             -- read a block from the input fifo
                             chmb_infifos_rd_en(e_input_idx) <= '1';
                             daq_curr_block_word <= 2;
+                        
+                        else
+                        
+                            daq_event_write_en <= '0';
                             
                         end if; 
 
@@ -760,12 +767,12 @@ begin
                     elsif (daq_state = x"6") then
                         
                         -- increment the input index if it hasn't maxed out yet
-                        if (e_input_idx < 23) then
+                        if (e_input_idx < number_of_optohybrids - 1) then
                             e_input_idx <= e_input_idx + 1;
                         end if;
                         
                         -- if we have data for the next input or if we've reached the last input
-                        if ((e_input_idx >= 23) or (e_dav_mask(e_input_idx + 1) = '1')) then
+                        if ((e_input_idx >= number_of_optohybrids - 1) or (e_dav_mask(e_input_idx + 1) = '1')) then
                         
                             -- send the data
                             daq_event_data <= x"0000" & -- OH CRC
@@ -786,6 +793,10 @@ begin
                             else -- if next input doesn't have data we can only get here if we're at the last input, so move to the event trailer
                                 daq_state <= x"7";
                             end if;
+                         
+                        else
+                        
+                            daq_event_write_en <= '0';
                             
                         end if;
                         
