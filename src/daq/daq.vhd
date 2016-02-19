@@ -96,11 +96,16 @@ architecture Behavioral of daq is
 
     -- TTS
     signal tts_state            : std_logic_vector(3 downto 0) := "1000";
+    signal tts_input_state_or   : std_logic_vector(3 downto 0);
     signal tts_critical_error   : std_logic := '0'; -- critical error detected - RESYNC/RESET NEEDED
     signal tts_warning          : std_logic := '0'; -- overflow warning - STOP TRIGGERS
     signal tts_out_of_sync      : std_logic := '0'; -- out-of-sync - RESYNC NEEDED
     signal tts_busy             : std_logic := '0'; -- I'm busy - NO TRIGGERS FOR NOW, PLEASE
     signal tts_override         : std_logic_vector(3 downto 0) := x"0"; -- this can be set via IPbus and will override the TTS state if it's not x"0" (regardless of reset_daq and daq_enable)
+    
+    signal tts_chmb_critical    : std_logic := '0'; -- input critical error detected - RESYNC/RESET NEEDED
+    signal tts_chmb_warning     : std_logic := '0'; -- input overflow warning - STOP TRIGGERS
+    signal tts_chmb_out_of_sync : std_logic := '0'; -- input out-of-sync - RESYNC NEEDED
     
     -- DAQ conf
     signal daq_enable           : std_logic := '1'; -- enable sending data to DAQLink
@@ -137,7 +142,7 @@ architecture Behavioral of daq is
     signal l1afifo_near_full    : std_logic;
     
     -- DAQ Error Flags
-    signal err_l1afifo_full     : std_logic;
+    signal err_l1afifo_full     : std_logic := '0';
     
     -- Timeouts
     signal dav_timer            : unsigned(23 downto 0) := (others => '0'); -- TODO: probably don't need this to be so large.. (need to test)
@@ -268,14 +273,10 @@ architecture Behavioral of daq is
 begin
 
     -- TODO main tasks:
-    --   * Support multiple OHs
+    --   * Handle OOS
     --   * Implement buffer status in the AMC header
     --   * TTS State aggregation
-    --   * Timeouts
-    --   * L1A FIFO
-    --   * Tag bx and orbit based on L1A
     --   * Check for VFAT and OH BX vs L1A bx mismatches
-    --   * OOS handling
     --   * Resync handling
     --   * Stop building events if input fifo is full -- let it drain to some level and only then restart building (otherwise you're pointing to inexisting data). I guess it's better to loose some data than to have something that doesn't make any sense..
 
@@ -417,29 +418,34 @@ begin
         chamber_infifos(I).rd_en <= chmb_infifos_rd_en(I);
         
     end generate;
-    
+        
     --================================--
     -- TTS
     --================================--
-    
---    tts_critical_error <= gs_event_too_big or 
---                          gs_event_fifo_full or 
---                          gs_input_fifo_underflow or 
---                          gs_input_fifo_full;
---                          
---    tts_warning <= gs_input_fifo_near_full or gs_event_fifo_near_full;
---    
---    tts_out_of_sync <= '0'; -- TODO: set this when serious OOS condition is detected (to be determined after looking at data)
---    
---    tts_busy <= reset_daq; -- not used for now (except for reset), but will be needed during resyncs (not implemented yet)
---                          
---    tts_state <= tts_override when (tts_override /= x"0") else
---                 x"8" when (daq_enable = '0') else
---                 x"4" when (tts_busy = '1') else
---                 x"c" when (tts_critical_error = '1') else
---                 x"2" when (tts_out_of_sync = '1') else
---                 x"1" when (tts_warning = '1') else
---                 x"8";
+
+    process (tk_data_links_i(0).clk)
+    begin
+        if (rising_edge(tk_data_links_i(0).clk)) then
+            for I in 0 to (number_of_optohybrids - 1) loop
+                tts_chmb_critical <= tts_chmb_critical or chmb_tts_states(I)(2);
+                tts_chmb_out_of_sync <= tts_chmb_out_of_sync or chmb_tts_states(I)(1);
+                tts_chmb_warning <= tts_chmb_warning or chmb_tts_states(I)(0);
+            end loop;
+        end if;
+    end process;
+
+    tts_critical_error <= tts_critical_error or err_l1afifo_full or tts_chmb_critical;
+    tts_out_of_sync <= tts_chmb_out_of_sync;
+    tts_warning <= tts_warning or l1afifo_near_full or tts_chmb_warning;
+    tts_busy <= reset_daq;
+
+    tts_state <= tts_override when (tts_override /= x"0") else
+                 x"8" when (daq_enable = '0') else
+                 x"4" when (tts_busy = '1') else
+                 x"c" when (tts_critical_error = '1') else
+                 x"2" when (tts_out_of_sync = '1') else
+                 x"1" when (tts_warning = '1') else
+                 x"8";
         
     --================================--
     -- DAQ Link
@@ -914,10 +920,10 @@ begin
                 
                 ipb_write_reg_data <= (others => (others => '0'));
                 ipb_write_reg_data(0)(31 downto 8) <= x"000001"; -- enable the first input by default
-                ipb_write_reg_data(6)(23 downto 0) <= x"000c35"; -- default DAV timeout of 10ms
+                ipb_write_reg_data(6)(23 downto 0) <= x"03d090"; -- default DAV timeout of 10ms
                 
                 for I in 0 to (number_of_optohybrids - 1) loop
-                    ipb_write_reg_data((I+1)*16 + 3)(23 downto 0) <= x"03d090"; -- default DAV timeout of 10ms
+                    ipb_write_reg_data((I+1)*16 + 3)(23 downto 0) <= x"000c35"; -- default DAV timeout of 10ms
                 end loop;
             else         
                 case ipb_state is
