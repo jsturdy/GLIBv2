@@ -706,11 +706,11 @@ begin
                                               -- input status
                                               e_chmb_evtfifo_full &
                                               e_chmb_infifo_full &
-                                              "0" & -- L1A fifo full
+                                              err_l1afifo_full &
                                               e_chmb_evt_too_big &
                                               e_chmb_evtfifo_near_full &
                                               e_chmb_infifo_near_full &
-                                              "0" &  -- L1A fifo near full
+                                              l1afifo_near_full &
                                               e_chmb_evt_bigger_24 &
                                               e_chmb_invalid_vfat_block &
                                               "0" & -- OOS GLIB-VFAT
