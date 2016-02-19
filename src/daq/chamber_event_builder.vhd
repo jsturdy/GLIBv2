@@ -578,7 +578,8 @@ begin
                               err_infifo_near_full &
                               infifo_full &
                               infifo_underflow &
-                              x"000" &
+                              x"00" &
+                              tts_state &
                               err_event_too_big &          -- Critical
                               err_evtfifo_full &           -- Critical
                               err_infifo_underflow &       -- Critical

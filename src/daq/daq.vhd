@@ -427,7 +427,7 @@ begin
     begin
         if (rising_edge(tk_data_links_i(0).clk)) then
             for I in 0 to (number_of_optohybrids - 1) loop
-                tts_chmb_critical <= tts_chmb_critical or (chmb_tts_states(I)(2) and input_mask(I));
+                tts_chmb_critical <= tts_chmb_critical or (chmb_tts_states(I)(2) and input_mask(I) and not reset_daq);
                 tts_chmb_out_of_sync <= tts_chmb_out_of_sync or (chmb_tts_states(I)(1) and input_mask(I));
                 tts_chmb_warning <= tts_chmb_warning or (chmb_tts_states(I)(0) and input_mask(I));
             end loop;
