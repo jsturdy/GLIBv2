@@ -874,7 +874,12 @@ begin
 
     --== DAQ and TTS state ==--
     ipb_read_reg_data(1) <= tts_state &
-                            x"000000" & 
+                            l1afifo_empty &
+                            l1afifo_near_full &
+                            l1afifo_full &
+                            l1afifo_underflow &
+                            err_l1afifo_full &
+                            x"0000" & "000" &
                             daq_almost_full &
                             ttc_ready_i & 
                             daq_clock_locked & 
