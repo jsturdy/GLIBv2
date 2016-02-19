@@ -427,9 +427,9 @@ begin
     begin
         if (rising_edge(tk_data_links_i(0).clk)) then
             for I in 0 to (number_of_optohybrids - 1) loop
-                tts_chmb_critical <= tts_chmb_critical or chmb_tts_states(I)(2);
-                tts_chmb_out_of_sync <= tts_chmb_out_of_sync or chmb_tts_states(I)(1);
-                tts_chmb_warning <= tts_chmb_warning or chmb_tts_states(I)(0);
+                tts_chmb_critical <= tts_chmb_critical or (chmb_tts_states(I)(2) and input_mask(I));
+                tts_chmb_out_of_sync <= tts_chmb_out_of_sync or (chmb_tts_states(I)(1) and input_mask(I));
+                tts_chmb_warning <= tts_chmb_warning or (chmb_tts_states(I)(0) and and input_mask(I));
             end loop;
         end if;
     end process;
@@ -678,7 +678,7 @@ begin
                         chmb_evtfifos_rd_en(e_input_idx) <= '0';
                         
                         -- wait for the valid flag and then fetch the chamber event data
-                        if (chamber_evtfifos(0).valid = '1') then
+                        if (chamber_evtfifos(e_input_idx).valid = '1') then
                         
                             e_chmb_l1a_id                       := chamber_evtfifos(e_input_idx).dout(59 downto 36);
                             e_chmb_bx_id                        := chamber_evtfifos(e_input_idx).dout(35 downto 24);
@@ -696,7 +696,7 @@ begin
                             e_chmb_mixed_vfat_bc                := chamber_evtfifos(e_input_idx).dout(1);
                             e_chmb_mixed_vfat_ec                := chamber_evtfifos(e_input_idx).dout(0);
 
-                            daq_curr_vfat_block <= unsigned(chamber_evtfifos(0).dout(23 downto 12)) - 3;
+                            daq_curr_vfat_block <= unsigned(chamber_evtfifos(e_input_idx).dout(23 downto 12)) - 3;
                             
                             -- send the data
                             daq_event_data <= x"000000" & -- Zero suppression flags
