@@ -229,8 +229,7 @@ architecture user_logic_arch of user_logic is
     
     --== DAQ signals ==--    
     
-    signal tk_evt_en    : std_logic_vector(number_of_optohybrids - 1 downto 0);
-    signal tk_evt_data  : std16_array_t(0 to number_of_optohybrids - 1);
+    signal tk_data_links: data_link_array_t(0 to number_of_optohybrids - 1);
     
 begin
     
@@ -266,12 +265,11 @@ begin
         tr_error_o      => gtx_tr_error,
         evt_rcvd_o      => gtx_evt_rcvd,
         vfat2_t1_i      => vfat2_t1,
-        tk_evt_en_o     => tk_evt_en,
-        tk_evt_data_o   => tk_evt_data,
 		rx_n_i          => sfp_rx_n(1 to 4),
 		rx_p_i          => sfp_rx_p(1 to 4),
 		tx_n_o          => sfp_tx_n(1 to 4),
-		tx_p_o          => sfp_tx_p(1 to 4)
+		tx_p_o          => sfp_tx_p(1 to 4),
+        tk_data_links_o => tk_data_links
 	);
     
     --================================--
@@ -343,9 +341,7 @@ begin
         ttc_l1a_id_i                => ttc_l1a_id,
 
         -- Track data
-        track_rx_clk_i              => gtx_usr_clk,
-        track_rx_en_i               => tk_evt_en(0),
-        track_rx_data_i             => tk_evt_data(0),  -- TODO: take data from all OHs, not just the first one
+        tk_data_links_i             => tk_data_links,
         
         -- IPbus
         ipb_mosi_i                  => ipb_mosi_i(ipb_daq),

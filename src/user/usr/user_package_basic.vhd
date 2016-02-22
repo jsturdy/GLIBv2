@@ -34,6 +34,10 @@ package user_package is
     
     constant number_of_optohybrids      : integer  := 2;    
     
+    --=== gtx links =============--
+
+    constant daq_format_version         : std_logic_vector(3 downto 0)  := x"0";
+
     --============--
     --== Common ==--
     --============--   
@@ -44,6 +48,56 @@ package user_package is
         
     type std16_array_t is array(integer range <>) of std_logic_vector(15 downto 0);
 
+    type std4_array_t is array(integer range <>) of std_logic_vector(3 downto 0);
+
+    --====================--
+    --== DAQ data input ==--
+    --====================--
+    
+    type data_link_t is record
+        clk        : std_logic;
+        data_en    : std_logic;
+        data       : std_logic_vector(15 downto 0);
+    end record;
+    
+    type data_link_array_t is array(integer range <>) of data_link_t;    
+
+    --====================--
+    --==   DAQ other    ==--
+    --====================--
+    
+    type chamber_err_glags_t is record
+        infifo_full             : std_logic;
+        infifo_underflow        : std_logic;
+        evtfifo_full            : std_logic;
+        evtfifo_underflow       : std_logic;
+        event_too_big           : std_logic;
+        vfat_block_too_small    : std_logic;
+        vfat_block_too_big      : std_logic;
+    end record;
+
+    type chamber_err_glags_array_t is array(integer range <>) of chamber_err_glags_t;
+    
+    type chamber_infifo_rd_t is record
+        dout          : std_logic_vector(191 downto 0);
+        rd_en         : std_logic;
+        empty         : std_logic;
+        valid         : std_logic;
+        underflow     : std_logic;
+    end record;
+
+    type chamber_infifo_rd_array_t is array(integer range <>) of chamber_infifo_rd_t;
+
+    type chamber_evtfifo_rd_t is record
+        dout          : std_logic_vector(59 downto 0);
+        rd_en         : std_logic;
+        empty         : std_logic;
+        valid         : std_logic;
+        underflow     : std_logic;
+    end record;
+
+    type chamber_evtfifo_rd_array_t is array(integer range <>) of chamber_evtfifo_rd_t;
+    
     --================--
     --== T1 command ==--
     --================--
