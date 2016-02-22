@@ -5,3 +5,6 @@
 prj/*
 !prj/GLIB_v2.gise
 !prj/GLIB_v2.xise
+!prj/*.cdc
+!prj/compile.tcl
+!prj/compile.sh

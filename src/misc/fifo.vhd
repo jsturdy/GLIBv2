@@ -90,7 +90,7 @@ begin
         empty           => fifo_0_empty,
         valid           => fifo_0_valid,
         underflow       => fifo_0_underflow,
-        rd_data_count   => fifo_0_count(13 downto 0)
+        rd_data_count   => fifo_0_count(12 downto 0)
     );
     
     fifo_tk_large_0_inst : entity work.fifo_tk_large
@@ -106,7 +106,7 @@ begin
         empty           => fifo_1_empty,
         valid           => fifo_1_valid,
         underflow       => fifo_1_underflow,
-        rd_data_count   => fifo_1_count(14 downto 0)   
+        rd_data_count   => fifo_1_count(13 downto 0)   
     );
     
     fifo_tk_large_1_inst : entity work.fifo_tk_large
@@ -122,7 +122,7 @@ begin
         empty           => fifo_2_empty,
         valid           => fifo_2_valid,
         underflow       => fifo_2_underflow,
-        rd_data_count   => fifo_2_count(14 downto 0)   
+        rd_data_count   => fifo_2_count(13 downto 0)   
     );
         
     fifo_tk_large_2_inst : entity work.fifo_tk_large
@@ -138,7 +138,7 @@ begin
         empty           => fifo_3_empty,
         valid           => valid,
         underflow       => underflow,
-        rd_data_count   => fifo_3_count(14 downto 0)   
+        rd_data_count   => fifo_3_count(13 downto 0)   
     );
 
     process(wr_clk) 
