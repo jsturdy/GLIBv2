@@ -24,6 +24,9 @@
   <files xmlns="http://www.xilinx.com/XMLSchema">
     <file xil_pn:fileType="FILE_USERDOC" xil_pn:name="../src/ip_cores/chipscope_ila_readme.txt"/>
     <file xil_pn:fileType="FILE_LOG" xil_pn:name="../src/ip_cores/coregen.log"/>
+    <file xil_pn:fileType="FILE_SYMBOL" xil_pn:name="../src/ip_cores/daq_event_fifo.sym" xil_pn:origination="imported"/>
+    <file xil_pn:fileType="FILE_SYMBOL" xil_pn:name="../src/ip_cores/daq_input_fifo.sym" xil_pn:origination="imported"/>
+    <file xil_pn:fileType="FILE_SYMBOL" xil_pn:name="../src/ip_cores/daq_l1a_fifo.sym" xil_pn:origination="imported"/>
     <file xil_pn:fileType="FILE_SYMBOL" xil_pn:name="../src/ip_cores/fifo16x65.sym" xil_pn:origination="imported"/>
     <file xil_pn:fileType="FILE_SYMBOL" xil_pn:name="../src/ip_cores/fifo8192x16.sym" xil_pn:origination="imported"/>
     <file xil_pn:fileType="FILE_SYMBOL" xil_pn:name="../src/ip_cores/fifo_tk_gtx.sym" xil_pn:origination="imported"/>
@@ -53,6 +56,12 @@
     <file xil_pn:fileType="FILE_XMSGS" xil_pn:name="_xmsgs/par.xmsgs"/>
     <file xil_pn:fileType="FILE_XMSGS" xil_pn:name="_xmsgs/trce.xmsgs"/>
     <file xil_pn:fileType="FILE_XMSGS" xil_pn:name="_xmsgs/xst.xmsgs"/>
+    <file xil_pn:fileType="FILE_XST_PROJECT" xil_pn:name="chamber_event_builder.prj"/>
+    <file xil_pn:fileType="FILE_XST_STX" xil_pn:name="chamber_event_builder.stx"/>
+    <file xil_pn:fileType="FILE_XST" xil_pn:name="chamber_event_builder.xst"/>
+    <file xil_pn:fileType="FILE_XST_PROJECT" xil_pn:name="daq.prj"/>
+    <file xil_pn:fileType="FILE_XST_STX" xil_pn:name="daq.stx"/>
+    <file xil_pn:fileType="FILE_XST" xil_pn:name="daq.xst"/>
     <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_BITGEN_REPORT" xil_pn:name="glib_top.bgn" xil_pn:subbranch="FPGAConfiguration"/>
     <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_BIT" xil_pn:name="glib_top.bit" xil_pn:subbranch="FPGAConfiguration"/>
     <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_NGDBUILD_LOG" xil_pn:name="glib_top.bld"/>
@@ -77,6 +86,8 @@
     <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_BITGEN_REPORT" xil_pn:name="glib_top.ut" xil_pn:subbranch="FPGAConfiguration"/>
     <file xil_pn:fileType="FILE_XPI" xil_pn:name="glib_top.xpi"/>
     <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_XST" xil_pn:name="glib_top.xst"/>
+    <file xil_pn:fileType="FILE_BLIF" xil_pn:name="glib_top_cs.blc"/>
+    <file xil_pn:fileType="FILE_NGC" xil_pn:name="glib_top_cs.ngc"/>
     <file xil_pn:fileType="FILE_HTML" xil_pn:name="glib_top_envsettings.html"/>
     <file xil_pn:fileType="FILE_NCD" xil_pn:name="glib_top_guide.ncd" xil_pn:origination="imported"/>
     <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_MAP_REPORT" xil_pn:name="glib_top_map.map" xil_pn:subbranch="Map"/>
@@ -92,6 +103,19 @@
     <file xil_pn:fileType="FILE_FITTER_REPORT" xil_pn:name="glib_top_summary.xml"/>
     <file xil_pn:fileType="FILE_WEBTALK" xil_pn:name="glib_top_usage.xml"/>
     <file xil_pn:fileType="FILE_XRPT" xil_pn:name="glib_top_xst.xrpt"/>
+    <file xil_pn:fileType="FILE_XST_PROJECT" xil_pn:name="gtx.prj"/>
+    <file xil_pn:fileType="FILE_XST_STX" xil_pn:name="gtx.stx"/>
+    <file xil_pn:fileType="FILE_XST" xil_pn:name="gtx.xst"/>
+    <file xil_pn:fileType="FILE_XST_PROJECT" xil_pn:name="gtx_wrapper.prj"/>
+    <file xil_pn:fileType="FILE_XST_STX" xil_pn:name="gtx_wrapper.stx"/>
+    <file xil_pn:fileType="FILE_XST" xil_pn:name="gtx_wrapper.xst"/>
+    <file xil_pn:fileType="FILE_XST_PROJECT" xil_pn:name="link_tkdata.prj"/>
+    <file xil_pn:fileType="FILE_XST_STX" xil_pn:name="link_tkdata.stx"/>
+    <file xil_pn:fileType="FILE_XST" xil_pn:name="link_tkdata.xst"/>
+    <file xil_pn:fileType="FILE_HTML" xil_pn:name="usage_statistics_webtalk.html"/>
+    <file xil_pn:fileType="FILE_XST_PROJECT" xil_pn:name="user_logic.prj"/>
+    <file xil_pn:fileType="FILE_XST_STX" xil_pn:name="user_logic.stx"/>
+    <file xil_pn:fileType="FILE_XST" xil_pn:name="user_logic.xst"/>
     <file xil_pn:fileType="FILE_LOG" xil_pn:name="webtalk.log"/>
     <file xil_pn:fileType="FILE_FITTER_REPORT" xil_pn:name="webtalk_pn.xml"/>
     <file xil_pn:fileType="FILE_DIRECTORY" xil_pn:name="xlnx_auto_0_xdb"/>
@@ -99,11 +123,15 @@
   </files>
 
   <transforms xmlns="http://www.xilinx.com/XMLSchema">
+    <transform xil_pn:end_ts="1445379159" xil_pn:name="TRAN_copyInitialToXSTAbstractSynthesis" xil_pn:start_ts="1445379159">
+      <status xil_pn:value="SuccessfullyRun"/>
+      <status xil_pn:value="ReadyToRun"/>
+    </transform>
     <transform xil_pn:end_ts="1444304436" xil_pn:name="TRAN_schematicsToHdl" xil_pn:prop_ck="1774269903776456723" xil_pn:start_ts="1444304436">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
     </transform>
-    <transform xil_pn:end_ts="1444308550" xil_pn:in_ck="-976310817890166119" xil_pn:name="TRAN_regenerateCores" xil_pn:prop_ck="-738508652297565762" xil_pn:start_ts="1444308549">
+    <transform xil_pn:end_ts="1455839949" xil_pn:in_ck="3535627425935491771" xil_pn:name="TRAN_regenerateCores" xil_pn:prop_ck="-738508652297565762" xil_pn:start_ts="1455839949">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
       <outfile xil_pn:name="../src/ip_cores/chipscope_icon.ngc"/>
@@ -112,6 +140,13 @@
       <outfile xil_pn:name="../src/ip_cores/chipscope_ila.vhd"/>
       <outfile xil_pn:name="../src/ip_cores/chipscope_vio.ngc"/>
       <outfile xil_pn:name="../src/ip_cores/chipscope_vio.vhd"/>
+      <outfile xil_pn:name="../src/ip_cores/daq_clk_80.vhd"/>
+      <outfile xil_pn:name="../src/ip_cores/daq_event_fifo.ngc"/>
+      <outfile xil_pn:name="../src/ip_cores/daq_event_fifo.vhd"/>
+      <outfile xil_pn:name="../src/ip_cores/daq_input_fifo.ngc"/>
+      <outfile xil_pn:name="../src/ip_cores/daq_input_fifo.vhd"/>
+      <outfile xil_pn:name="../src/ip_cores/daq_l1a_fifo.ngc"/>
+      <outfile xil_pn:name="../src/ip_cores/daq_l1a_fifo.vhd"/>
       <outfile xil_pn:name="../src/ip_cores/fifo_gtx_rx.ngc"/>
       <outfile xil_pn:name="../src/ip_cores/fifo_gtx_rx.vhd"/>
       <outfile xil_pn:name="../src/ip_cores/fifo_gtx_tx.ngc"/>
@@ -153,42 +188,43 @@
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
     </transform>
-    <transform xil_pn:end_ts="1445267461" xil_pn:in_ck="-47596332609932307" xil_pn:name="TRANEXT_xstsynthesize_virtex6" xil_pn:prop_ck="-1895621303767648803" xil_pn:start_ts="1445267355">
-      <status xil_pn:value="SuccessfullyRun"/>
+    <transform xil_pn:end_ts="1455910510" xil_pn:in_ck="-6943335062874795170" xil_pn:name="TRANEXT_xstsynthesize_virtex6" xil_pn:prop_ck="-1895621303767648803" xil_pn:start_ts="1455910501">
+      <status xil_pn:value="FailedRun"/>
       <status xil_pn:value="WarningsGenerated"/>
       <status xil_pn:value="ReadyToRun"/>
-      <status xil_pn:value="OutOfDateForOutputs"/>
-      <status xil_pn:value="OutputChanged"/>
       <outfile xil_pn:name="_xmsgs/xst.xmsgs"/>
       <outfile xil_pn:name="glib_top.lso"/>
       <outfile xil_pn:name="glib_top.ngc"/>
       <outfile xil_pn:name="glib_top.ngr"/>
       <outfile xil_pn:name="glib_top.prj"/>
-      <outfile xil_pn:name="glib_top.stx"/>
       <outfile xil_pn:name="glib_top.syr"/>
       <outfile xil_pn:name="glib_top.xst"/>
       <outfile xil_pn:name="glib_top_xst.xrpt"/>
       <outfile xil_pn:name="webtalk_pn.xml"/>
       <outfile xil_pn:name="xst"/>
     </transform>
-    <transform xil_pn:end_ts="1444304451" xil_pn:in_ck="5439014198115027416" xil_pn:name="TRAN_compileBCD2" xil_pn:prop_ck="1472633567844231832" xil_pn:start_ts="1444304451">
+    <transform xil_pn:end_ts="1455840068" xil_pn:in_ck="1347752429960081054" xil_pn:name="TRAN_compileBCD2" xil_pn:prop_ck="1472633567844231832" xil_pn:start_ts="1455840068">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
     </transform>
-    <transform xil_pn:end_ts="1445267497" xil_pn:in_ck="-2470312444263011851" xil_pn:name="TRANEXT_ngdbuild_FPGA" xil_pn:prop_ck="2015394535562358994" xil_pn:start_ts="1445267461">
+    <transform xil_pn:end_ts="1455907946" xil_pn:in_ck="-3417580199974873736" xil_pn:name="TRANEXT_ngdbuild_FPGA" xil_pn:prop_ck="2015394535562358994" xil_pn:start_ts="1455907885">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="WarningsGenerated"/>
       <status xil_pn:value="ReadyToRun"/>
+      <status xil_pn:value="OutOfDateForPredecessor"/>
       <outfile xil_pn:name="_ngo"/>
       <outfile xil_pn:name="_xmsgs/ngdbuild.xmsgs"/>
       <outfile xil_pn:name="glib_top.bld"/>
       <outfile xil_pn:name="glib_top.ngd"/>
+      <outfile xil_pn:name="glib_top_cs.blc"/>
+      <outfile xil_pn:name="glib_top_cs.ngc"/>
       <outfile xil_pn:name="glib_top_ngdbuild.xrpt"/>
     </transform>
-    <transform xil_pn:end_ts="1445267784" xil_pn:in_ck="-8036773152516401041" xil_pn:name="TRANEXT_map_virtex6" xil_pn:prop_ck="3468729705812694747" xil_pn:start_ts="1445267497">
+    <transform xil_pn:end_ts="1455908302" xil_pn:in_ck="-3852871503005902418" xil_pn:name="TRANEXT_map_virtex6" xil_pn:prop_ck="3468729705812694747" xil_pn:start_ts="1455907946">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="WarningsGenerated"/>
       <status xil_pn:value="ReadyToRun"/>
+      <status xil_pn:value="OutOfDateForPredecessor"/>
       <status xil_pn:value="OutOfDateForOutputs"/>
       <status xil_pn:value="OutputChanged"/>
       <outfile xil_pn:name="_xmsgs/map.xmsgs"/>
@@ -201,10 +237,11 @@
       <outfile xil_pn:name="glib_top_summary.xml"/>
       <outfile xil_pn:name="glib_top_usage.xml"/>
     </transform>
-    <transform xil_pn:end_ts="1445268010" xil_pn:in_ck="-6559519433464314104" xil_pn:name="TRANEXT_par_virtex5" xil_pn:prop_ck="-174231212644676884" xil_pn:start_ts="1445267784">
+    <transform xil_pn:end_ts="1455908571" xil_pn:in_ck="1941111458798604231" xil_pn:name="TRANEXT_par_virtex5" xil_pn:prop_ck="-174231212644676884" xil_pn:start_ts="1455908302">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="WarningsGenerated"/>
       <status xil_pn:value="ReadyToRun"/>
+      <status xil_pn:value="OutOfDateForPredecessor"/>
       <outfile xil_pn:name="_xmsgs/par.xmsgs"/>
       <outfile xil_pn:name="glib_top.ncd"/>
       <outfile xil_pn:name="glib_top.pad"/>
@@ -216,29 +253,43 @@
       <outfile xil_pn:name="glib_top_pad.txt"/>
       <outfile xil_pn:name="glib_top_par.xrpt"/>
     </transform>
-    <transform xil_pn:end_ts="1445268160" xil_pn:in_ck="5376262738270210579" xil_pn:name="TRANEXT_bitFile_virtex6" xil_pn:prop_ck="2793798927870611753" xil_pn:start_ts="1445268010">
-      <status xil_pn:value="SuccessfullyRun"/>
+    <transform xil_pn:end_ts="1455908730" xil_pn:in_ck="5376262738270210579" xil_pn:name="TRANEXT_bitFile_virtex6" xil_pn:prop_ck="2793798927870611753" xil_pn:start_ts="1455908571">
+      <status xil_pn:value="AbortedRun"/>
       <status xil_pn:value="ReadyToRun"/>
+      <status xil_pn:value="OutOfDateForPredecessor"/>
       <outfile xil_pn:name="_xmsgs/bitgen.xmsgs"/>
       <outfile xil_pn:name="glib_top.bgn"/>
       <outfile xil_pn:name="glib_top.bit"/>
       <outfile xil_pn:name="glib_top.ut"/>
+      <outfile xil_pn:name="usage_statistics_webtalk.html"/>
       <outfile xil_pn:name="webtalk.log"/>
       <outfile xil_pn:name="webtalk_pn.xml"/>
     </transform>
-    <transform xil_pn:end_ts="1445267954" xil_pn:in_ck="5376262738270210579" xil_pn:name="TRAN_asynDlyRpt" xil_pn:start_ts="1445267924">
+    <transform xil_pn:end_ts="1450265683" xil_pn:in_ck="5376262738270197725" xil_pn:name="TRAN_configureTargetDevice" xil_pn:prop_ck="-5555903658368550997" xil_pn:start_ts="1450263378">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
+      <status xil_pn:value="OutOfDateForInputs"/>
+      <status xil_pn:value="OutOfDateForPredecessor"/>
+      <status xil_pn:value="InputAdded"/>
+      <status xil_pn:value="InputChanged"/>
+      <status xil_pn:value="InputRemoved"/>
+    </transform>
+    <transform xil_pn:end_ts="1455908493" xil_pn:in_ck="5376262738270210579" xil_pn:name="TRAN_asynDlyRpt" xil_pn:start_ts="1455908454">
+      <status xil_pn:value="SuccessfullyRun"/>
+      <status xil_pn:value="ReadyToRun"/>
+      <status xil_pn:value="OutOfDateForPredecessor"/>
       <outfile xil_pn:name="glib_top.dly"/>
     </transform>
-    <transform xil_pn:end_ts="1445267980" xil_pn:in_ck="5376262738270210579" xil_pn:name="TRAN_clkRegionRpt" xil_pn:start_ts="1445267954">
+    <transform xil_pn:end_ts="1455908528" xil_pn:in_ck="5376262738270210579" xil_pn:name="TRAN_clkRegionRpt" xil_pn:start_ts="1455908493">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
+      <status xil_pn:value="OutOfDateForPredecessor"/>
       <outfile xil_pn:name="glib_top.clk_rgn"/>
     </transform>
-    <transform xil_pn:end_ts="1445268010" xil_pn:in_ck="-8036773152516401173" xil_pn:name="TRAN_postRouteTrce" xil_pn:prop_ck="445577401284416183" xil_pn:start_ts="1445267980">
+    <transform xil_pn:end_ts="1455908571" xil_pn:in_ck="-3852871503005902550" xil_pn:name="TRAN_postRouteTrce" xil_pn:prop_ck="445577401284416183" xil_pn:start_ts="1455908528">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
+      <status xil_pn:value="OutOfDateForPredecessor"/>
       <outfile xil_pn:name="_xmsgs/trce.xmsgs"/>
       <outfile xil_pn:name="glib_top.twr"/>
       <outfile xil_pn:name="glib_top.twx"/>

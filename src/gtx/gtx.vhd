@@ -32,18 +32,20 @@ port(
     
     reset_i         : in std_logic;
     
-	gtx_ipb_mosi_i  : in ipb_wbus_array(0 to 1);
-	gtx_ipb_miso_o  : out ipb_rbus_array(0 to 1);
+	gtx_ipb_mosi_i  : in ipb_wbus_array(0 to number_of_optohybrids - 1);
+	gtx_ipb_miso_o  : out ipb_rbus_array(0 to number_of_optohybrids - 1);
     
-	evt_ipb_mosi_i  : in ipb_wbus_array(0 to 1);
-	evt_ipb_miso_o  : out ipb_rbus_array(0 to 1);
+	evt_ipb_mosi_i  : in ipb_wbus_array(0 to number_of_optohybrids - 1);
+	evt_ipb_miso_o  : out ipb_rbus_array(0 to number_of_optohybrids - 1);
     
     vfat2_t1_i      : in t1_t;
     
     gtx_usr_clk_o   : out std_logic;
-    tk_error_o      : out std_logic_vector(1 downto 0);
-    tr_error_o      : out std_logic_vector(1 downto 0);
-    evt_rcvd_o      : out std_logic_vector(1 downto 0);
+    tk_error_o      : out std_logic_vector(number_of_optohybrids - 1 downto 0);
+    tr_error_o      : out std_logic_vector(number_of_optohybrids - 1 downto 0);
+    evt_rcvd_o      : out std_logic_vector(number_of_optohybrids - 1 downto 0);
+    
+    tk_data_links_o : out data_link_array_t(0 to number_of_optohybrids - 1);
    
     rx_n_i          : in std_logic_vector(3 downto 0);
     rx_p_i          : in std_logic_vector(3 downto 0);
@@ -103,7 +105,7 @@ begin
     --== OptoHybrid ==--
     --================--
     
-    gtx_optohybrid_loop : for I in 0 to 1 generate
+    gtx_optohybrid_loop : for I in 0 to (number_of_optohybrids - 1) generate
     begin
     
         gtx_optohybrid_inst : entity work.gtx_optohybrid
@@ -122,7 +124,8 @@ begin
             tx_kchar_o      => tx_kchar((4 * I + 3) downto (4 * I)),
             tx_data_o       => tx_data((32 * I + 31) downto (32 * I)),    
             rx_kchar_i      => rx_kchar((4 * I + 3) downto (4 * I)),
-            rx_data_i       => rx_data((32 * I + 31) downto (32 * I))
+            rx_data_i       => rx_data((32 * I + 31) downto (32 * I)),
+            tk_data_link_o  => tk_data_links_o(I)
         );
     
     end generate;
@@ -131,25 +134,25 @@ begin
     --== ChipScope ==--
     --===============--
     
-    chipscope_icon_inst : entity work.chipscope_icon
-    port map(
-        control0    => cs_ctrl0,
-        control1    => cs_ctrl1
-    );
-    
-    chipscope_vio_inst : entity work.chipscope_vio
-    port map(
-        control     => cs_ctrl0,
-        async_out   => cs_async_out
-    );
-    
-    chipscope_ila_inst : entity work.chipscope_ila
-    port map(
-        control => cs_ctrl1,
-        clk     => gtx_usr_clk,
-        trig0   => cs_trig0
-    );
-    
-    cs_trig0 <= tx_data & rx_data;
+--    chipscope_icon_inst : entity work.chipscope_icon
+--    port map(
+--        control0    => cs_ctrl0,
+--        control1    => cs_ctrl1
+--    );
+--    
+--    chipscope_vio_inst : entity work.chipscope_vio
+--    port map(
+--        control     => cs_ctrl0,
+--        async_out   => cs_async_out
+--    );
+--    
+--    chipscope_ila_inst : entity work.chipscope_ila
+--    port map(
+--        control => cs_ctrl1,
+--        clk     => gtx_usr_clk,
+--        trig0   => cs_trig0
+--    );
+--    
+--    cs_trig0 <= tx_data & rx_data;
 
 end Behavioral;

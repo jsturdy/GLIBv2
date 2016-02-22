@@ -9,10 +9,10 @@
 ## FABRIC A             ## p0 already declared in system.ucf
 ##########################
 
-#NET "amc_port_tx_p[1]"						LOC = Y1	 		;	# MGTTXP0_114
-#NET "amc_port_tx_n[1]"						LOC = Y2    	;	# MGTTXN0_114
-#NET "amc_port_rx_p[1]"						LOC = AA3   	;	# MGTRXP0_114
-#NET "amc_port_rx_n[1]"						LOC = AA4   	;	# MGTRXN0_114
+NET "amc_port_tx_p[1]"						LOC = Y1	 		;	# MGTTXP0_114
+NET "amc_port_tx_n[1]"						LOC = Y2    	;	# MGTTXN0_114
+NET "amc_port_rx_p[1]"						LOC = AA3   	;	# MGTRXP0_114
+NET "amc_port_rx_n[1]"						LOC = AA4   	;	# MGTRXN0_114
 
 ##########################
 ## FABRIC D-G: FAT PIPE ##

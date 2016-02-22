@@ -13,21 +13,30 @@ package user_package is
 	constant i2c_master_enable			: boolean  := true;
 	constant auto_eeprom_read_enable    : boolean  := true;    
 
-	--=== wishbone slaves ========--
+    --=== wishbone slaves ========--
     
 	constant number_of_wb_slaves		: positive := 1;
 
 	constant user_wb_regs               : integer  := 0;
 	
-		--=== ipb slaves =============--
+    --=== ipb slaves =============--
     
-	constant number_of_ipb_slaves		: positive := 5;
+	constant number_of_ipb_slaves		: positive := 6;
    
 	constant ipb_gtx_forward_0          : integer  := 0;
 	constant ipb_gtx_forward_1          : integer  := 1;
 	constant ipb_evt_data_0             : integer  := 2;
 	constant ipb_evt_data_1             : integer  := 3;
     constant ipb_counters               : integer  := 4;
+    constant ipb_daq                    : integer  := 5;
+
+    --=== gtx links =============--
+    
+    constant number_of_optohybrids      : integer  := 2;    
+    
+    --=== gtx links =============--
+
+    constant daq_format_version         : std_logic_vector(3 downto 0)  := x"0";
 
     --============--
     --== Common ==--
@@ -37,6 +46,58 @@ package user_package is
     
     type std32_array_t is array(integer range <>) of std_logic_vector(31 downto 0);
         
+    type std16_array_t is array(integer range <>) of std_logic_vector(15 downto 0);
+
+    type std4_array_t is array(integer range <>) of std_logic_vector(3 downto 0);
+
+    --====================--
+    --== DAQ data input ==--
+    --====================--
+    
+    type data_link_t is record
+        clk        : std_logic;
+        data_en    : std_logic;
+        data       : std_logic_vector(15 downto 0);
+    end record;
+    
+    type data_link_array_t is array(integer range <>) of data_link_t;    
+
+    --====================--
+    --==   DAQ other    ==--
+    --====================--
+    
+    type chamber_err_glags_t is record
+        infifo_full             : std_logic;
+        infifo_underflow        : std_logic;
+        evtfifo_full            : std_logic;
+        evtfifo_underflow       : std_logic;
+        event_too_big           : std_logic;
+        vfat_block_too_small    : std_logic;
+        vfat_block_too_big      : std_logic;
+    end record;
+
+    type chamber_err_glags_array_t is array(integer range <>) of chamber_err_glags_t;
+    
+    type chamber_infifo_rd_t is record
+        dout          : std_logic_vector(191 downto 0);
+        rd_en         : std_logic;
+        empty         : std_logic;
+        valid         : std_logic;
+        underflow     : std_logic;
+    end record;
+
+    type chamber_infifo_rd_array_t is array(integer range <>) of chamber_infifo_rd_t;
+
+    type chamber_evtfifo_rd_t is record
+        dout          : std_logic_vector(59 downto 0);
+        rd_en         : std_logic;
+        empty         : std_logic;
+        valid         : std_logic;
+        underflow     : std_logic;
+    end record;
+
+    type chamber_evtfifo_rd_array_t is array(integer range <>) of chamber_evtfifo_rd_t;
+    
     --================--
     --== T1 command ==--
     --================--
