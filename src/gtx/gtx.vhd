@@ -44,8 +44,8 @@ port(
     tk_error_o      : out std_logic_vector(number_of_optohybrids - 1 downto 0);
     tr_error_o      : out std_logic_vector(number_of_optohybrids - 1 downto 0);
     evt_rcvd_o      : out std_logic_vector(number_of_optohybrids - 1 downto 0);
-    tk_evt_en_o     : out std_logic_vector(number_of_optohybrids - 1 downto 0);
-    tk_evt_data_o   : out std16_array_t(0 to number_of_optohybrids - 1);
+    
+    tk_data_links_o : out data_link_array_t(0 to number_of_optohybrids - 1);
    
     rx_n_i          : in std_logic_vector(3 downto 0);
     rx_p_i          : in std_logic_vector(3 downto 0);
@@ -125,8 +125,7 @@ begin
             tx_data_o       => tx_data((32 * I + 31) downto (32 * I)),    
             rx_kchar_i      => rx_kchar((4 * I + 3) downto (4 * I)),
             rx_data_i       => rx_data((32 * I + 31) downto (32 * I)),
-            tk_evt_en_o     => tk_evt_en_o(I),
-            tk_evt_data_o   => tk_evt_data_o(I)
+            tk_data_link_o  => tk_data_links_o(I)
         );
     
     end generate;

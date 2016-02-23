@@ -49,8 +49,7 @@ port(
     rx_kchar_i      : in std_logic_vector(3 downto 0);
     rx_data_i       : in std_logic_vector(31 downto 0);
 
-    tk_evt_en_o     : out std_logic;
-    tk_evt_data_o   : out std_logic_vector(15 downto 0)
+    tk_data_link_o  : out data_link_t
     
 );
 end gtx_optohybrid;
@@ -119,8 +118,9 @@ begin
     --== SFP RX Tracking link ==--
     --==========================--
 
-    tk_evt_en_o <= evt_en;
-    tk_evt_data_o <= evt_data;
+    tk_data_link_o.clk <= gtx_usr_clk_i;
+    tk_data_link_o.data_en <= evt_en;
+    tk_data_link_o.data <= evt_data;
        
     link_rx_tracking_inst : entity work.link_rx_tracking
     port map(
