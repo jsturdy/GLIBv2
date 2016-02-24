@@ -237,11 +237,11 @@ begin
     -- IP & MAC address --
     --==================--
 
-    --ip_addr_o <= x"c0a800a" & amc_slot_i;  -- 192.168.0.[160:175]
-    --mac_addr_o <= x"080030F100a" & amc_slot_i;  -- 08:00:30:F1:00:0[A0:AF] 
+    ip_addr_o <= x"c0a800a" & amc_slot_i;  -- 192.168.0.[160:175]
+    mac_addr_o <= x"080030F100a" & amc_slot_i;  -- 08:00:30:F1:00:0[A0:AF] 
     
-    ip_addr_o <= x"898A73B9"; -- 137.138.115.185
-    mac_addr_o <= x"080030F100A1"; -- 08:00:30:F1:00:A1 
+    --ip_addr_o <= x"898A73B9"; -- 137.138.115.185
+    --mac_addr_o <= x"080030F100A1"; -- 08:00:30:F1:00:A1 
 
     
     ipb_miso_o <= ipb_miso;

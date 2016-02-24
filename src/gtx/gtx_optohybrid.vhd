@@ -107,6 +107,7 @@ begin
     port map(
         gtx_clk_i   => gtx_usr_clk_i,   
         reset_i     => reset_i,           
+        vfat2_t1_i  => vfat2_t1_i,        
         req_en_o    => g2o_req_en,   
         req_valid_i => g2o_req_valid,   
         req_data_i  => g2o_req_data,           
