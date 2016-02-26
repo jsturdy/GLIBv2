@@ -229,7 +229,10 @@ architecture user_logic_arch of user_logic is
     
     --== DAQ signals ==--    
     
-    signal tk_data_links: data_link_array_t(0 to number_of_optohybrids - 1);
+    signal tk_data_links        : data_link_array_t(0 to number_of_optohybrids - 1);
+    signal trig_data_links      : trig_link_array_t(0 to number_of_optohybrids - 1);
+    
+    signal sbit_rate            : unsigned(31 downto 0) := (others => '0');
     
 begin
     
@@ -266,7 +269,8 @@ begin
 		rx_p_i          => sfp_rx_p(1 to 4),
 		tx_n_o          => sfp_tx_n(1 to 4),
 		tx_p_o          => sfp_tx_p(1 to 4),
-        tk_data_links_o => tk_data_links
+        tk_data_links_o => tk_data_links,
+        trig_data_links_o => trig_data_links
 	);
     
     --================================--
@@ -290,7 +294,7 @@ begin
         single_err_o    => open,
         double_err_o    => open,
         led_l1a_o       => user_v6_led_o(2),
-        led_clk_bc0_o   => user_v6_led_o(1),
+        led_clk_bc0_o   => open, --user_v6_led_o(1),
         bx_id_o         => ttc_bx_id,
         orbit_id_o      => ttc_orbit_id,
         l1a_id_o        => ttc_l1a_id
@@ -304,7 +308,7 @@ begin
     --vfat2_t1.bc0 <= '0';
     
     fpga_clkout_o <= ttc_clk;
-    
+        
     --==========--
     --    DAQ   --
     --==========--
@@ -339,6 +343,8 @@ begin
 
         -- Track data
         tk_data_links_i             => tk_data_links,
+        trig_data_links_i           => trig_data_links,
+        sbit_rate_i                 => sbit_rate,
         
         -- IPbus
         ipb_mosi_i                  => ipb_mosi_i(ipb_daq),
@@ -348,6 +354,53 @@ begin
         board_sn_i                  => sn
     );
     
+    -- blink an LED whenever we have at least one valid SBit cluster
+    -- also count the rate of the sbits
+    process(tk_data_links(0).clk)
+        variable sbit_led_countdown  : integer := 0;
+        variable sbit_rate_countdown : integer := 0;
+        variable valid_sbit : std_logic;
+    begin
+        if (rising_edge(tk_data_links(0).clk)) then
+            
+            -- find valid sbit signal
+            if ((trig_data_links(0).data_en = '1') or (trig_data_links(1).data_en = '1')) then
+                valid_sbit := (not (trig_data_links(0).data(9) and trig_data_links(0).data(10) and trig_data_links(0).data(23) and trig_data_links(0).data(24) and trig_data_links(0).data(37) and trig_data_links(0).data(38) and trig_data_links(0).data(51) and trig_data_links(0).data(52)))
+                           or (not (trig_data_links(1).data(9) and trig_data_links(1).data(10) and trig_data_links(1).data(23) and trig_data_links(1).data(24) and trig_data_links(1).data(37) and trig_data_links(1).data(38) and trig_data_links(1).data(51) and trig_data_links(1).data(52)));
+            else
+                valid_sbit := '0';
+            end if;
+            
+            -- LED countdown
+            if (valid_sbit = '1') then
+                sbit_led_countdown := 1_600_000;
+            elsif (sbit_led_countdown > 0) then
+                sbit_led_countdown := sbit_led_countdown - 1;
+            else
+                sbit_led_countdown := 0;
+            end if;
+            
+            -- calculate the rate
+            if (sbit_rate_countdown > 0) then
+                if (valid_sbit = '1') then
+                    sbit_rate <= sbit_rate + 1;
+                end if;
+                sbit_rate_countdown := sbit_rate_countdown - 1;
+            else
+                sbit_rate <= (others => '0');
+                sbit_rate_countdown := 1_600_000_000;
+            end if;
+            
+            -- led state
+            if (sbit_led_countdown > 0) then
+                user_v6_led_o(1) <= '1';
+            else
+                user_v6_led_o(1) <= '0';
+            end if;            
+            
+        end if;
+    end process;
+
     --==========--
     -- Counters --
     --==========--

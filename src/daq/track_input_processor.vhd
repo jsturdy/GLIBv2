@@ -20,7 +20,7 @@ use work.ipbus.all;
 use work.system_package.all;
 use work.user_package.all;
 
-entity chamber_event_builder is
+entity track_input_processor is
 port(
     -- Reset
     reset_i                     : in std_logic;
@@ -61,9 +61,9 @@ port(
     ipb_write_reg_data_i        : in std32_array_t(0 to 15)
 );
 
-end chamber_event_builder;
+end track_input_processor;
 
-architecture Behavioral of chamber_event_builder is
+architecture Behavioral of track_input_processor is
 
     -- Constants (TODO: should be moved to package)
     constant vfat_block_marker      : std_logic_vector(47 downto 0) := x"a000c000e000";

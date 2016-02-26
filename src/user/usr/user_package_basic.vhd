@@ -62,6 +62,13 @@ package user_package is
     
     type data_link_array_t is array(integer range <>) of data_link_t;    
 
+    type trig_link_t is record
+        data        : std_logic_vector(55 downto 0);
+        data_en     : std_logic;
+    end record;
+
+    type trig_link_array_t is array(integer range <>) of trig_link_t;    
+
     --====================--
     --==   DAQ other    ==--
     --====================--

@@ -59,6 +59,8 @@ port(
 
     -- Track data
     tk_data_links_i             : in data_link_array_t(0 to number_of_optohybrids - 1);
+    trig_data_links_i           : in trig_link_array_t(0 to number_of_optohybrids - 1);
+    sbit_rate_i                 : in unsigned(31 downto 0);
     
     -- IPbus
 	ipb_mosi_i                  : in ipb_wbus;
@@ -369,7 +371,7 @@ begin
     chamber_evt_builder_loop : for I in 0 to (number_of_optohybrids - 1) generate
     begin
 
-        chamber_evt_builder : entity work.chamber_event_builder
+        track_input_processors : entity work.track_input_processor
         port map
         (
             -- Reset
@@ -903,6 +905,37 @@ begin
     ipb_read_reg_data(7)(23 downto 0) <= std_logic_vector(max_dav_timer);
     ipb_read_reg_data(8)(23 downto 0) <= std_logic_vector(last_dav_timer);
 
+    --== SBit clusters ==--
+    process(tk_data_links_i(0).clk)
+    begin
+        if (rising_edge(tk_data_links_i(0).clk)) then
+            if (trig_data_links_i(0).data_en = '1') then
+                ipb_read_reg_data(9)(30 downto 28) <= trig_data_links_i(0).data(55 downto 53);
+                ipb_read_reg_data(9)(26 downto 16) <= trig_data_links_i(0).data(52 downto 42);
+                ipb_read_reg_data(9)(14 downto 12) <= trig_data_links_i(0).data(41 downto 39);
+                ipb_read_reg_data(9)(10 downto 0) <= trig_data_links_i(0).data(38 downto 28);
+                
+                ipb_read_reg_data(10)(30 downto 28) <= trig_data_links_i(0).data(27 downto 25);
+                ipb_read_reg_data(10)(26 downto 16) <= trig_data_links_i(0).data(24 downto 14);
+                ipb_read_reg_data(10)(14 downto 12) <= trig_data_links_i(0).data(13 downto 11);
+                ipb_read_reg_data(10)(10 downto 0) <= trig_data_links_i(0).data(10 downto 0);
+            end if;
+            
+            if (trig_data_links_i(1).data_en = '1') then    
+                ipb_read_reg_data(11)(30 downto 28) <= trig_data_links_i(1).data(55 downto 53);
+                ipb_read_reg_data(11)(26 downto 16) <= trig_data_links_i(1).data(52 downto 42);
+                ipb_read_reg_data(11)(14 downto 12) <= trig_data_links_i(1).data(41 downto 39);
+                ipb_read_reg_data(11)(10 downto 0) <= trig_data_links_i(1).data(38 downto 28);
+                
+                ipb_read_reg_data(12)(30 downto 28) <= trig_data_links_i(1).data(27 downto 25);
+                ipb_read_reg_data(12)(26 downto 16) <= trig_data_links_i(1).data(24 downto 14);
+                ipb_read_reg_data(12)(14 downto 12) <= trig_data_links_i(1).data(13 downto 11);
+                ipb_read_reg_data(12)(10 downto 0) <= trig_data_links_i(1).data(10 downto 0);
+            end if;
+        end if;
+    end process;    
+    
+    ipb_read_reg_data(13) <= std_logic_vector(sbit_rate_i);
     
     --== Software settable run type and run parameters ==--
     ipb_read_reg_data(15)(27 downto 24) <= run_type;
