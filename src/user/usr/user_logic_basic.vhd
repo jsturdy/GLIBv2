@@ -354,6 +354,28 @@ begin
         board_sn_i                  => sn
     );
     
+    trigger: entity work.trigger
+    port map
+    (
+        -- resets
+        reset_i                     => reset_i,
+        
+        -- inputs
+        trig_data_links_i           => trig_data_links,
+
+        -- TTC
+        ttc_clk_i                   => ttc_clk,
+        ttc_l1a_i                   => ttc_l1a,
+
+        -- Outputs
+        trig_led_o                  => user_v6_led_o(1),
+        
+        -- IPbus
+        ipb_clk_i                   => ipb_clk_i,
+        ipb_mosi_i                  => ipb_mosi_i(ipb_trigger);
+        ipb_miso_o                  => ipb_miso(ipb_trigger)
+    );
+    
     -- blink an LED whenever we have at least one valid SBit cluster
     -- also count the rate of the sbits
     process(tk_data_links(0).clk)

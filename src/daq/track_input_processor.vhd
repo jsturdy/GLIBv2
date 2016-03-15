@@ -4,7 +4,7 @@
 -- 
 -- Create Date:    14:00:00 11-Jan-2016 
 -- Design Name:    GLIB v2
--- Module Name:    Chamber Event Builder
+-- Module Name:    Track Input Processor
 -- Project Name:   GLIB v2
 -- Target Devices: xc6vlx130t-1ff1156
 -- Tool versions:  ISE  P.20131013
