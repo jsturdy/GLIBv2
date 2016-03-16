@@ -71,6 +71,7 @@ architecture Behavioral of daq is
     signal reset_daqlink        : std_logic := '1'; -- should only be done once at powerup
     signal reset_pwrup          : std_logic := '1';
     signal reset_ipb            : std_logic := '1';
+    signal reset_daqlink_ipb    : std_logic := '0';
 
     -- Clocks
     signal daq_clk_bufg         : std_logic;
@@ -279,7 +280,7 @@ begin
     --================================--
     
     reset_daq <= reset_pwrup or reset_i or reset_ipb;
-    reset_daqlink <= reset_pwrup or reset_i;
+    reset_daqlink <= reset_pwrup or reset_i or reset_daqlink_ipb;
     
     -- Reset after powerup
     
@@ -857,11 +858,13 @@ begin
     
     --== DAQ control ==--
     ipb_read_reg_data(0)(0) <= daq_enable;
+    ipb_read_reg_data(0)(2) <= reset_daqlink_ipb;
     ipb_read_reg_data(0)(3) <= reset_ipb;
     ipb_read_reg_data(0)(7 downto 4) <= tts_override;
     ipb_read_reg_data(0)(31 downto 8) <= input_mask;
     
     daq_enable <= ipb_write_reg_data(0)(0);
+    reset_daqlink_ipb <= ipb_write_reg_data(0)(2);
     reset_ipb <= ipb_write_reg_data(0)(3);
     tts_override <= ipb_write_reg_data(0)(7 downto 4);
     input_mask <= ipb_write_reg_data(0)(31 downto 8);
