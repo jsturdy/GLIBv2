@@ -215,6 +215,7 @@ architecture user_logic_arch of user_logic is
     signal ttc_l1a      : std_logic;
     signal ttc_bc0      : std_logic;
     signal ttc_ec0      : std_logic;
+    signal ttc_calpulse : std_logic;
     signal ttc_resync   : std_logic;
     
     signal ttc_bx_id    : std_logic_vector(11 downto 0);
@@ -282,6 +283,7 @@ begin
     
     ttc_inst : entity work.ttc_wrapper
     port map(
+        reset_i         => reset_i,
         ref_clk_i       => user_clk125_i,
         ttc_clk_p_i     => xpoint1_clk3_p,
         ttc_clk_n_i     => xpoint1_clk3_n,
@@ -291,7 +293,11 @@ begin
         ttc_ready_o     => ttc_ready,
         l1a_o           => ttc_l1a,
         bc0_o           => ttc_bc0,
-        ec0_o           => ttc_ec0, 
+        ec0_o           => ttc_ec0,
+        oc0_o           => open,
+        calpulse_o      => ttc_calpulse,
+        start_o         => open,
+        stop_o          => open,
         resync_o        => ttc_resync,
         hard_reset_o    => open,
         single_err_o    => open,
@@ -300,15 +306,19 @@ begin
         led_clk_bc0_o   => open, --user_v6_led_o(1),
         bx_id_o         => ttc_bx_id,
         orbit_id_o      => ttc_orbit_id,
-        l1a_id_o        => ttc_l1a_id
+        l1a_id_o        => ttc_l1a_id,
+
+        -- IPbus
+        ipb_clk_i       => ipb_clk_i,
+        ipb_mosi_i      => ipb_mosi_i(ipb_ttc),
+        ipb_miso_o      => ipb_miso(ipb_ttc)
+        
     );    
     
     vfat2_t1.lv1a <= ttc_l1a;
     --vfat2_t1.resync <= ttc_resync;
-    -- TODO: previously bc0 was not working, so keep it disconnected from VFATs for now
-    -- (there was a problem once that BC0 was clearing the VFAT EC, which would screw up event building)
     vfat2_t1.bc0 <= ttc_bc0;
-    --vfat2_t1.bc0 <= '0';
+    vfat2_t1.calpulse <= ttc_calpulse;
     
     fpga_clkout_o <= ttc_clk;
         
@@ -375,7 +385,7 @@ begin
         
         -- IPbus
         ipb_clk_i                   => ipb_clk_i,
-        ipb_mosi_i                  => ipb_mosi_i(ipb_trigger);
+        ipb_mosi_i                  => ipb_mosi_i(ipb_trigger),
         ipb_miso_o                  => ipb_miso(ipb_trigger)
     );
     

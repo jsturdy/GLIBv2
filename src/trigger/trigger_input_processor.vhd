@@ -23,7 +23,7 @@ use work.user_package.all;
 
 entity trigger_input_processor is
 port(
-    trig_link           : in trig_link_t;
+    trig_link           : in trig_link_t
 );
 end trigger_input_processor;
 
