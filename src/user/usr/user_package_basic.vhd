@@ -21,7 +21,7 @@ package user_package is
 	
     --=== ipb slaves =============--
     
-	constant number_of_ipb_slaves		: positive := 6;
+	constant number_of_ipb_slaves		: positive := 8;
    
 	constant ipb_gtx_forward_0          : integer  := 0;
 	constant ipb_gtx_forward_1          : integer  := 1;
@@ -29,6 +29,8 @@ package user_package is
 	constant ipb_evt_data_1             : integer  := 3;
     constant ipb_counters               : integer  := 4;
     constant ipb_daq                    : integer  := 5;
+    constant ipb_trigger                : integer  := 6;
+    constant ipb_ttc                    : integer  := 7;
 
     --=== gtx links =============--
     
@@ -49,6 +51,18 @@ package user_package is
     type std16_array_t is array(integer range <>) of std_logic_vector(15 downto 0);
 
     type std4_array_t is array(integer range <>) of std_logic_vector(3 downto 0);
+
+    --========================--
+    --== Trigger data input ==--
+    --========================--
+
+    type trig_link_t is record
+        clk         : std_logic;
+        data        : std_logic_vector(55 downto 0);
+        data_en     : std_logic;
+    end record;
+
+    type trig_link_array_t is array(integer range <>) of trig_link_t;    
 
     --====================--
     --== DAQ data input ==--

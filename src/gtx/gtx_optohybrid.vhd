@@ -49,7 +49,8 @@ port(
     rx_kchar_i      : in std_logic_vector(3 downto 0);
     rx_data_i       : in std_logic_vector(31 downto 0);
 
-    tk_data_link_o  : out data_link_t
+    tk_data_link_o  : out data_link_t;
+    trig_data_link_o: out trig_link_t
     
 );
 end gtx_optohybrid;
@@ -92,11 +93,13 @@ begin
     
     link_rx_trigger_inst : entity work.link_rx_trigger
     port map(
-        gtx_clk_i   => gtx_usr_clk_i,   
-        reset_i     => reset_i,  
-        tr_error_o  => tr_error_o,        
-        rx_kchar_i  => rx_kchar_i(3 downto 2),   
-        rx_data_i   => rx_data_i(31 downto 16)      
+        gtx_clk_i           => gtx_usr_clk_i,   
+        reset_i             => reset_i,  
+        tr_error_o          => tr_error_o,        
+        rx_kchar_i          => rx_kchar_i(3 downto 2),   
+        rx_data_i           => rx_data_i(31 downto 16),
+        clusters_data_o     => trig_data_link_o.data,
+        clusters_valid_o    => trig_data_link_o.data_en
     );
     
     --==========================--
@@ -107,6 +110,7 @@ begin
     port map(
         gtx_clk_i   => gtx_usr_clk_i,   
         reset_i     => reset_i,           
+        vfat2_t1_i  => vfat2_t1_i,        
         req_en_o    => g2o_req_en,   
         req_valid_i => g2o_req_valid,   
         req_data_i  => g2o_req_data,           

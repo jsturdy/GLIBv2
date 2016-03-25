@@ -13,21 +13,13 @@
 ----------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
-use IEEE.std_logic_misc.all;
+use ieee.std_logic_misc.all;
+use ieee.numeric_std.all;
 
 library work;
 use work.ipbus.all;
 use work.system_package.all;
 use work.user_package.all;
-
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
-use IEEE.NUMERIC_STD.ALL;
-
--- Uncomment the following library declaration if instantiating
--- any Xilinx primitives in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
 
 entity daq is
 port(
@@ -59,6 +51,8 @@ port(
 
     -- Track data
     tk_data_links_i             : in data_link_array_t(0 to number_of_optohybrids - 1);
+    trig_data_links_i           : in trig_link_array_t(0 to number_of_optohybrids - 1);
+    sbit_rate_i                 : in unsigned(31 downto 0);
     
     -- IPbus
 	ipb_mosi_i                  : in ipb_wbus;
@@ -77,6 +71,7 @@ architecture Behavioral of daq is
     signal reset_daqlink        : std_logic := '1'; -- should only be done once at powerup
     signal reset_pwrup          : std_logic := '1';
     signal reset_ipb            : std_logic := '1';
+    signal reset_daqlink_ipb    : std_logic := '0';
 
     -- Clocks
     signal daq_clk_bufg         : std_logic;
@@ -285,7 +280,7 @@ begin
     --================================--
     
     reset_daq <= reset_pwrup or reset_i or reset_ipb;
-    reset_daqlink <= reset_pwrup or reset_i;
+    reset_daqlink <= reset_pwrup or reset_i or reset_daqlink_ipb;
     
     -- Reset after powerup
     
@@ -369,7 +364,7 @@ begin
     chamber_evt_builder_loop : for I in 0 to (number_of_optohybrids - 1) generate
     begin
 
-        chamber_evt_builder : entity work.chamber_event_builder
+        track_input_processors : entity work.track_input_processor
         port map
         (
             -- Reset
@@ -863,11 +858,13 @@ begin
     
     --== DAQ control ==--
     ipb_read_reg_data(0)(0) <= daq_enable;
+    ipb_read_reg_data(0)(2) <= reset_daqlink_ipb;
     ipb_read_reg_data(0)(3) <= reset_ipb;
     ipb_read_reg_data(0)(7 downto 4) <= tts_override;
     ipb_read_reg_data(0)(31 downto 8) <= input_mask;
     
     daq_enable <= ipb_write_reg_data(0)(0);
+    reset_daqlink_ipb <= ipb_write_reg_data(0)(2);
     reset_ipb <= ipb_write_reg_data(0)(3);
     tts_override <= ipb_write_reg_data(0)(7 downto 4);
     input_mask <= ipb_write_reg_data(0)(31 downto 8);
@@ -903,6 +900,37 @@ begin
     ipb_read_reg_data(7)(23 downto 0) <= std_logic_vector(max_dav_timer);
     ipb_read_reg_data(8)(23 downto 0) <= std_logic_vector(last_dav_timer);
 
+    --== SBit clusters ==--
+    process(tk_data_links_i(0).clk)
+    begin
+        if (rising_edge(tk_data_links_i(0).clk)) then
+            if (trig_data_links_i(0).data_en = '1') then
+                ipb_read_reg_data(9)(30 downto 28) <= trig_data_links_i(0).data(55 downto 53);
+                ipb_read_reg_data(9)(26 downto 16) <= trig_data_links_i(0).data(52 downto 42);
+                ipb_read_reg_data(9)(14 downto 12) <= trig_data_links_i(0).data(41 downto 39);
+                ipb_read_reg_data(9)(10 downto 0) <= trig_data_links_i(0).data(38 downto 28);
+                
+                ipb_read_reg_data(10)(30 downto 28) <= trig_data_links_i(0).data(27 downto 25);
+                ipb_read_reg_data(10)(26 downto 16) <= trig_data_links_i(0).data(24 downto 14);
+                ipb_read_reg_data(10)(14 downto 12) <= trig_data_links_i(0).data(13 downto 11);
+                ipb_read_reg_data(10)(10 downto 0) <= trig_data_links_i(0).data(10 downto 0);
+            end if;
+            
+            if (trig_data_links_i(1).data_en = '1') then    
+                ipb_read_reg_data(11)(30 downto 28) <= trig_data_links_i(1).data(55 downto 53);
+                ipb_read_reg_data(11)(26 downto 16) <= trig_data_links_i(1).data(52 downto 42);
+                ipb_read_reg_data(11)(14 downto 12) <= trig_data_links_i(1).data(41 downto 39);
+                ipb_read_reg_data(11)(10 downto 0) <= trig_data_links_i(1).data(38 downto 28);
+                
+                ipb_read_reg_data(12)(30 downto 28) <= trig_data_links_i(1).data(27 downto 25);
+                ipb_read_reg_data(12)(26 downto 16) <= trig_data_links_i(1).data(24 downto 14);
+                ipb_read_reg_data(12)(14 downto 12) <= trig_data_links_i(1).data(13 downto 11);
+                ipb_read_reg_data(12)(10 downto 0) <= trig_data_links_i(1).data(10 downto 0);
+            end if;
+        end if;
+    end process;    
+    
+    ipb_read_reg_data(13) <= std_logic_vector(sbit_rate_i);
     
     --== Software settable run type and run parameters ==--
     ipb_read_reg_data(15)(27 downto 24) <= run_type;

@@ -22,6 +22,8 @@ package body user_addr_decode is
 		elsif std_match(addr, "010100000001000000000000000000--") then sel := ipb_evt_data_1;
 		elsif std_match(addr, "011000000000000000000000--------") then sel := ipb_counters;
 		elsif std_match(addr, "01110000000000000000000---------") then sel := ipb_daq;
+		elsif std_match(addr, "01111000000000000000000---------") then sel := ipb_trigger;
+		elsif std_match(addr, "01111100000000000000000000000---") then sel := ipb_ttc;
 		else sel := 99;
 		end if;
 		return sel;
