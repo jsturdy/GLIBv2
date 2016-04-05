@@ -8,8 +8,8 @@
 -- Project Name:   GLIB v2
 -- Target Devices: xc6vlx130t-1ff1156
 -- Tool versions:  ISE  P.20131013
--- Description:    Wrapper for the TTC decoder module from BU, adds reset, LED output, and a few counters (orbit_id, bx_id, l1a_id).
---                 It also supports AMC13 and GEM TTC decoding standards (GEM decoding is the same as CSC, at least for now)
+-- Description:    Wrapper for the TTC decoder module from BU, adds reset, LED output, command decoding, counters and monitoring.
+--                 It supports AMC13 and GEM/CSC TTC decoding standards (the difference is only in BC0 and EC0 since CSC is not using the lowest two bits)
 --
 ----------------------------------------------------------------------------------
 library ieee;
@@ -298,7 +298,7 @@ begin
                 end case;
                 
                 -- fill the spy buffer if the pointer is not yet at the last word
-                if (ttc_spy_pointer <= 28) then
+                if ((ttc_spy_pointer <= 28) and (brcst /= x"1")) then
                     ttc_spy_buffer(ttc_spy_pointer + 3 downto ttc_spy_pointer) <= brcst(5 downto 2);
                     ttc_spy_pointer <= ttc_spy_pointer + 4;
                 end if;
