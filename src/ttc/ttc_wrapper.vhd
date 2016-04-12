@@ -77,10 +77,12 @@ architecture Behavioral of ttc_wrapper is
     -- TTC commands decoded in AMC13 format
     signal amc13_bc0            : std_logic := '0';
     signal amc13_ec0            : std_logic := '0';
+    signal amc13_oc0				  : std_logic := '0';
 
     -- TTC commands decoded in CSC format
     signal csc_bc0              : std_logic := '0';
     signal csc_ec0              : std_logic := '0';
+    signal csc_oc0              : std_logic := '0';
     
     -- TTC command output after choosing the decoding (AMC13 or GEM) and all the control logic
     signal l1a                  : std_logic := '0';
@@ -138,6 +140,7 @@ begin
     -- Choose between CSC and AMC13 BC0 and EC0 decoding
     bc0         <= csc_bc0 when use_csc_format = '1' else amc13_bc0;
     ec0         <= csc_ec0 when use_csc_format = '1' else amc13_ec0;
+    oc0         <= csc_oc0 when use_csc_format = '1' else amc13_oc0;
     
     -- L1A logic (currently only block or not block)
     l1a <= ttc_l1a and (not block_l1as);
@@ -268,7 +271,8 @@ begin
             
             csc_bc0     <= '0';
             csc_ec0     <= '0';
-            oc0         <= '0';
+            csc_oc0     <= '0';
+            amc13_oc0   <= '0';
             calpulse    <= '0';
             start       <= '0';
             stop        <= '0';
@@ -281,26 +285,28 @@ begin
                     -- normally BC0 is encoded as 0x1 (in which case we should just use the bc0 output of the decoder), but CSC encodes it as 0x4 (so comes as 0x1 with two lower bits wiped away)
                     when "00" & x"0" =>
                         csc_ec0 <= '1';
-                        oc0 <= '1'; -- for now just squish it together with EC0 since CSC doesn't have it defined..
-                    when "00" & x"1" =>
+                        csc_oc0 <= '1'; -- for now just squish it together with EC0 since CSC doesn't have it defined..
+                    when "00" & x"4" =>   -- 1
                         csc_bc0 <= '1';
-                    when "00" & x"3" =>
+                    when "00" & x"c" =>   -- 3
                         resync <= '1';
-                    when "00" & x"4" =>
+                    when "01" & x"0" =>  -- 4
                         hard_reset <= '1';
-                    when "00" & x"5" =>
+                    when "01" & x"4" => -- 5
                         calpulse <= '1';
-                    when "00" & x"6" =>
+                    when "01" & x"8" => -- 6
                         start <= '1';
-                    when "00" & x"7" =>
+                    when "01" & x"c" => -- 7
                         stop <= '1';
+                    when "10" & x"0" => -- 8
+                        amc13_oc0 <= '1';
                     when others =>
                 end case;
                 
                 -- fill the spy buffer if the pointer is not yet at the last word
                 if ((ttc_spy_pointer <= 28) and (brcst /= "00" & x"1")) then
-                    ttc_spy_buffer(ttc_spy_pointer + 3 downto ttc_spy_pointer) <= brcst(5 downto 2);
-                    ttc_spy_pointer <= ttc_spy_pointer + 4;
+                    ttc_spy_buffer(ttc_spy_pointer + 7 downto ttc_spy_pointer) <= "00" & brcst;
+                    ttc_spy_pointer <= ttc_spy_pointer + 8;
                 end if;
                 
                 -- reset the spy buffer (called when the buffer is read through IPBus)
