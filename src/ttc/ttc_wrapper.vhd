@@ -283,30 +283,30 @@ begin
                 -- NOTE: the lowest two bits are dropped by the decoder, so if you encode a command as 0xC, it will come out as 0x3!
                 case brcst is
                     -- normally BC0 is encoded as 0x1 (in which case we should just use the bc0 output of the decoder), but CSC encodes it as 0x4 (so comes as 0x1 with two lower bits wiped away)
-                    when "00" & x"0" =>
+                    when "00" & x"0" =>   -- 0x0:  EC0 (also adding OC0 here, but not sure if it's a good idea.. needs testing)
                         csc_ec0 <= '1';
                         csc_oc0 <= '1'; -- for now just squish it together with EC0 since CSC doesn't have it defined..
-                    when "00" & x"4" =>   -- 1
+                    when "00" & x"1" =>   -- 0x4:  BC0
                         csc_bc0 <= '1';
-                    when "00" & x"c" =>   -- 3
+                    when "00" & x"3" =>   -- 0xc:  Resync
                         resync <= '1';
-                    when "01" & x"0" =>  -- 4
+                    when "00" & x"4" =>   -- 0x10: Hard reset
                         hard_reset <= '1';
-                    when "01" & x"4" => -- 5
+                    when "00" & x"5" =>   -- 0x14: Calibration pulse
                         calpulse <= '1';
-                    when "01" & x"8" => -- 6
+                    when "00" & x"6" =>   -- 0x18: Start
                         start <= '1';
-                    when "01" & x"c" => -- 7
+                    when "00" & x"7" =>   -- 0x1c: Stop
                         stop <= '1';
-                    when "10" & x"0" => -- 8
+                    when "00" & x"8" =>   -- 0x20: OC0
                         amc13_oc0 <= '1';
                     when others =>
                 end case;
                 
                 -- fill the spy buffer if the pointer is not yet at the last word
                 if ((ttc_spy_pointer <= 28) and (brcst /= "00" & x"1")) then
-                    ttc_spy_buffer(ttc_spy_pointer + 7 downto ttc_spy_pointer) <= "00" & brcst;
-                    ttc_spy_pointer <= ttc_spy_pointer + 8;
+                    ttc_spy_buffer(ttc_spy_pointer + 3 downto ttc_spy_pointer) <= brcst(5 downto 2);
+                    ttc_spy_pointer <= ttc_spy_pointer + 4;
                 end if;
                 
                 -- reset the spy buffer (called when the buffer is read through IPBus)
