@@ -298,7 +298,7 @@ begin
                 end case;
                 
                 -- fill the spy buffer if the pointer is not yet at the last word
-                if ((ttc_spy_pointer <= 28) and (brcst /= x"1")) then
+                if ((ttc_spy_pointer <= 28) and (brcst /= "00" & x"1")) then
                     ttc_spy_buffer(ttc_spy_pointer + 3 downto ttc_spy_pointer) <= brcst(5 downto 2);
                     ttc_spy_pointer <= ttc_spy_pointer + 4;
                 end if;
