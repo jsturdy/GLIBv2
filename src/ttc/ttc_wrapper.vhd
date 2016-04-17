@@ -8,8 +8,8 @@
 -- Project Name:   GLIB v2
 -- Target Devices: xc6vlx130t-1ff1156
 -- Tool versions:  ISE  P.20131013
--- Description:    Wrapper for the TTC decoder module from BU, adds reset, LED output, and a few counters (orbit_id, bx_id, l1a_id).
---                 It also supports AMC13 and GEM TTC decoding standards (GEM decoding is the same as CSC, at least for now)
+-- Description:    Wrapper for the TTC decoder module from BU, adds reset, LED output, command decoding, counters and monitoring.
+--                 It supports AMC13 and GEM/CSC TTC decoding standards (the difference is only in BC0 and EC0 since CSC is not using the lowest two bits)
 --
 ----------------------------------------------------------------------------------
 library ieee;
@@ -77,10 +77,12 @@ architecture Behavioral of ttc_wrapper is
     -- TTC commands decoded in AMC13 format
     signal amc13_bc0            : std_logic := '0';
     signal amc13_ec0            : std_logic := '0';
+    signal amc13_oc0				  : std_logic := '0';
 
     -- TTC commands decoded in CSC format
     signal csc_bc0              : std_logic := '0';
     signal csc_ec0              : std_logic := '0';
+    signal csc_oc0              : std_logic := '0';
     
     -- TTC command output after choosing the decoding (AMC13 or GEM) and all the control logic
     signal l1a                  : std_logic := '0';
@@ -138,6 +140,7 @@ begin
     -- Choose between CSC and AMC13 BC0 and EC0 decoding
     bc0         <= csc_bc0 when use_csc_format = '1' else amc13_bc0;
     ec0         <= csc_ec0 when use_csc_format = '1' else amc13_ec0;
+    oc0         <= csc_oc0 when use_csc_format = '1' else amc13_oc0;
     
     -- L1A logic (currently only block or not block)
     l1a <= ttc_l1a and (not block_l1as);
@@ -268,7 +271,8 @@ begin
             
             csc_bc0     <= '0';
             csc_ec0     <= '0';
-            oc0         <= '0';
+            csc_oc0     <= '0';
+            amc13_oc0   <= '0';
             calpulse    <= '0';
             start       <= '0';
             stop        <= '0';
@@ -279,26 +283,28 @@ begin
                 -- NOTE: the lowest two bits are dropped by the decoder, so if you encode a command as 0xC, it will come out as 0x3!
                 case brcst is
                     -- normally BC0 is encoded as 0x1 (in which case we should just use the bc0 output of the decoder), but CSC encodes it as 0x4 (so comes as 0x1 with two lower bits wiped away)
-                    when "00" & x"0" =>
+                    when "00" & x"0" =>   -- 0x0:  EC0 (also adding OC0 here, but not sure if it's a good idea.. needs testing)
                         csc_ec0 <= '1';
-                        oc0 <= '1'; -- for now just squish it together with EC0 since CSC doesn't have it defined..
-                    when "00" & x"1" =>
+                        csc_oc0 <= '1'; -- for now just squish it together with EC0 since CSC doesn't have it defined..
+                    when "00" & x"1" =>   -- 0x4:  BC0
                         csc_bc0 <= '1';
-                    when "00" & x"3" =>
+                    when "00" & x"3" =>   -- 0xc:  Resync
                         resync <= '1';
-                    when "00" & x"4" =>
+                    when "00" & x"4" =>   -- 0x10: Hard reset
                         hard_reset <= '1';
-                    when "00" & x"5" =>
+                    when "00" & x"5" =>   -- 0x14: Calibration pulse
                         calpulse <= '1';
-                    when "00" & x"6" =>
+                    when "00" & x"6" =>   -- 0x18: Start
                         start <= '1';
-                    when "00" & x"7" =>
+                    when "00" & x"7" =>   -- 0x1c: Stop
                         stop <= '1';
+                    when "00" & x"8" =>   -- 0x20: OC0
+                        amc13_oc0 <= '1';
                     when others =>
                 end case;
                 
                 -- fill the spy buffer if the pointer is not yet at the last word
-                if (ttc_spy_pointer <= 28) then
+                if ((ttc_spy_pointer <= 28) and (brcst /= "00" & x"1")) then
                     ttc_spy_buffer(ttc_spy_pointer + 3 downto ttc_spy_pointer) <= brcst(5 downto 2);
                     ttc_spy_pointer <= ttc_spy_pointer + 4;
                 end if;

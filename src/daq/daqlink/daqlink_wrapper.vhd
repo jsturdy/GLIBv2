@@ -404,7 +404,7 @@ begin
     port map
     ( 
            reset                      => RESET_IN, -- asynchronous reset, assert reset until GTX REFCLK stable
-           USE_TRIGGER_PORT           => false,
+           USE_TRIGGER_PORT           => false, -- must set this to true when using HCAL type AMC13 (e.g. in TAMU)
         -- MGT signals
            UsrClk                     => gtx0_usr_clk, --gtx0_usr_clk, -- it must have a frequency of 250MHz
            RXPLLLKDET                 => gtx0_rxplllkdet_o,
